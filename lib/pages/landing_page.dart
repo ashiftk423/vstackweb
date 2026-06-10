@@ -2,22 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vstackweb/models/site_models.dart';
-import 'package:vstackweb/services/vstack_content_service.dart';
+import 'package:vstackweb/theme/responsive.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
+import 'package:vstackweb/widgets/responsive_image.dart';
 import 'package:vstackweb/widgets/scroll_reveal.dart';
 import 'package:vstackweb/widgets/section_header.dart';
 
 class LandingPage extends StatefulWidget {
-  const LandingPage({
-    super.key,
-    required this.content,
-    this.service,
-    this.firebaseReady = false,
-  });
+  const LandingPage({super.key, required this.content});
 
   final SiteContent content;
-  final VStackContentService? service;
-  final bool firebaseReady;
 
   @override
   State<LandingPage> createState() => _LandingPageState();
@@ -34,14 +28,14 @@ class _LandingPageState extends State<LandingPage> {
   @override
   void initState() {
     super.initState();
-    _enquiry = widget.content.settings.enquiryTypes.first;
+    _enquiry = widget.content.contact.enquiryTypes.first;
   }
 
   @override
   void didUpdateWidget(covariant LandingPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.content.settings.enquiryTypes != widget.content.settings.enquiryTypes) {
-      _enquiry = widget.content.settings.enquiryTypes.first;
+    if (oldWidget.content.contact.enquiryTypes != widget.content.contact.enquiryTypes) {
+      _enquiry = widget.content.contact.enquiryTypes.first;
     }
   }
 
@@ -69,38 +63,28 @@ class _LandingPageState extends State<LandingPage> {
 
   Future<void> _submitEnquiry() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    try {
-      if (widget.service != null) {
-        await widget.service!.submitEnquiry(
-          name: _nameCtrl.text.trim(),
-          email: _emailCtrl.text.trim(),
-          message: _msgCtrl.text.trim(),
-          enquiryType: _enquiry,
-        );
-      }
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Thanks ${_nameCtrl.text.trim()}! We\'ll reply within 24 hours.'),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: VStackColors.surfaceLight,
-        ),
-      );
-      _nameCtrl.clear();
-      _emailCtrl.clear();
-      _msgCtrl.clear();
-      setState(() => _enquiry = widget.content.settings.enquiryTypes.first);
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not send: $e'), backgroundColor: Colors.red.shade900),
-      );
-    }
+    final contact = widget.content.contact;
+    final body = Uri.encodeComponent(
+      'Enquiry type: $_enquiry\n\n${_msgCtrl.text.trim()}',
+    );
+    final subject = Uri.encodeComponent('VStack enquiry from ${_nameCtrl.text.trim()}');
+    final mailto =
+        'mailto:${contact.email}?subject=$subject&body=$body';
+    await _launch(mailto);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Opening your email app to send the enquiry.'),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: VStackColors.surfaceLight,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final wide = MediaQuery.sizeOf(context).width > 900;
+    final wide = AppLayout.isDesktop(context);
+    final pad = AppLayout.pagePadding(context);
 
     return Scaffold(
       body: Stack(
@@ -109,37 +93,43 @@ class _LandingPageState extends State<LandingPage> {
           CustomScrollView(
             controller: _scroll,
             slivers: [
-              SliverToBoxAdapter(child: _NavBar(wide: wide, onNav: _scrollTo)),
+              SliverToBoxAdapter(child: _NavBar(padding: pad, wide: wide, onNav: _scrollTo)),
               SliverToBoxAdapter(
                 child: _HeroSection(
-                  wide: wide,
-                  settings: widget.content.settings,
+                  padding: pad,
+                  site: widget.content.site,
                   onCta: () => _scrollTo(2800),
                 ),
               ),
               SliverToBoxAdapter(
-                child: _CapabilitiesSection(wide: wide, capabilities: widget.content.capabilities),
+                child: _CapabilitiesSection(
+                  padding: pad,
+                  capabilities: widget.content.capabilities,
+                ),
               ),
               SliverToBoxAdapter(
-                child: _ProjectsSection(wide: wide, projects: widget.content.projects),
+                child: _ProjectsSection(
+                  padding: pad,
+                  projects: widget.content.projects,
+                  onOpenLink: _launch,
+                ),
               ),
               SliverToBoxAdapter(
-                child: _TeamSection(wide: wide, team: widget.content.team),
+                child: _TeamSection(padding: pad, team: widget.content.team),
               ),
               SliverToBoxAdapter(
                 child: _ContactSection(
-                  wide: wide,
-                  settings: widget.content.settings,
+                  padding: pad,
+                  contact: widget.content.contact,
                   formKey: _formKey,
                   nameCtrl: _nameCtrl,
                   emailCtrl: _emailCtrl,
                   msgCtrl: _msgCtrl,
                   enquiry: _enquiry,
-                  enquiryTypes: widget.content.settings.enquiryTypes,
                   onEnquiry: (v) => setState(() => _enquiry = v),
                   onSubmit: _submitEnquiry,
-                  onEmail: () => _launch('mailto:${widget.content.settings.contactEmail}'),
-                  onWhatsApp: () => _launch('https://wa.me/${widget.content.settings.whatsappNumber}'),
+                  onEmail: () => _launch('mailto:${widget.content.contact.email}'),
+                  onWhatsApp: () => _launch('https://wa.me/${widget.content.contact.whatsappNumber}'),
                 ),
               ),
               const SliverToBoxAdapter(child: _Footer()),
@@ -156,18 +146,22 @@ class _AmbientBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mobile = AppLayout.isMobile(context);
+    final scale = mobile ? 0.55 : 1.0;
+
     return IgnorePointer(
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
           Positioned(
             top: -120,
             right: -80,
-            child: _orb(320, VStackColors.accent.withValues(alpha: 0.18)),
+            child: _orb(320 * scale, VStackColors.accent.withValues(alpha: 0.18)),
           ),
           Positioned(
             bottom: 200,
             left: -100,
-            child: _orb(280, VStackColors.accent2.withValues(alpha: 0.14)),
+            child: _orb(280 * scale, VStackColors.accent2.withValues(alpha: 0.14)),
           ),
         ],
       ),
@@ -191,8 +185,9 @@ class _AmbientBackground extends StatelessWidget {
 }
 
 class _NavBar extends StatelessWidget {
-  const _NavBar({required this.wide, required this.onNav});
+  const _NavBar({required this.padding, required this.wide, required this.onNav});
 
+  final double padding;
   final bool wide;
   final void Function(double) onNav;
 
@@ -204,11 +199,14 @@ class _NavBar extends StatelessWidget {
       ('Contact', 3200.0),
     ];
 
+    final compact = AppLayout.isMobile(context);
+
     return Padding(
-      padding: EdgeInsets.fromLTRB(wide ? 48 : 20, 16, wide ? 48 : 20, 8),
+      padding: EdgeInsets.fromLTRB(padding, 16, padding, 8),
       child: Row(
         children: [
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 width: 42,
@@ -222,17 +220,19 @@ class _NavBar extends StatelessWidget {
                 ),
                 child: const Text('V', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               ),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'VStack',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-                  ),
-                  const Text('IT Solutions', style: TextStyle(color: VStackColors.muted, fontSize: 11)),
-                ],
-              ),
+              if (!compact) ...[
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'VStack',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                    const Text('IT Solutions', style: TextStyle(color: VStackColors.muted, fontSize: 11)),
+                  ],
+                ),
+              ],
             ],
           ),
           const Spacer(),
@@ -248,95 +248,98 @@ class _NavBar extends StatelessWidget {
             style: FilledButton.styleFrom(
               backgroundColor: VStackColors.accent,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              padding: EdgeInsets.symmetric(horizontal: compact ? 14 : 20, vertical: 14),
             ),
-            child: const Text('Get a quote'),
+            child: Text(compact ? 'Quote' : 'Get a quote'),
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.2, end: 0);
+    );
   }
 }
 
 class _HeroSection extends StatelessWidget {
-  const _HeroSection({required this.wide, required this.settings, required this.onCta});
+  const _HeroSection({required this.padding, required this.site, required this.onCta});
 
-  final bool wide;
-  final SiteSettings settings;
+  final double padding;
+  final SiteInfo site;
   final VoidCallback onCta;
 
   @override
   Widget build(BuildContext context) {
+    final titleSize = AppLayout.heroTitleSize(context);
+    final mobile = AppLayout.isMobile(context);
+
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: wide ? 48 : 20, vertical: wide ? 48 : 28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              color: VStackColors.surface,
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: VStackColors.border),
+      padding: EdgeInsets.fromLTRB(padding, mobile ? 24 : 48, padding, mobile ? 32 : 48),
+      child: ScrollReveal(
+        id: 'hero',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: VStackColors.surface,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: VStackColors.border),
+              ),
+              child: Text(
+                site.heroBadge,
+                style: TextStyle(color: VStackColors.muted, fontSize: mobile ? 11 : 12),
+              ),
             ),
-            child: Text(
-              settings.heroBadge,
-              style: const TextStyle(color: VStackColors.muted, fontSize: 12),
+            SizedBox(height: mobile ? 20 : 28),
+            Text(
+              site.heroTitle,
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    height: 1.05,
+                    fontSize: titleSize,
+                  ),
             ),
-          ).animate().fadeIn(delay: 200.ms).slideX(),
-          const SizedBox(height: 28),
-          Text(
-            settings.heroTitle,
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  height: 1.05,
-                  fontSize: wide ? 56 : 36,
+            SizedBox(height: mobile ? 14 : 20),
+            Text(
+              site.heroSubtitle,
+              style: TextStyle(
+                color: VStackColors.muted,
+                fontSize: mobile ? 16 : 18,
+                height: 1.55,
+              ),
+            ),
+            SizedBox(height: mobile ? 24 : 32),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                FilledButton.icon(
+                  onPressed: onCta,
+                  icon: const Icon(Icons.arrow_forward_rounded, size: 18),
+                  label: const Text('Start your project'),
+                  style: FilledButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: mobile ? 20 : 28, vertical: 16),
+                    backgroundColor: VStackColors.accent,
+                  ),
                 ),
-          )
-              .animate()
-              .fadeIn(delay: 350.ms, duration: 700.ms)
-              .slideY(begin: 0.15, end: 0, curve: Curves.easeOutCubic),
-          const SizedBox(height: 20),
-          Text(
-            settings.heroSubtitle,
-            style: const TextStyle(color: VStackColors.muted, fontSize: 18, height: 1.55),
-          ).animate().fadeIn(delay: 500.ms),
-          const SizedBox(height: 32),
-          Wrap(
-            spacing: 14,
-            runSpacing: 12,
-            children: [
-              FilledButton.icon(
-                onPressed: onCta,
-                icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-                label: const Text('Start your project'),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
-                  backgroundColor: VStackColors.accent,
+                OutlinedButton(
+                  onPressed: onCta,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: VStackColors.text,
+                    side: const BorderSide(color: VStackColors.border),
+                    padding: EdgeInsets.symmetric(horizontal: mobile ? 18 : 24, vertical: 16),
+                  ),
+                  child: const Text('View our work'),
                 ),
-              ).animate().fadeIn(delay: 650.ms).scale(begin: const Offset(0.92, 0.92)),
-              OutlinedButton(
-                onPressed: onCta,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: VStackColors.text,
-                  side: const BorderSide(color: VStackColors.border),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                ),
-                child: const Text('View our work'),
-              ).animate().fadeIn(delay: 750.ms),
-            ],
-          ),
-          const SizedBox(height: 48),
-          Wrap(
-            spacing: wide ? 48 : 28,
-            runSpacing: 16,
-            children: [
-              _stat(settings.stat1Value, settings.stat1Label),
-              _stat(settings.stat2Value, settings.stat2Label),
-              _stat(settings.stat3Value, settings.stat3Label),
-            ],
-          ).animate().fadeIn(delay: 900.ms).slideY(begin: 0.2),
-        ],
+              ],
+            ),
+            SizedBox(height: mobile ? 32 : 48),
+            Wrap(
+              spacing: mobile ? 24 : 48,
+              runSpacing: 16,
+              children: site.stats.map((s) => _stat(s.value, s.label)).toList(),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -353,19 +356,20 @@ class _HeroSection extends StatelessWidget {
 }
 
 class _CapabilitiesSection extends StatelessWidget {
-  const _CapabilitiesSection({required this.wide, required this.capabilities});
+  const _CapabilitiesSection({required this.padding, required this.capabilities});
 
-  final bool wide;
-  final List<CapabilityDoc> capabilities;
+  final double padding;
+  final List<Capability> capabilities;
 
   @override
   Widget build(BuildContext context) {
     return _sectionPad(
-      wide: wide,
+      padding: padding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SectionHeader(
+            id: 'capabilities-header',
             tag: 'WHAT WE DO',
             title: 'Capabilities on display',
             subtitle: 'Every section of this site is built to show how we think about product, motion, and engineering.',
@@ -373,7 +377,7 @@ class _CapabilitiesSection extends StatelessWidget {
           const SizedBox(height: 36),
           LayoutBuilder(
             builder: (context, c) {
-              final cols = wide ? 4 : 1;
+              final cols = AppLayout.gridColumns(context, desktop: 4, tablet: 2);
               final w = (c.maxWidth - (cols - 1) * 16) / cols;
               return Wrap(
                 spacing: 16,
@@ -381,9 +385,10 @@ class _CapabilitiesSection extends StatelessWidget {
                 children: capabilities.asMap().entries.map((e) {
                   final cap = e.value;
                   return SizedBox(
-                    width: wide ? w : c.maxWidth,
+                    width: cols == 1 ? c.maxWidth : w,
                     child: ScrollReveal(
-                      delay: Duration(milliseconds: 80 * e.key),
+                      id: 'cap-${cap.id}',
+                      delay: Duration(milliseconds: 60 * e.key),
                       child: _capCard(cap.title, cap.description, e.key),
                     ),
                   );
@@ -420,40 +425,72 @@ class _CapabilitiesSection extends StatelessWidget {
 }
 
 class _ProjectsSection extends StatelessWidget {
-  const _ProjectsSection({required this.wide, required this.projects});
+  const _ProjectsSection({
+    required this.padding,
+    required this.projects,
+    required this.onOpenLink,
+  });
 
-  final bool wide;
-  final List<ProjectDoc> projects;
+  final double padding;
+  final List<Project> projects;
+  final Future<void> Function(String url) onOpenLink;
 
   @override
   Widget build(BuildContext context) {
+    final desktop = AppLayout.isDesktop(context);
+
     return _sectionPad(
-      wide: wide,
+      padding: padding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SectionHeader(
+            id: 'projects-header',
             tag: 'OUR WORK',
             title: 'Projects we\'ve delivered',
-            subtitle: 'Replace these with your real client names and screenshots when ready.',
+            subtitle: 'Edit projects in assets/content/site_content.json — add images and links anytime.',
           ),
           const SizedBox(height: 28),
-          SizedBox(
-            height: wide ? 260 : 300,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: projects.length,
-              separatorBuilder: (context, index) => const SizedBox(width: 18),
-              itemBuilder: (context, i) {
-                final p = projects[i];
-                return ScrollReveal(
-                  delay: Duration(milliseconds: 100 * i),
-                  slideFromLeft: true,
-                  child: _ProjectCard(doc: p, wide: wide),
+          if (desktop)
+            SizedBox(
+              height: 300,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: projects.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 18),
+                itemBuilder: (context, i) {
+                  final p = projects[i];
+                  return ScrollReveal(
+                    id: 'project-${p.id}',
+                    delay: Duration(milliseconds: 80 * i),
+                    slideFromLeft: true,
+                    child: _ProjectCard(
+                      project: p,
+                      fullWidth: false,
+                      onOpenLink: onOpenLink,
+                    ),
+                  );
+                },
+              ),
+            )
+          else
+            Column(
+              children: projects.asMap().entries.map((e) {
+                final p = e.value;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: ScrollReveal(
+                    id: 'project-${p.id}',
+                    delay: Duration(milliseconds: 60 * e.key),
+                    child: _ProjectCard(
+                      project: p,
+                      fullWidth: true,
+                      onOpenLink: onOpenLink,
+                    ),
+                  ),
                 );
-              },
+              }).toList(),
             ),
-          ),
         ],
       ),
     );
@@ -461,10 +498,15 @@ class _ProjectsSection extends StatelessWidget {
 }
 
 class _ProjectCard extends StatefulWidget {
-  const _ProjectCard({required this.doc, required this.wide});
+  const _ProjectCard({
+    required this.project,
+    required this.fullWidth,
+    required this.onOpenLink,
+  });
 
-  final ProjectDoc doc;
-  final bool wide;
+  final Project project;
+  final bool fullWidth;
+  final Future<void> Function(String url) onOpenLink;
 
   @override
   State<_ProjectCard> createState() => _ProjectCardState();
@@ -475,16 +517,16 @@ class _ProjectCardState extends State<_ProjectCard> {
 
   @override
   Widget build(BuildContext context) {
-    final w = widget.wide ? 340.0 : 300.0;
+    final cardWidth = widget.fullWidth ? double.infinity : 340.0;
     return MouseRegion(
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 350),
         curve: Curves.easeOutCubic,
-        width: w,
-        transform: Matrix4.identity()..translateByDouble(0, _hover ? -8.0 : 0, 0, 1),
-        padding: const EdgeInsets.all(26),
+        width: cardWidth,
+        transform: Matrix4.identity()..translateByDouble(0, _hover ? -6.0 : 0, 0, 1),
+        padding: EdgeInsets.all(widget.fullWidth ? 20 : 26),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -503,12 +545,10 @@ class _ProjectCardState extends State<_ProjectCard> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: widget.fullWidth ? MainAxisSize.min : MainAxisSize.max,
           children: [
-            if (widget.doc.imageUrl != null) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(widget.doc.imageUrl!, height: 100, width: double.infinity, fit: BoxFit.cover),
-              ),
+            if (widget.project.image != null) ...[
+              ResponsiveAssetImage(assetPath: widget.project.image!),
               const SizedBox(height: 14),
             ],
             Row(
@@ -520,28 +560,42 @@ class _ProjectCardState extends State<_ProjectCard> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    widget.doc.category,
+                    widget.project.category,
                     style: const TextStyle(color: VStackColors.accent, fontSize: 11, fontWeight: FontWeight.w600),
                   ),
                 ),
                 const Spacer(),
-                Text(widget.doc.year, style: const TextStyle(color: VStackColors.muted, fontSize: 12)),
+                Text(widget.project.year, style: const TextStyle(color: VStackColors.muted, fontSize: 12)),
               ],
             ),
             const SizedBox(height: 16),
             Text(
-              widget.doc.title,
+              widget.project.title,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, height: 1.2),
             ),
             const SizedBox(height: 10),
-            Expanded(
-              child: Text(
-                widget.doc.description,
+            if (widget.fullWidth)
+              Text(
+                widget.project.description,
                 style: const TextStyle(color: VStackColors.muted, height: 1.45, fontSize: 14),
+              )
+            else
+              Expanded(
+                child: Text(
+                  widget.project.description,
+                  style: const TextStyle(color: VStackColors.muted, height: 1.45, fontSize: 14),
+                ),
               ),
-            ),
             const SizedBox(height: 12),
-            Text(widget.doc.tech, style: const TextStyle(fontSize: 12, color: VStackColors.accent2)),
+            Text(widget.project.tech, style: const TextStyle(fontSize: 12, color: VStackColors.accent2)),
+            if (widget.project.link != null) ...[
+              const SizedBox(height: 10),
+              TextButton.icon(
+                onPressed: () => widget.onOpenLink(widget.project.link!),
+                icon: const Icon(Icons.open_in_new, size: 16),
+                label: const Text('View project'),
+              ),
+            ],
           ],
         ),
       ),
@@ -550,37 +604,40 @@ class _ProjectCardState extends State<_ProjectCard> {
 }
 
 class _TeamSection extends StatelessWidget {
-  const _TeamSection({required this.wide, required this.team});
+  const _TeamSection({required this.padding, required this.team});
 
-  final bool wide;
-  final List<TeamDoc> team;
+  final double padding;
+  final List<TeamMember> team;
 
   @override
   Widget build(BuildContext context) {
     return _sectionPad(
-      wide: wide,
+      padding: padding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SectionHeader(
+            id: 'team-header',
             tag: 'THE PEOPLE',
             title: 'Owners & team',
-            subtitle: 'Introduce your real founders and engineers — names and roles are placeholders.',
+            subtitle: 'Edit team in assets/content/site_content.json — add photos under assets/images/team/.',
           ),
           const SizedBox(height: 32),
           LayoutBuilder(
             builder: (context, c) {
-              final cols = wide ? 4 : 1;
+              final cols = AppLayout.gridColumns(context, desktop: 4, tablet: 2);
               final w = (c.maxWidth - (cols - 1) * 18) / cols;
               return Wrap(
                 spacing: 18,
                 runSpacing: 18,
                 children: team.asMap().entries.map((e) {
+                  final m = e.value;
                   return SizedBox(
-                    width: wide ? w : c.maxWidth,
+                    width: cols == 1 ? c.maxWidth : w,
                     child: ScrollReveal(
-                      delay: Duration(milliseconds: 90 * e.key),
-                      child: _teamCard(e.value),
+                      id: 'team-${m.id}',
+                      delay: Duration(milliseconds: 70 * e.key),
+                      child: _teamCard(m),
                     ),
                   );
                 }).toList(),
@@ -592,7 +649,7 @@ class _TeamSection extends StatelessWidget {
     );
   }
 
-  Widget _teamCard(TeamDoc m) {
+  Widget _teamCard(TeamMember m) {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
@@ -606,20 +663,7 @@ class _TeamSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: m.isLeadership ? VStackColors.accent : VStackColors.surfaceLight,
-            backgroundImage: m.photoUrl != null ? NetworkImage(m.photoUrl!) : null,
-            child: m.photoUrl == null
-                ? Text(
-                    m.initials,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: m.isLeadership ? Colors.white : VStackColors.text,
-                    ),
-                  )
-                : null,
-          ),
+          _TeamAvatar(member: m),
           const SizedBox(height: 14),
           if (m.isLeadership)
             const Text('LEADERSHIP', style: TextStyle(color: VStackColors.accent, fontSize: 10, letterSpacing: 1.2)),
@@ -633,30 +677,71 @@ class _TeamSection extends StatelessWidget {
   }
 }
 
+class _TeamAvatar extends StatelessWidget {
+  const _TeamAvatar({required this.member});
+
+  final TeamMember member;
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = AppLayout.isMobile(context) ? 26.0 : 28.0;
+    if (member.photo == null) {
+      return CircleAvatar(
+        radius: radius,
+        backgroundColor: member.isLeadership ? VStackColors.accent : VStackColors.surfaceLight,
+        child: Text(
+          member.initials,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: member.isLeadership ? Colors.white : VStackColors.text,
+          ),
+        ),
+      );
+    }
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: VStackColors.surfaceLight,
+      child: ClipOval(
+        child: Image.asset(
+          member.photo!,
+          width: radius * 2,
+          height: radius * 2,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => Text(
+            member.initials,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: member.isLeadership ? VStackColors.accent : VStackColors.text,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _ContactSection extends StatelessWidget {
   const _ContactSection({
-    required this.wide,
-    required this.settings,
+    required this.padding,
+    required this.contact,
     required this.formKey,
     required this.nameCtrl,
     required this.emailCtrl,
     required this.msgCtrl,
     required this.enquiry,
-    required this.enquiryTypes,
     required this.onEnquiry,
     required this.onSubmit,
     required this.onEmail,
     required this.onWhatsApp,
   });
 
-  final bool wide;
-  final SiteSettings settings;
+  final double padding;
+  final ContactInfo contact;
   final GlobalKey<FormState> formKey;
   final TextEditingController nameCtrl;
   final TextEditingController emailCtrl;
   final TextEditingController msgCtrl;
   final String enquiry;
-  final List<String> enquiryTypes;
   final ValueChanged<String> onEnquiry;
   final Future<void> Function() onSubmit;
   final VoidCallback onEmail;
@@ -664,13 +749,18 @@ class _ContactSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final split = AppLayout.width(context) >= AppLayout.contactSplitMin;
+    final mobile = AppLayout.isMobile(context);
+
     return _sectionPad(
-      wide: wide,
+      padding: padding,
       child: ScrollReveal(
+        id: 'contact-section',
         child: Container(
-          padding: EdgeInsets.all(wide ? 40 : 24),
+          width: double.infinity,
+          padding: EdgeInsets.all(split ? 40 : 20),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(mobile ? 20 : 28),
             gradient: LinearGradient(
               colors: [
                 VStackColors.surface,
@@ -679,20 +769,20 @@ class _ContactSection extends StatelessWidget {
             ),
             border: Border.all(color: VStackColors.border),
           ),
-          child: wide
+          child: split
               ? Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(child: _contactInfo(onEmail, onWhatsApp)),
-                    const SizedBox(width: 40),
+                    Expanded(child: _contactInfo(context, onEmail, onWhatsApp)),
+                    const SizedBox(width: 32),
                     Expanded(flex: 2, child: _form(context)),
                   ],
                 )
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _contactInfo(onEmail, onWhatsApp),
-                    const SizedBox(height: 32),
+                    _contactInfo(context, onEmail, onWhatsApp),
+                    const SizedBox(height: 28),
                     _form(context),
                   ],
                 ),
@@ -701,24 +791,29 @@ class _ContactSection extends StatelessWidget {
     );
   }
 
-  Widget _contactInfo(VoidCallback onEmail, VoidCallback onWhatsApp) {
+  Widget _contactInfo(BuildContext context, VoidCallback onEmail, VoidCallback onWhatsApp) {
+    final mobile = AppLayout.isMobile(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('GET IN TOUCH', style: TextStyle(color: VStackColors.accent, fontSize: 12, letterSpacing: 2)),
         const SizedBox(height: 12),
-        const Text('Let\'s talk about your next build', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800)),
+        Text(
+          'Let\'s talk about your next build',
+          style: TextStyle(fontSize: mobile ? 22 : 26, fontWeight: FontWeight.w800),
+        ),
         const SizedBox(height: 12),
         const Text(
           'Pick how you want to reach us — enquiry form, email, or WhatsApp.',
           style: TextStyle(color: VStackColors.muted, height: 1.5),
         ),
         const SizedBox(height: 28),
-        _contactTile(Icons.email_outlined, settings.contactEmail, 'Email us', onEmail),
+        _contactTile(Icons.email_outlined, contact.email, 'Email us', onEmail),
         const SizedBox(height: 12),
         _contactTile(Icons.chat_outlined, 'WhatsApp chat', 'Quick questions', onWhatsApp),
         const SizedBox(height: 12),
-        _contactTile(Icons.location_on_outlined, 'Kerala, India', 'Remote worldwide', () {}),
+        _contactTile(Icons.location_on_outlined, contact.location, 'Our location', () {}),
       ],
     );
   }
@@ -731,27 +826,42 @@ class _ContactSection extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon, color: VStackColors.accent),
-              const SizedBox(width: 14),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-                  Text(sub, style: const TextStyle(color: VStackColors.muted, fontSize: 12)),
-                ],
+              Icon(icon, color: VStackColors.accent, size: 22),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(fontWeight: FontWeight.w600, height: 1.3),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      sub,
+                      style: const TextStyle(color: VStackColors.muted, fontSize: 12),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
-              const Spacer(),
-              const Icon(Icons.arrow_outward, size: 16, color: VStackColors.muted),
+              const SizedBox(width: 8),
+              const Padding(
+                padding: EdgeInsets.only(top: 2),
+                child: Icon(Icons.arrow_outward, size: 16, color: VStackColors.muted),
+              ),
             ],
           ),
         ),
       ),
-    )
-        .animate(onPlay: (c) => c.repeat(reverse: true))
-        .shimmer(duration: 3.seconds, color: VStackColors.accent.withValues(alpha: 0.08));
+    );
   }
 
   Widget _form(BuildContext context) {
@@ -765,7 +875,7 @@ class _ContactSection extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: enquiryTypes.map((t) {
+            children: contact.enquiryTypes.map((t) {
               final selected = enquiry == t;
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 280),
@@ -851,25 +961,40 @@ class _Footer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pad = AppLayout.pagePadding(context);
+    final mobile = AppLayout.isMobile(context);
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
-      child: Row(
-        children: [
-          Text(
-            '© ${DateTime.now().year} VStack IT Solutions',
-            style: const TextStyle(color: VStackColors.muted, fontSize: 13),
-          ),
-          const Spacer(),
-          const Text('Built with Flutter', style: TextStyle(color: VStackColors.muted, fontSize: 12)),
-        ],
-      ),
+      padding: EdgeInsets.fromLTRB(pad, 24, pad, 40),
+      child: mobile
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '© ${DateTime.now().year} VStack IT Solutions',
+                  style: const TextStyle(color: VStackColors.muted, fontSize: 13),
+                ),
+                const SizedBox(height: 6),
+                const Text('Built with Flutter', style: TextStyle(color: VStackColors.muted, fontSize: 12)),
+              ],
+            )
+          : Row(
+              children: [
+                Text(
+                  '© ${DateTime.now().year} VStack IT Solutions',
+                  style: const TextStyle(color: VStackColors.muted, fontSize: 13),
+                ),
+                const Spacer(),
+                const Text('Built with Flutter', style: TextStyle(color: VStackColors.muted, fontSize: 12)),
+              ],
+            ),
     );
   }
 }
 
-Widget _sectionPad({required bool wide, required Widget child}) {
+Widget _sectionPad({required double padding, required Widget child}) {
   return Padding(
-    padding: EdgeInsets.fromLTRB(wide ? 48 : 20, 56, wide ? 48 : 20, 24),
+    padding: EdgeInsets.fromLTRB(padding, 48, padding, 24),
     child: child,
   );
 }

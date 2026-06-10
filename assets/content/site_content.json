@@ -1,0 +1,138 @@
+{
+  "site": {
+    "heroBadge": "Software company · Kerala · Remote worldwide",
+    "heroTitle": "We build software\nthat proves what we can do.",
+    "heroSubtitle": "VStack IT Solutions delivers web apps, mobile products, and cloud systems — with scroll-perfect animations and polish your clients will remember.",
+    "stats": [
+      { "value": "40+", "label": "Projects shipped" },
+      { "value": "12", "label": "Team specialists" },
+      { "value": "8 yrs", "label": "Building products" }
+    ]
+  },
+  "capabilities": [
+    {
+      "id": "web-saas",
+      "sortOrder": 0,
+      "title": "Web & SaaS",
+      "description": "Dashboards, portals, and high-performance marketing sites."
+    },
+    {
+      "id": "mobile",
+      "sortOrder": 1,
+      "title": "Mobile Apps",
+      "description": "Flutter apps for Android, iOS, and desktop from one codebase."
+    },
+    {
+      "id": "cloud",
+      "sortOrder": 2,
+      "title": "Cloud & APIs",
+      "description": "Secure backends, integrations, and automated deployments."
+    },
+    {
+      "id": "motion",
+      "sortOrder": 3,
+      "title": "UI & Motion",
+      "description": "Scroll animations, micro-interactions, and premium brand feel."
+    }
+  ],
+  "projects": [
+    {
+      "id": "retail-pos",
+      "sortOrder": 0,
+      "title": "Retail POS & Inventory",
+      "category": "Enterprise",
+      "description": "Full sales platform with barcode scanning, multi-branch stock, and live dashboards for store owners.",
+      "tech": "Flutter · .NET · SQL Server",
+      "year": "2025",
+      "image": null,
+      "link": null
+    },
+    {
+      "id": "healthcare-hub",
+      "sortOrder": 1,
+      "title": "Healthcare Appointment Hub",
+      "category": "Web App",
+      "description": "Patient booking, doctor schedules, SMS reminders, and admin analytics for a clinic network.",
+      "tech": "React · Node · PostgreSQL",
+      "year": "2024",
+      "image": null,
+      "link": null
+    },
+    {
+      "id": "logistics-suite",
+      "sortOrder": 2,
+      "title": "Logistics Tracking Suite",
+      "category": "Mobile",
+      "description": "Driver app with GPS routes, proof-of-delivery photos, and dispatcher web console.",
+      "tech": "Flutter · Firebase · Maps API",
+      "year": "2024",
+      "image": null,
+      "link": "https://example.com/logistics-demo"
+    },
+    {
+      "id": "brand-website",
+      "sortOrder": 3,
+      "title": "Corporate Brand Website",
+      "category": "Marketing",
+      "description": "Scroll-driven storytelling site with animated sections — built to replace a slow WordPress setup.",
+      "tech": "Flutter · Local assets",
+      "year": "2025",
+      "image": null,
+      "link": null
+    }
+  ],
+  "team": [
+    {
+      "id": "ashif",
+      "sortOrder": 0,
+      "name": "Ashif Saheer",
+      "role": "Founder & Lead Developer",
+      "bio": "Architecture, full-stack delivery, and client strategy. Turns ideas into shipped products.",
+      "initials": "AS",
+      "isLeadership": true,
+      "photo": null
+    },
+    {
+      "id": "priya",
+      "sortOrder": 1,
+      "name": "Priya Nair",
+      "role": "Co-founder · Product Design",
+      "bio": "UX flows, design systems, and motion direction so every screen feels intentional.",
+      "initials": "PN",
+      "isLeadership": true,
+      "photo": null
+    },
+    {
+      "id": "rahul",
+      "sortOrder": 2,
+      "name": "Rahul Menon",
+      "role": "Senior Flutter Engineer",
+      "bio": "Cross-platform apps, performance tuning, and clean state management.",
+      "initials": "RM",
+      "isLeadership": false,
+      "photo": null
+    },
+    {
+      "id": "sneha",
+      "sortOrder": 3,
+      "name": "Sneha Thomas",
+      "role": "Backend & Cloud",
+      "bio": "APIs, DevOps, Azure/AWS deployments, and security best practices.",
+      "initials": "ST",
+      "isLeadership": false,
+      "photo": null
+    }
+  ],
+  "contact": {
+    "email": "hello@vstackitsolutions.com",
+    "whatsappNumber": "919876543210",
+    "location": "Kerala, India · Remote worldwide",
+    "enquiryTypes": [
+      "New project",
+      "Website redesign",
+      "Mobile app",
+      "Support & maintenance",
+      "Partnership"
+    ]
+  }
+}

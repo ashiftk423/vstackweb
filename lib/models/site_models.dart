@@ -1,290 +1,167 @@
-import 'package:vstackweb/data/site_data.dart' as demo;
+class SiteContent {
+  const SiteContent({
+    required this.site,
+    required this.capabilities,
+    required this.projects,
+    required this.team,
+    required this.contact,
+  });
 
-class SiteSettings {
-  const SiteSettings({
+  final SiteInfo site;
+  final List<Capability> capabilities;
+  final List<Project> projects;
+  final List<TeamMember> team;
+  final ContactInfo contact;
+}
+
+class SiteInfo {
+  const SiteInfo({
     required this.heroBadge,
     required this.heroTitle,
     required this.heroSubtitle,
-    required this.stat1Value,
-    required this.stat1Label,
-    required this.stat2Value,
-    required this.stat2Label,
-    required this.stat3Value,
-    required this.stat3Label,
-    required this.contactEmail,
-    required this.whatsappNumber,
-    required this.enquiryTypes,
+    required this.stats,
   });
 
   final String heroBadge;
   final String heroTitle;
   final String heroSubtitle;
-  final String stat1Value;
-  final String stat1Label;
-  final String stat2Value;
-  final String stat2Label;
-  final String stat3Value;
-  final String stat3Label;
-  final String contactEmail;
-  final String whatsappNumber;
-  final List<String> enquiryTypes;
+  final List<StatItem> stats;
 
-  factory SiteSettings.defaults() => const SiteSettings(
-        heroBadge: 'Software company · Kerala · Remote worldwide',
-        heroTitle: 'We build software\nthat proves what we can do.',
-        heroSubtitle:
-            'VStack IT Solutions delivers web apps, mobile products, and cloud systems — with scroll-perfect animations and polish your clients will remember.',
-        stat1Value: '40+',
-        stat1Label: 'Projects shipped',
-        stat2Value: '12',
-        stat2Label: 'Team specialists',
-        stat3Value: '8 yrs',
-        stat3Label: 'Building products',
-        contactEmail: 'hello@vstackitsolutions.com',
-        whatsappNumber: '919876543210',
-        enquiryTypes: demo.enquiryTypes,
-      );
-
-  factory SiteSettings.fromMap(Map<String, dynamic> m) {
-    return SiteSettings(
-      heroBadge: m['heroBadge'] as String? ?? SiteSettings.defaults().heroBadge,
-      heroTitle: m['heroTitle'] as String? ?? SiteSettings.defaults().heroTitle,
-      heroSubtitle: m['heroSubtitle'] as String? ?? SiteSettings.defaults().heroSubtitle,
-      stat1Value: m['stat1Value'] as String? ?? '40+',
-      stat1Label: m['stat1Label'] as String? ?? 'Projects shipped',
-      stat2Value: m['stat2Value'] as String? ?? '12',
-      stat2Label: m['stat2Label'] as String? ?? 'Team specialists',
-      stat3Value: m['stat3Value'] as String? ?? '8 yrs',
-      stat3Label: m['stat3Label'] as String? ?? 'Building products',
-      contactEmail: m['contactEmail'] as String? ?? SiteSettings.defaults().contactEmail,
-      whatsappNumber: m['whatsappNumber'] as String? ?? SiteSettings.defaults().whatsappNumber,
-      enquiryTypes: (m['enquiryTypes'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          demo.enquiryTypes,
+  factory SiteInfo.fromJson(Map<String, dynamic> json) {
+    final statsJson = json['stats'] as List<dynamic>? ?? [];
+    return SiteInfo(
+      heroBadge: json['heroBadge'] as String? ?? '',
+      heroTitle: json['heroTitle'] as String? ?? '',
+      heroSubtitle: json['heroSubtitle'] as String? ?? '',
+      stats: statsJson
+          .map((e) => StatItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
-
-  Map<String, dynamic> toMap() => {
-        'heroBadge': heroBadge,
-        'heroTitle': heroTitle,
-        'heroSubtitle': heroSubtitle,
-        'stat1Value': stat1Value,
-        'stat1Label': stat1Label,
-        'stat2Value': stat2Value,
-        'stat2Label': stat2Label,
-        'stat3Value': stat3Value,
-        'stat3Label': stat3Label,
-        'contactEmail': contactEmail,
-        'whatsappNumber': whatsappNumber,
-        'enquiryTypes': enquiryTypes,
-      };
 }
 
-class ProjectDoc {
-  const ProjectDoc({
+class StatItem {
+  const StatItem({required this.value, required this.label});
+
+  final String value;
+  final String label;
+
+  factory StatItem.fromJson(Map<String, dynamic> json) => StatItem(
+        value: json['value'] as String? ?? '',
+        label: json['label'] as String? ?? '',
+      );
+}
+
+class Capability {
+  const Capability({
     required this.id,
+    required this.sortOrder,
+    required this.title,
+    required this.description,
+  });
+
+  final String id;
+  final int sortOrder;
+  final String title;
+  final String description;
+
+  factory Capability.fromJson(Map<String, dynamic> json) => Capability(
+        id: json['id'] as String? ?? '',
+        sortOrder: json['sortOrder'] as int? ?? 0,
+        title: json['title'] as String? ?? '',
+        description: json['description'] as String? ?? '',
+      );
+}
+
+class Project {
+  const Project({
+    required this.id,
+    required this.sortOrder,
     required this.title,
     required this.category,
     required this.description,
     required this.tech,
     required this.year,
-    required this.sortOrder,
-    this.imageUrl,
-    this.imageStoragePath,
+    this.image,
+    this.link,
   });
 
   final String id;
+  final int sortOrder;
   final String title;
   final String category;
   final String description;
   final String tech;
   final String year;
-  final int sortOrder;
-  final String? imageUrl;
-  final String? imageStoragePath;
+  final String? image;
+  final String? link;
 
-  factory ProjectDoc.fromMap(String id, Map<String, dynamic> m) {
-    return ProjectDoc(
-      id: id,
-      title: m['title'] as String? ?? '',
-      category: m['category'] as String? ?? '',
-      description: m['description'] as String? ?? '',
-      tech: m['tech'] as String? ?? '',
-      year: m['year'] as String? ?? '',
-      sortOrder: m['sortOrder'] as int? ?? 0,
-      imageUrl: m['imageUrl'] as String?,
-      imageStoragePath: m['imageStoragePath'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toMap() => {
-        'title': title,
-        'category': category,
-        'description': description,
-        'tech': tech,
-        'year': year,
-        'sortOrder': sortOrder,
-        if (imageUrl != null) 'imageUrl': imageUrl,
-        if (imageStoragePath != null) 'imageStoragePath': imageStoragePath,
-      };
-
-  demo.ProjectItem toItem() => demo.ProjectItem(
-        title: title,
-        category: category,
-        description: description,
-        tech: tech,
-        year: year,
+  factory Project.fromJson(Map<String, dynamic> json) => Project(
+        id: json['id'] as String? ?? '',
+        sortOrder: json['sortOrder'] as int? ?? 0,
+        title: json['title'] as String? ?? '',
+        category: json['category'] as String? ?? '',
+        description: json['description'] as String? ?? '',
+        tech: json['tech'] as String? ?? '',
+        year: json['year'] as String? ?? '',
+        image: json['image'] as String?,
+        link: json['link'] as String?,
       );
-
-  static ProjectDoc fromDemo(demo.ProjectItem p, int order, {String? id}) {
-    return ProjectDoc(
-      id: id ?? '',
-      title: p.title,
-      category: p.category,
-      description: p.description,
-      tech: p.tech,
-      year: p.year,
-      sortOrder: order,
-    );
-  }
 }
 
-class TeamDoc {
-  const TeamDoc({
+class TeamMember {
+  const TeamMember({
     required this.id,
+    required this.sortOrder,
     required this.name,
     required this.role,
     required this.bio,
     required this.initials,
     required this.isLeadership,
-    required this.sortOrder,
-    this.photoUrl,
-    this.photoStoragePath,
+    this.photo,
   });
 
   final String id;
+  final int sortOrder;
   final String name;
   final String role;
   final String bio;
   final String initials;
   final bool isLeadership;
-  final int sortOrder;
-  final String? photoUrl;
-  final String? photoStoragePath;
+  final String? photo;
 
-  factory TeamDoc.fromMap(String id, Map<String, dynamic> m) {
-    return TeamDoc(
-      id: id,
-      name: m['name'] as String? ?? '',
-      role: m['role'] as String? ?? '',
-      bio: m['bio'] as String? ?? '',
-      initials: m['initials'] as String? ?? '',
-      isLeadership: m['isLeadership'] as bool? ?? false,
-      sortOrder: m['sortOrder'] as int? ?? 0,
-      photoUrl: m['photoUrl'] as String?,
-      photoStoragePath: m['photoStoragePath'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toMap() => {
-        'name': name,
-        'role': role,
-        'bio': bio,
-        'initials': initials,
-        'isLeadership': isLeadership,
-        'sortOrder': sortOrder,
-        if (photoUrl != null) 'photoUrl': photoUrl,
-        if (photoStoragePath != null) 'photoStoragePath': photoStoragePath,
-      };
-
-  demo.TeamMember toMember() => demo.TeamMember(
-        name: name,
-        role: role,
-        bio: bio,
-        initials: initials,
-        isLeadership: isLeadership,
+  factory TeamMember.fromJson(Map<String, dynamic> json) => TeamMember(
+        id: json['id'] as String? ?? '',
+        sortOrder: json['sortOrder'] as int? ?? 0,
+        name: json['name'] as String? ?? '',
+        role: json['role'] as String? ?? '',
+        bio: json['bio'] as String? ?? '',
+        initials: json['initials'] as String? ?? '',
+        isLeadership: json['isLeadership'] as bool? ?? false,
+        photo: json['photo'] as String?,
       );
-
-  static TeamDoc fromDemo(demo.TeamMember m, int order, {String? id}) {
-    return TeamDoc(
-      id: id ?? '',
-      name: m.name,
-      role: m.role,
-      bio: m.bio,
-      initials: m.initials,
-      isLeadership: m.isLeadership,
-      sortOrder: order,
-    );
-  }
 }
 
-class CapabilityDoc {
-  const CapabilityDoc({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.sortOrder,
+class ContactInfo {
+  const ContactInfo({
+    required this.email,
+    required this.whatsappNumber,
+    required this.location,
+    required this.enquiryTypes,
   });
 
-  final String id;
-  final String title;
-  final String description;
-  final int sortOrder;
+  final String email;
+  final String whatsappNumber;
+  final String location;
+  final List<String> enquiryTypes;
 
-  factory CapabilityDoc.fromMap(String id, Map<String, dynamic> m) {
-    return CapabilityDoc(
-      id: id,
-      title: m['title'] as String? ?? '',
-      description: m['description'] as String? ?? '',
-      sortOrder: m['sortOrder'] as int? ?? 0,
-    );
-  }
-
-  Map<String, dynamic> toMap() => {
-        'title': title,
-        'description': description,
-        'sortOrder': sortOrder,
-      };
-}
-
-class SiteContent {
-  const SiteContent({
-    required this.settings,
-    required this.projects,
-    required this.team,
-    required this.capabilities,
-    required this.fromFirebase,
-  });
-
-  final SiteSettings settings;
-  final List<ProjectDoc> projects;
-  final List<TeamDoc> team;
-  final List<CapabilityDoc> capabilities;
-  final bool fromFirebase;
-
-  factory SiteContent.defaults() {
-    return SiteContent(
-      settings: SiteSettings.defaults(),
-      projects: demo.projects
-          .asMap()
-          .entries
-          .map((e) => ProjectDoc.fromDemo(e.value, e.key))
-          .toList(),
-      team: demo.team.asMap().entries.map((e) => TeamDoc.fromDemo(e.value, e.key)).toList(),
-      capabilities: demo.capabilities
-          .asMap()
-          .entries
-          .map(
-            (e) => CapabilityDoc(
-              id: '',
-              title: e.value.$1,
-              description: e.value.$2,
-              sortOrder: e.key,
-            ),
-          )
-          .toList(),
-      fromFirebase: false,
-    );
-  }
+  factory ContactInfo.fromJson(Map<String, dynamic> json) => ContactInfo(
+        email: json['email'] as String? ?? '',
+        whatsappNumber: json['whatsappNumber'] as String? ?? '',
+        location: json['location'] as String? ?? '',
+        enquiryTypes: (json['enquiryTypes'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            const ['New project'],
+      );
 }
