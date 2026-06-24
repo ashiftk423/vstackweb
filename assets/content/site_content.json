@@ -1,82 +1,116 @@
 {
   "site": {
-    "heroBadge": "Software company · Kerala · Remote worldwide",
-    "heroTitle": "We build software\nthat proves what we can do.",
-    "heroSubtitle": "VStack IT Solutions delivers web apps, mobile products, and cloud systems — with scroll-perfect animations and polish your clients will remember.",
+    "heroBadge": "The VStack Groups · Kerala · Remote worldwide",
+    "heroTitle": "Welcome to\nVStack IT Solutions",
+    "heroSubtitle": "We provide e-commerce app development, mobile apps, website development, digital marketing, and complete tech support — helping startups, small businesses, and enterprises grow to an international level.",
     "stats": [
-      { "value": "40+", "label": "Projects shipped" },
-      { "value": "12", "label": "Team specialists" },
-      { "value": "8 yrs", "label": "Building products" }
+      { "value": "6", "label": "Core digital services" },
+      { "value": "6-D", "label": "Proven delivery process" },
+      { "value": "Since 2025", "label": "Building with dedication" }
     ]
   },
   "capabilities": [
     {
-      "id": "web-saas",
+      "id": "ui-ux",
       "sortOrder": 0,
-      "title": "Web & SaaS",
-      "description": "Dashboards, portals, and high-performance marketing sites."
+      "title": "UI/UX Design",
+      "description": "User-friendly designs and engaging experiences for websites, mobile apps, and marketing campaigns."
     },
     {
-      "id": "mobile",
+      "id": "web-dev",
       "sortOrder": 1,
-      "title": "Mobile Apps",
-      "description": "Flutter apps for Android, iOS, and desktop from one codebase."
+      "title": "Website Development",
+      "description": "High-performance websites built with modern technologies — from corporate sites to custom web apps."
     },
     {
-      "id": "cloud",
+      "id": "marketing",
       "sortOrder": 2,
-      "title": "Cloud & APIs",
-      "description": "Secure backends, integrations, and automated deployments."
+      "title": "Digital Marketing",
+      "description": "Result-driven digital marketing strategies that strengthen your online presence and grow revenue."
     },
     {
-      "id": "motion",
+      "id": "social-media",
       "sortOrder": 3,
-      "title": "UI & Motion",
-      "description": "Scroll animations, micro-interactions, and premium brand feel."
+      "title": "Social Media",
+      "description": "Social media management and growth strategies to improve engagement and brand visibility."
+    },
+    {
+      "id": "ecommerce",
+      "sortOrder": 4,
+      "title": "eCommerce Store",
+      "description": "Powerful e-commerce platforms tailored to your products, customers, and business goals."
+    },
+    {
+      "id": "tech-support",
+      "sortOrder": 5,
+      "title": "Tech Support",
+      "description": "Reliable technical support and maintenance so your systems keep running smoothly after launch."
     }
   ],
   "projects": [
     {
-      "id": "retail-pos",
+      "id": "discover",
       "sortOrder": 0,
-      "title": "Retail POS & Inventory",
-      "category": "Enterprise",
-      "description": "Full sales platform with barcode scanning, multi-branch stock, and live dashboards for store owners.",
-      "tech": "Flutter · .NET · SQL Server",
-      "year": "2025",
+      "title": "Discover",
+      "category": "Our 6-D Process",
+      "description": "We begin by understanding your business, goals, target audience, and challenges to identify opportunities for growth.",
+      "tech": "Research · Strategy · Insights",
+      "year": "01",
       "image": null,
       "link": null
     },
     {
-      "id": "healthcare-hub",
+      "id": "define",
       "sortOrder": 1,
-      "title": "Healthcare Appointment Hub",
-      "category": "Web App",
-      "description": "Patient booking, doctor schedules, SMS reminders, and admin analytics for a clinic network.",
-      "tech": "React · Node · PostgreSQL",
-      "year": "2024",
+      "title": "Define",
+      "category": "Our 6-D Process",
+      "description": "We outline a clear strategy and project roadmap with objectives, timelines, and the best approach to achieve your goals.",
+      "tech": "Planning · Roadmap · Goals",
+      "year": "02",
       "image": null,
       "link": null
     },
     {
-      "id": "logistics-suite",
+      "id": "design",
       "sortOrder": 2,
-      "title": "Logistics Tracking Suite",
-      "category": "Mobile",
-      "description": "Driver app with GPS routes, proof-of-delivery photos, and dispatcher web console.",
-      "tech": "Flutter · Firebase · Maps API",
-      "year": "2024",
+      "title": "Design",
+      "category": "Our 6-D Process",
+      "description": "Our creative team crafts user-friendly designs and engaging experiences for websites, mobile apps, and campaigns.",
+      "tech": "UI/UX · Branding · Prototypes",
+      "year": "03",
       "image": null,
-      "link": "https://example.com/logistics-demo"
+      "link": null
     },
     {
-      "id": "brand-website",
+      "id": "develop",
       "sortOrder": 3,
-      "title": "Corporate Brand Website",
-      "category": "Marketing",
-      "description": "Scroll-driven storytelling site with animated sections — built to replace a slow WordPress setup.",
-      "tech": "Flutter · Local assets",
-      "year": "2025",
+      "title": "Develop",
+      "category": "Our 6-D Process",
+      "description": "We turn ideas into reality with high-performance websites, mobile applications, and e-commerce platforms.",
+      "tech": "Web · Mobile · eCommerce",
+      "year": "04",
+      "image": null,
+      "link": null
+    },
+    {
+      "id": "deploy",
+      "sortOrder": 4,
+      "title": "Deploy",
+      "category": "Our 6-D Process",
+      "description": "After thorough testing and quality checks, we launch your project smoothly across all platforms.",
+      "tech": "QA · Launch · Optimization",
+      "year": "05",
+      "image": null,
+      "link": null
+    },
+    {
+      "id": "deliver",
+      "sortOrder": 5,
+      "title": "Deliver",
+      "category": "Our 6-D Process",
+      "description": "We provide continuous support, digital marketing, and optimization to ensure long-term success and measurable results.",
+      "tech": "Support · Growth · Results",
+      "year": "06",
       "image": null,
       "link": null
     }
@@ -85,41 +119,31 @@
     {
       "id": "ashif",
       "sortOrder": 0,
-      "name": "Ashif Saheer",
-      "role": "Founder & Lead Developer",
-      "bio": "Architecture, full-stack delivery, and client strategy. Turns ideas into shipped products.",
-      "initials": "AS",
+      "name": "Ashif Zaheer",
+      "role": "Co-Founder · Programming Department Head",
+      "bio": "Leads software development and technical delivery — turning business ideas into scalable digital products with quality and precision.",
+      "initials": "AZ",
       "isLeadership": true,
       "photo": null
     },
     {
-      "id": "priya",
+      "id": "abhinav",
       "sortOrder": 1,
-      "name": "Priya Nair",
-      "role": "Co-founder · Product Design",
-      "bio": "UX flows, design systems, and motion direction so every screen feels intentional.",
-      "initials": "PN",
+      "name": "Abhinav Govind",
+      "role": "Co-Founder · Service & Hardware Department Head",
+      "bio": "Oversees service operations and hardware solutions, ensuring reliable support and smooth client experiences end to end.",
+      "initials": "AG",
       "isLeadership": true,
       "photo": null
     },
     {
-      "id": "rahul",
+      "id": "gokul",
       "sortOrder": 2,
-      "name": "Rahul Menon",
-      "role": "Senior Flutter Engineer",
-      "bio": "Cross-platform apps, performance tuning, and clean state management.",
-      "initials": "RM",
-      "isLeadership": false,
-      "photo": null
-    },
-    {
-      "id": "sneha",
-      "sortOrder": 3,
-      "name": "Sneha Thomas",
-      "role": "Backend & Cloud",
-      "bio": "APIs, DevOps, Azure/AWS deployments, and security best practices.",
-      "initials": "ST",
-      "isLeadership": false,
+      "name": "Gokul Krishna",
+      "role": "Co-Founder · Marketing & Hardware Department Head",
+      "bio": "Drives marketing strategy, social media growth, and hardware initiatives — helping businesses reach the right audience and grow digitally.",
+      "initials": "GK",
+      "isLeadership": true,
       "photo": null
     }
   ],
@@ -128,11 +152,12 @@
     "whatsappNumber": "+918156825205",
     "location": "Kerala, India · Remote worldwide",
     "enquiryTypes": [
-      "New project",
-      "Website redesign",
-      "Mobile app",
-      "Support & maintenance",
-      "Partnership"
+      "Digital marketing",
+      "Website development",
+      "Mobile app development",
+      "eCommerce solutions",
+      "Social media marketing",
+      "Technical support"
     ]
   }
 }
