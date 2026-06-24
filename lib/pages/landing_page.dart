@@ -20,6 +20,9 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
   final _scroll = ScrollController();
   final _formKey = GlobalKey<FormState>();
+  final _workKey = GlobalKey();
+  final _teamKey = GlobalKey();
+  final _contactKey = GlobalKey();
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _msgCtrl = TextEditingController();
@@ -48,11 +51,14 @@ class _LandingPageState extends State<LandingPage> {
     super.dispose();
   }
 
-  void _scrollTo(double offset) {
-    _scroll.animateTo(
-      offset,
+  void _scrollToSection(GlobalKey key) {
+    final target = key.currentContext;
+    if (target == null) return;
+    Scrollable.ensureVisible(
+      target,
       duration: const Duration(milliseconds: 900),
       curve: Curves.easeInOutCubic,
+      alignment: 0.08,
     );
   }
 
@@ -93,12 +99,21 @@ class _LandingPageState extends State<LandingPage> {
           CustomScrollView(
             controller: _scroll,
             slivers: [
-              SliverToBoxAdapter(child: _NavBar(padding: pad, wide: wide, onNav: _scrollTo)),
+              SliverToBoxAdapter(
+                child: _NavBar(
+                  padding: pad,
+                  wide: wide,
+                  onWork: () => _scrollToSection(_workKey),
+                  onTeam: () => _scrollToSection(_teamKey),
+                  onContact: () => _scrollToSection(_contactKey),
+                ),
+              ),
               SliverToBoxAdapter(
                 child: _HeroSection(
                   padding: pad,
                   site: widget.content.site,
-                  onCta: () => _scrollTo(2800),
+                  onStartProject: () => _scrollToSection(_contactKey),
+                  onViewWork: () => _scrollToSection(_workKey),
                 ),
               ),
               SliverToBoxAdapter(
@@ -108,28 +123,37 @@ class _LandingPageState extends State<LandingPage> {
                 ),
               ),
               SliverToBoxAdapter(
-                child: _ProjectsSection(
-                  padding: pad,
-                  projects: widget.content.projects,
-                  onOpenLink: _launch,
+                child: KeyedSubtree(
+                  key: _workKey,
+                  child: _ProjectsSection(
+                    padding: pad,
+                    projects: widget.content.projects,
+                    onOpenLink: _launch,
+                  ),
                 ),
               ),
               SliverToBoxAdapter(
-                child: _TeamSection(padding: pad, team: widget.content.team),
+                child: KeyedSubtree(
+                  key: _teamKey,
+                  child: _TeamSection(padding: pad, team: widget.content.team),
+                ),
               ),
               SliverToBoxAdapter(
-                child: _ContactSection(
-                  padding: pad,
-                  contact: widget.content.contact,
-                  formKey: _formKey,
-                  nameCtrl: _nameCtrl,
-                  emailCtrl: _emailCtrl,
-                  msgCtrl: _msgCtrl,
-                  enquiry: _enquiry,
-                  onEnquiry: (v) => setState(() => _enquiry = v),
-                  onSubmit: _submitEnquiry,
-                  onEmail: () => _launch('mailto:${widget.content.contact.email}'),
-                  onWhatsApp: () => _launch('https://wa.me/${widget.content.contact.whatsappNumber}'),
+                child: KeyedSubtree(
+                  key: _contactKey,
+                  child: _ContactSection(
+                    padding: pad,
+                    contact: widget.content.contact,
+                    formKey: _formKey,
+                    nameCtrl: _nameCtrl,
+                    emailCtrl: _emailCtrl,
+                    msgCtrl: _msgCtrl,
+                    enquiry: _enquiry,
+                    onEnquiry: (v) => setState(() => _enquiry = v),
+                    onSubmit: _submitEnquiry,
+                    onEmail: () => _launch('mailto:${widget.content.contact.email}'),
+                    onWhatsApp: () => _launch('https://wa.me/${widget.content.contact.whatsappNumber}'),
+                  ),
                 ),
               ),
               const SliverToBoxAdapter(child: _Footer()),
@@ -185,18 +209,26 @@ class _AmbientBackground extends StatelessWidget {
 }
 
 class _NavBar extends StatelessWidget {
-  const _NavBar({required this.padding, required this.wide, required this.onNav});
+  const _NavBar({
+    required this.padding,
+    required this.wide,
+    required this.onWork,
+    required this.onTeam,
+    required this.onContact,
+  });
 
   final double padding;
   final bool wide;
-  final void Function(double) onNav;
+  final VoidCallback onWork;
+  final VoidCallback onTeam;
+  final VoidCallback onContact;
 
   @override
   Widget build(BuildContext context) {
     final links = [
-      ('Work', 1400.0),
-      ('Team', 2200.0),
-      ('Contact', 3200.0),
+      ('Work', onWork),
+      ('Team', onTeam),
+      ('Contact', onContact),
     ];
 
     final compact = AppLayout.isMobile(context);
@@ -239,12 +271,12 @@ class _NavBar extends StatelessWidget {
           if (wide)
             ...links.map(
               (l) => TextButton(
-                onPressed: () => onNav(l.$2),
+                onPressed: l.$2,
                 child: Text(l.$1, style: const TextStyle(color: VStackColors.muted)),
               ),
             ),
           FilledButton(
-            onPressed: () => onNav(3200),
+            onPressed: onContact,
             style: FilledButton.styleFrom(
               backgroundColor: VStackColors.accent,
               foregroundColor: Colors.white,
@@ -259,11 +291,17 @@ class _NavBar extends StatelessWidget {
 }
 
 class _HeroSection extends StatelessWidget {
-  const _HeroSection({required this.padding, required this.site, required this.onCta});
+  const _HeroSection({
+    required this.padding,
+    required this.site,
+    required this.onStartProject,
+    required this.onViewWork,
+  });
 
   final double padding;
   final SiteInfo site;
-  final VoidCallback onCta;
+  final VoidCallback onStartProject;
+  final VoidCallback onViewWork;
 
   @override
   Widget build(BuildContext context) {
@@ -313,7 +351,7 @@ class _HeroSection extends StatelessWidget {
               runSpacing: 12,
               children: [
                 FilledButton.icon(
-                  onPressed: onCta,
+                  onPressed: onStartProject,
                   icon: const Icon(Icons.arrow_forward_rounded, size: 18),
                   label: const Text('Start your project'),
                   style: FilledButton.styleFrom(
@@ -322,7 +360,7 @@ class _HeroSection extends StatelessWidget {
                   ),
                 ),
                 OutlinedButton(
-                  onPressed: onCta,
+                  onPressed: onViewWork,
                   style: OutlinedButton.styleFrom(
                     foregroundColor: VStackColors.text,
                     side: const BorderSide(color: VStackColors.border),
