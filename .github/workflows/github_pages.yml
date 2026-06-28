@@ -1,5 +1,5 @@
 # Builds Flutter web and publishes to GitHub Pages.
-# Live site: https://ashiftk423.github.io/vstackweb/
+# Live site: https://vstackbusinesssolutions.com
 
 name: Deploy to GitHub Pages
 
@@ -34,7 +34,7 @@ jobs:
         run: flutter pub get
 
       - name: Build web
-        run: flutter build web --release --base-href "/vstackweb/"
+        run: flutter build web --release --base-href "/"
 
       - name: Add .nojekyll
         run: touch build/web/.nojekyll
