@@ -32,6 +32,7 @@ class LocalContentLoader {
       cta: CtaSection.fromJson(json['cta'] as Map<String, dynamic>? ?? {}),
       capabilities: parseList('capabilities', Capability.fromJson),
       projects: parseList('projects', Project.fromJson),
+      process: parseList('process', Project.fromJson),
       team: parseList('team', TeamMember.fromJson),
       contact: ContactInfo.fromJson(json['contact'] as Map<String, dynamic>? ?? {}),
     );

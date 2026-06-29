@@ -140,6 +140,12 @@ class _LandingPageState extends State<LandingPage> {
                 ),
               ),
               SliverToBoxAdapter(
+                child: _ProcessSection(
+                  padding: pad,
+                  steps: widget.content.process,
+                ),
+              ),
+              SliverToBoxAdapter(
                 child: KeyedSubtree(
                   key: _teamKey,
                   child: _TeamSection(padding: pad, team: widget.content.team),
@@ -465,8 +471,6 @@ class _ProjectsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final desktop = AppLayout.isDesktop(context);
-
     return _sectionPad(
       padding: padding,
       child: Column(
@@ -474,51 +478,36 @@ class _ProjectsSection extends StatelessWidget {
         children: [
           const SectionHeader(
             id: 'projects-header',
-            tag: 'HOW WE WORK',
-            title: 'Our 6-D delivery process',
-            subtitle: 'A proven approach from discovery to long-term support — built for reliable business results.',
+            tag: 'OUR WORK',
+            title: 'Featured projects we\'ve delivered',
+            subtitle: 'A selection of our flagship work — each a complete, real-world business solution we designed, built, and shipped end to end.',
           ),
-          const SizedBox(height: 28),
-          if (desktop)
-            SizedBox(
-              height: 300,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: projects.length,
-                separatorBuilder: (context, index) => const SizedBox(width: 18),
-                itemBuilder: (context, i) {
-                  final p = projects[i];
-                  return ScrollReveal(
-                    id: 'project-${p.id}',
-                    delay: Duration(milliseconds: 80 * i),
-                    slideFromLeft: true,
-                    child: _ProjectCard(
-                      project: p,
-                      fullWidth: false,
-                      onOpenLink: onOpenLink,
+          const SizedBox(height: 36),
+          LayoutBuilder(
+            builder: (context, c) {
+              final cols = AppLayout.gridColumns(context, desktop: 3, tablet: 2);
+              final w = (c.maxWidth - (cols - 1) * 20) / cols;
+              return Wrap(
+                spacing: 20,
+                runSpacing: 20,
+                children: projects.asMap().entries.map((e) {
+                  final p = e.value;
+                  return SizedBox(
+                    width: cols == 1 ? c.maxWidth : w,
+                    child: ScrollReveal(
+                      id: 'project-${p.id}',
+                      delay: Duration(milliseconds: 80 * e.key),
+                      child: _ProjectCard(
+                        project: p,
+                        fullWidth: true,
+                        onOpenLink: onOpenLink,
+                      ),
                     ),
                   );
-                },
-              ),
-            )
-          else
-            Column(
-              children: projects.asMap().entries.map((e) {
-                final p = e.value;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: ScrollReveal(
-                    id: 'project-${p.id}',
-                    delay: Duration(milliseconds: 60 * e.key),
-                    child: _ProjectCard(
-                      project: p,
-                      fullWidth: true,
-                      onOpenLink: onOpenLink,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
+                }).toList(),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -576,8 +565,13 @@ class _ProjectCardState extends State<_ProjectCard> {
           mainAxisSize: widget.fullWidth ? MainAxisSize.min : MainAxisSize.max,
           children: [
             if (widget.project.image != null) ...[
-              ResponsiveAssetImage(assetPath: widget.project.image!),
-              const SizedBox(height: 14),
+              ResponsiveAssetImage(
+                assetPath: widget.project.image!,
+                borderRadius: 14,
+                mobileHeight: 200,
+                desktopHeight: 200,
+              ),
+              const SizedBox(height: 16),
             ],
             Row(
               children: [
@@ -626,6 +620,83 @@ class _ProjectCardState extends State<_ProjectCard> {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ProcessSection extends StatelessWidget {
+  const _ProcessSection({required this.padding, required this.steps});
+
+  final double padding;
+  final List<Project> steps;
+
+  @override
+  Widget build(BuildContext context) {
+    return _sectionPad(
+      padding: padding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionHeader(
+            id: 'process-header',
+            tag: 'HOW WE WORK',
+            title: 'Our 6-D delivery process',
+            subtitle: 'A proven approach from discovery to long-term support — built for reliable business results.',
+          ),
+          const SizedBox(height: 36),
+          LayoutBuilder(
+            builder: (context, c) {
+              final cols = AppLayout.gridColumns(context, desktop: 3, tablet: 2);
+              final w = (c.maxWidth - (cols - 1) * 16) / cols;
+              return Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: steps.asMap().entries.map((e) {
+                  final s = e.value;
+                  return SizedBox(
+                    width: cols == 1 ? c.maxWidth : w,
+                    child: ScrollReveal(
+                      id: 'process-${s.id}',
+                      delay: Duration(milliseconds: 60 * e.key),
+                      child: _stepCard(s),
+                    ),
+                  );
+                }).toList(),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _stepCard(Project s) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: VStackColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: VStackColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            s.year,
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w800,
+              color: VStackColors.accent.withValues(alpha: 0.85),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(s.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 8),
+          Text(s.description, style: const TextStyle(color: VStackColors.muted, height: 1.45, fontSize: 14)),
+          const SizedBox(height: 12),
+          Text(s.tech, style: const TextStyle(fontSize: 12, color: VStackColors.accent2)),
+        ],
       ),
     );
   }

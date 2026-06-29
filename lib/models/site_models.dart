@@ -5,6 +5,7 @@ class SiteContent {
     required this.cta,
     required this.capabilities,
     required this.projects,
+    required this.process,
     required this.team,
     required this.contact,
   });
@@ -14,6 +15,7 @@ class SiteContent {
   final CtaSection cta;
   final List<Capability> capabilities;
   final List<Project> projects;
+  final List<Project> process;
   final List<TeamMember> team;
   final ContactInfo contact;
 }
