@@ -803,8 +803,8 @@ class _TeamSection extends StatelessWidget {
         color: VStackColors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: m.isLeadership ? VStackColors.accent.withValues(alpha: 0.4) : VStackColors.border,
-          width: m.isLeadership ? 1.5 : 1,
+          color: VStackColors.accent.withValues(alpha: 0.4),
+          width: 1.5,
         ),
       ),
       child: Column(
@@ -812,8 +812,10 @@ class _TeamSection extends StatelessWidget {
         children: [
           _TeamAvatar(member: m),
           const SizedBox(height: 14),
-          if (m.isLeadership)
-            const Text('LEADERSHIP', style: TextStyle(color: VStackColors.accent, fontSize: 10, letterSpacing: 1.2)),
+          Text(
+            m.isLeadership ? 'LEADERSHIP' : 'TEAM',
+            style: const TextStyle(color: VStackColors.accent, fontSize: 10, letterSpacing: 1.2),
+          ),
           Text(m.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           Text(m.role, style: const TextStyle(color: VStackColors.accent2, fontSize: 13)),
           const SizedBox(height: 10),
@@ -835,12 +837,12 @@ class _TeamAvatar extends StatelessWidget {
     if (member.photo == null) {
       return CircleAvatar(
         radius: radius,
-        backgroundColor: member.isLeadership ? VStackColors.accent : VStackColors.surfaceLight,
+        backgroundColor: VStackColors.accent,
         child: Text(
           member.initials,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: member.isLeadership ? Colors.white : VStackColors.text,
+            color: Colors.white,
           ),
         ),
       );
