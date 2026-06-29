@@ -15,7 +15,7 @@ class VStackWebApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'VStack IT Solutions',
+      title: 'VStack Business Solutions',
       debugShowCheckedModeBanner: false,
       theme: buildVStackTheme(),
       home: FutureBuilder<SiteContent>(

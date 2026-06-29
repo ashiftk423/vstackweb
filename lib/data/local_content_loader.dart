@@ -28,6 +28,8 @@ class LocalContentLoader {
 
     return SiteContent(
       site: SiteInfo.fromJson(json['site'] as Map<String, dynamic>? ?? {}),
+      about: AboutSection.fromJson(json['about'] as Map<String, dynamic>? ?? {}),
+      cta: CtaSection.fromJson(json['cta'] as Map<String, dynamic>? ?? {}),
       capabilities: parseList('capabilities', Capability.fromJson),
       projects: parseList('projects', Project.fromJson),
       team: parseList('team', TeamMember.fromJson),

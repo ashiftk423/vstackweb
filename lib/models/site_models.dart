@@ -1,6 +1,8 @@
 class SiteContent {
   const SiteContent({
     required this.site,
+    required this.about,
+    required this.cta,
     required this.capabilities,
     required this.projects,
     required this.team,
@@ -8,6 +10,8 @@ class SiteContent {
   });
 
   final SiteInfo site;
+  final AboutSection about;
+  final CtaSection cta;
   final List<Capability> capabilities;
   final List<Project> projects;
   final List<TeamMember> team;
@@ -16,12 +20,14 @@ class SiteContent {
 
 class SiteInfo {
   const SiteInfo({
+    required this.companyName,
     required this.heroBadge,
     required this.heroTitle,
     required this.heroSubtitle,
     required this.stats,
   });
 
+  final String companyName;
   final String heroBadge;
   final String heroTitle;
   final String heroSubtitle;
@@ -30,6 +36,7 @@ class SiteInfo {
   factory SiteInfo.fromJson(Map<String, dynamic> json) {
     final statsJson = json['stats'] as List<dynamic>? ?? [];
     return SiteInfo(
+      companyName: json['companyName'] as String? ?? 'VStack Business Solutions',
       heroBadge: json['heroBadge'] as String? ?? '',
       heroTitle: json['heroTitle'] as String? ?? '',
       heroSubtitle: json['heroSubtitle'] as String? ?? '',
@@ -38,6 +45,39 @@ class SiteInfo {
           .toList(),
     );
   }
+}
+
+class AboutSection {
+  const AboutSection({
+    required this.tag,
+    required this.title,
+    required this.text,
+  });
+
+  final String tag;
+  final String title;
+  final String text;
+
+  factory AboutSection.fromJson(Map<String, dynamic> json) => AboutSection(
+        tag: json['tag'] as String? ?? 'ABOUT US',
+        title: json['title'] as String? ?? '',
+        text: json['text'] as String? ?? '',
+      );
+}
+
+class CtaSection {
+  const CtaSection({
+    required this.title,
+    required this.text,
+  });
+
+  final String title;
+  final String text;
+
+  factory CtaSection.fromJson(Map<String, dynamic> json) => CtaSection(
+        title: json['title'] as String? ?? '',
+        text: json['text'] as String? ?? '',
+      );
 }
 
 class StatItem {

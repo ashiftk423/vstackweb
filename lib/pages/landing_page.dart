@@ -7,6 +7,7 @@ import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/widgets/responsive_image.dart';
 import 'package:vstackweb/widgets/scroll_reveal.dart';
 import 'package:vstackweb/widgets/section_header.dart';
+import 'package:vstackweb/widgets/vstack_logo.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key, required this.content});
@@ -73,7 +74,7 @@ class _LandingPageState extends State<LandingPage> {
     final body = Uri.encodeComponent(
       'Enquiry type: $_enquiry\n\n${_msgCtrl.text.trim()}',
     );
-    final subject = Uri.encodeComponent('VStack enquiry from ${_nameCtrl.text.trim()}');
+    final subject = Uri.encodeComponent('${widget.content.site.companyName} enquiry from ${_nameCtrl.text.trim()}');
     final mailto =
         'mailto:${contact.email}?subject=$subject&body=$body';
     await _launch(mailto);
@@ -123,6 +124,12 @@ class _LandingPageState extends State<LandingPage> {
                 ),
               ),
               SliverToBoxAdapter(
+                child: _AboutSection(
+                  padding: pad,
+                  about: widget.content.about,
+                ),
+              ),
+              SliverToBoxAdapter(
                 child: KeyedSubtree(
                   key: _workKey,
                   child: _ProjectsSection(
@@ -136,6 +143,13 @@ class _LandingPageState extends State<LandingPage> {
                 child: KeyedSubtree(
                   key: _teamKey,
                   child: _TeamSection(padding: pad, team: widget.content.team),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: _CtaSection(
+                  padding: pad,
+                  cta: widget.content.cta,
+                  onStartProject: () => _scrollToSection(_contactKey),
                 ),
               ),
               SliverToBoxAdapter(
@@ -156,7 +170,7 @@ class _LandingPageState extends State<LandingPage> {
                   ),
                 ),
               ),
-              const SliverToBoxAdapter(child: _Footer()),
+              SliverToBoxAdapter(child: _Footer(companyName: widget.content.site.companyName)),
             ],
           ),
         ],
@@ -240,31 +254,7 @@ class _NavBar extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 42,
-                height: 42,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: const LinearGradient(
-                    colors: [VStackColors.accent, VStackColors.accent2],
-                  ),
-                ),
-                child: const Text('V', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-              ),
-              if (!compact) ...[
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'VStack',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-                    ),
-                    const Text('IT Solutions', style: TextStyle(color: VStackColors.muted, fontSize: 11)),
-                  ],
-                ),
-              ],
+              VStackLogo(size: compact ? 38 : 42, showLabel: !compact, compact: compact),
             ],
           ),
           const Spacer(),
@@ -409,8 +399,8 @@ class _CapabilitiesSection extends StatelessWidget {
           const SectionHeader(
             id: 'capabilities-header',
             tag: 'WHAT WE DO',
-            title: 'Capabilities on display',
-            subtitle: 'Every section of this site is built to show how we think about product, motion, and engineering.',
+            title: 'Services & business solutions',
+            subtitle: 'Custom software, billing systems, POS, hardware setup, digital marketing, and complete technology support — all under one roof.',
           ),
           const SizedBox(height: 36),
           LayoutBuilder(
@@ -484,9 +474,9 @@ class _ProjectsSection extends StatelessWidget {
         children: [
           const SectionHeader(
             id: 'projects-header',
-            tag: 'OUR WORK',
-            title: 'Projects we\'ve delivered',
-            subtitle: 'Edit projects in assets/content/site_content.json — add images and links anytime.',
+            tag: 'HOW WE WORK',
+            title: 'Our 6-D delivery process',
+            subtitle: 'A proven approach from discovery to long-term support — built for reliable business results.',
           ),
           const SizedBox(height: 28),
           if (desktop)
@@ -641,6 +631,125 @@ class _ProjectCardState extends State<_ProjectCard> {
   }
 }
 
+class _AboutSection extends StatelessWidget {
+  const _AboutSection({required this.padding, required this.about});
+
+  final double padding;
+  final AboutSection about;
+
+  @override
+  Widget build(BuildContext context) {
+    final mobile = AppLayout.isMobile(context);
+    final paragraphs = about.text.split('\n\n').where((p) => p.trim().isNotEmpty);
+
+    return _sectionPad(
+      padding: padding,
+      child: ScrollReveal(
+        id: 'about-section',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SectionHeader(
+              id: 'about-header',
+              tag: about.tag,
+              title: about.title,
+              subtitle: paragraphs.first,
+            ),
+            if (paragraphs.length > 1) ...[
+              const SizedBox(height: 24),
+              ...paragraphs.skip(1).map(
+                    (p) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Text(
+                        p,
+                        style: TextStyle(
+                          color: VStackColors.muted,
+                          fontSize: mobile ? 15 : 17,
+                          height: 1.6,
+                        ),
+                      ),
+                    ),
+                  ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CtaSection extends StatelessWidget {
+  const _CtaSection({
+    required this.padding,
+    required this.cta,
+    required this.onStartProject,
+  });
+
+  final double padding;
+  final CtaSection cta;
+  final VoidCallback onStartProject;
+
+  @override
+  Widget build(BuildContext context) {
+    final mobile = AppLayout.isMobile(context);
+
+    return _sectionPad(
+      padding: padding,
+      child: ScrollReveal(
+        id: 'cta-section',
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(mobile ? 24 : 36),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            gradient: LinearGradient(
+              colors: [
+                VStackColors.accent.withValues(alpha: 0.18),
+                VStackColors.surfaceLight,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            border: Border.all(color: VStackColors.accent.withValues(alpha: 0.35)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                cta.title,
+                style: TextStyle(
+                  fontSize: mobile ? 24 : 32,
+                  fontWeight: FontWeight.w800,
+                  height: 1.15,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                cta.text,
+                style: TextStyle(
+                  color: VStackColors.muted,
+                  fontSize: mobile ? 15 : 17,
+                  height: 1.55,
+                ),
+              ),
+              const SizedBox(height: 24),
+              FilledButton.icon(
+                onPressed: onStartProject,
+                icon: const Icon(Icons.arrow_forward_rounded, size: 18),
+                label: const Text('Start your project'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: VStackColors.accent,
+                  padding: EdgeInsets.symmetric(horizontal: mobile ? 20 : 28, vertical: 16),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _TeamSection extends StatelessWidget {
   const _TeamSection({required this.padding, required this.team});
 
@@ -654,11 +763,11 @@ class _TeamSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionHeader(
+          SectionHeader(
             id: 'team-header',
             tag: 'THE PEOPLE',
-            title: 'Owners & team',
-            subtitle: 'Edit team in assets/content/site_content.json — add photos under assets/images/team/.',
+            title: 'Our leadership & team',
+            subtitle: 'The people behind ${team.isNotEmpty ? 'VStack Business Solutions' : 'our company'}.',
           ),
           const SizedBox(height: 32),
           LayoutBuilder(
@@ -995,7 +1104,9 @@ class _ContactSection extends StatelessWidget {
 }
 
 class _Footer extends StatelessWidget {
-  const _Footer();
+  const _Footer({required this.companyName});
+
+  final String companyName;
 
   @override
   Widget build(BuildContext context) {
@@ -1009,7 +1120,7 @@ class _Footer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '© ${DateTime.now().year} VStack IT Solutions',
+                  '© ${DateTime.now().year} $companyName',
                   style: const TextStyle(color: VStackColors.muted, fontSize: 13),
                 ),
                 const SizedBox(height: 6),
@@ -1019,7 +1130,7 @@ class _Footer extends StatelessWidget {
           : Row(
               children: [
                 Text(
-                  '© ${DateTime.now().year} VStack IT Solutions',
+                  '© ${DateTime.now().year} $companyName',
                   style: const TextStyle(color: VStackColors.muted, fontSize: 13),
                 ),
                 const Spacer(),

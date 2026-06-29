@@ -1,50 +1,84 @@
 {
   "site": {
-    "heroBadge": "The VStack Groups · Kerala · Remote worldwide",
-    "heroTitle": "Welcome to\nVStack IT Solutions",
-    "heroSubtitle": "We provide e-commerce app development, mobile apps, website development, digital marketing, and complete tech support — helping startups, small businesses, and enterprises grow to an international level.",
+    "companyName": "VStack Business Solutions",
+    "heroBadge": "VStack Business Solutions · Kerala · Remote worldwide",
+    "heroTitle": "Build. Grow. Scale.",
+    "heroSubtitle": "VStack Business Solutions delivers custom software, business automation, digital solutions, and complete technology setups — helping businesses operate smarter and grow faster.",
     "stats": [
-      { "value": "6", "label": "Core digital services" },
+      { "value": "10+", "label": "Business solutions" },
       { "value": "6-D", "label": "Proven delivery process" },
-      { "value": "Since 2025", "label": "Building with dedication" }
+      { "value": "Since 2025", "label": "Trusted technology partner" }
     ]
+  },
+  "about": {
+    "tag": "ABOUT US",
+    "title": "Complete Technology Solutions For Modern Businesses",
+    "text": "VStack Business Solutions helps businesses grow with complete digital and technology solutions. We build custom software, billing systems, POS solutions, websites, mobile applications, and provide complete hardware setups including computers, printers, CCTV, networking, and business equipment.\n\nFrom software development to complete office technology setup, we provide everything your business needs — designed according to your requirements.\n\nAt VStack Business Solutions, we believe every business has unique needs. That's why we create customized solutions instead of one-size-fits-all products.\n\nWhether you need a billing system for your shop, a complete POS setup, a business website, mobile application, office computers, security systems, or technical support — our team provides reliable solutions from idea to implementation."
+  },
+  "cta": {
+    "title": "One Partner. Complete Business Technology.",
+    "text": "Stop searching for multiple providers. VStack Business Solutions handles your software, hardware, and digital needs under one roof."
   },
   "capabilities": [
     {
-      "id": "ui-ux",
+      "id": "custom-software",
       "sortOrder": 0,
-      "title": "UI/UX Design",
-      "description": "User-friendly designs and engaging experiences for websites, mobile apps, and marketing campaigns."
+      "title": "Custom Software Development",
+      "description": "Tailored software built around your workflows — from internal tools to customer-facing platforms."
     },
     {
-      "id": "web-dev",
+      "id": "business-automation",
       "sortOrder": 1,
-      "title": "Website Development",
-      "description": "High-performance websites built with modern technologies — from corporate sites to custom web apps."
+      "title": "Business Automation Solutions",
+      "description": "Automate daily operations, reduce manual work, and improve efficiency across your business."
     },
     {
-      "id": "marketing",
+      "id": "web-mobile",
       "sortOrder": 2,
-      "title": "Digital Marketing",
-      "description": "Result-driven digital marketing strategies that strengthen your online presence and grow revenue."
+      "title": "Website & Mobile Applications",
+      "description": "Modern websites and mobile apps designed for performance, usability, and business growth."
     },
     {
-      "id": "social-media",
+      "id": "billing-pos",
       "sortOrder": 3,
-      "title": "Social Media",
-      "description": "Social media management and growth strategies to improve engagement and brand visibility."
+      "title": "Custom Billing & POS Systems",
+      "description": "Smart billing and POS solutions for sales, inventory, customers, and daily store operations."
     },
     {
-      "id": "ecommerce",
+      "id": "hardware-setup",
       "sortOrder": 4,
-      "title": "eCommerce Store",
-      "description": "Powerful e-commerce platforms tailored to your products, customers, and business goals."
+      "title": "Hardware & Office Setup",
+      "description": "Complete office technology setup including computers, printers, networking, and business equipment."
+    },
+    {
+      "id": "cctv-security",
+      "sortOrder": 5,
+      "title": "CCTV & Security Solutions",
+      "description": "Reliable CCTV and security systems to protect your shop, office, or business premises."
+    },
+    {
+      "id": "digital-marketing",
+      "sortOrder": 6,
+      "title": "Digital Marketing & Brand Growth",
+      "description": "Result-driven digital marketing strategies that strengthen your brand and online presence."
     },
     {
       "id": "tech-support",
-      "sortOrder": 5,
-      "title": "Tech Support",
-      "description": "Reliable technical support and maintenance so your systems keep running smoothly after launch."
+      "sortOrder": 7,
+      "title": "Technical Support & Maintenance",
+      "description": "Ongoing technical support and maintenance so your systems keep running smoothly."
+    },
+    {
+      "id": "business-solutions",
+      "sortOrder": 8,
+      "title": "Complete Business Solutions",
+      "description": "Complete technology solutions for businesses — including custom software, billing systems, POS, computers, printers, CCTV, networking, and complete office setups tailored to your needs."
+    },
+    {
+      "id": "billing-software",
+      "sortOrder": 9,
+      "title": "Custom Billing & POS Software",
+      "description": "Smart billing systems and POS solutions built around your business requirements, helping you manage sales, inventory, customers, and daily operations efficiently."
     }
   ],
   "projects": [
@@ -119,10 +153,10 @@
     {
       "id": "ashif",
       "sortOrder": 0,
-      "name": "Ashif Zaheer",
+      "name": "Ashif Saheer",
       "role": "Co-Founder · Programming Department Head",
       "bio": "Leads software development and technical delivery — turning business ideas into scalable digital products with quality and precision.",
-      "initials": "AZ",
+      "initials": "AS",
       "isLeadership": true,
       "photo": null
     },
@@ -131,7 +165,7 @@
       "sortOrder": 1,
       "name": "Abhinav Govind",
       "role": "Co-Founder · Service & Hardware Department Head",
-      "bio": "Oversees service operations and hardware solutions, ensuring reliable support and smooth client experiences end to end.",
+      "bio": "Managing service operations and hardware solutions to deliver smooth, reliable, and complete technology experiences for clients.",
       "initials": "AG",
       "isLeadership": true,
       "photo": null
@@ -141,9 +175,29 @@
       "sortOrder": 2,
       "name": "Gokul Krishna",
       "role": "Co-Founder · Marketing & Hardware Department Head",
-      "bio": "Drives marketing strategy, social media growth, and hardware initiatives — helping businesses reach the right audience and grow digitally.",
+      "bio": "Building growth strategies, digital marketing solutions, and technology initiatives that help brands expand their reach.",
       "initials": "GK",
       "isLeadership": true,
+      "photo": null
+    },
+    {
+      "id": "gayathri",
+      "sortOrder": 3,
+      "name": "Gayathri Mini Rajan",
+      "role": "Frontend Developer",
+      "bio": "Creates responsive and engaging user interfaces that deliver smooth and enjoyable digital experiences.",
+      "initials": "GM",
+      "isLeadership": false,
+      "photo": null
+    },
+    {
+      "id": "edwin",
+      "sortOrder": 4,
+      "name": "Edwin Reji John",
+      "role": "Backend Developer",
+      "bio": "Develops secure, scalable backend systems that power reliable applications and business solutions.",
+      "initials": "ER",
+      "isLeadership": false,
       "photo": null
     }
   ],
@@ -152,11 +206,13 @@
     "whatsappNumber": "+918156825205",
     "location": "Kerala, India · Remote worldwide",
     "enquiryTypes": [
-      "Digital marketing",
+      "Custom software",
+      "Billing & POS systems",
       "Website development",
       "Mobile app development",
-      "eCommerce solutions",
-      "Social media marketing",
+      "Hardware & office setup",
+      "CCTV & security",
+      "Digital marketing",
       "Technical support"
     ]
   }
