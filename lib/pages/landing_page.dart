@@ -4,7 +4,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:vstackweb/models/site_models.dart';
 import 'package:vstackweb/theme/responsive.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
-import 'package:vstackweb/widgets/responsive_image.dart';
 import 'package:vstackweb/widgets/scroll_reveal.dart';
 import 'package:vstackweb/widgets/section_header.dart';
 import 'package:vstackweb/widgets/vstack_logo.dart';
@@ -565,30 +564,30 @@ class _ProjectCardState extends State<_ProjectCard> {
           mainAxisSize: widget.fullWidth ? MainAxisSize.min : MainAxisSize.max,
           children: [
             if (widget.project.image != null) ...[
-              ResponsiveAssetImage(
-                assetPath: widget.project.image!,
-                borderRadius: 14,
-                mobileHeight: 200,
-                desktopHeight: 200,
+              ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: Image.asset(
+                  widget.project.image!,
+                  width: double.infinity,
+                  fit: BoxFit.fitWidth,
+                  errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                ),
               ),
               const SizedBox(height: 16),
             ],
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: VStackColors.accent.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    widget.project.category,
-                    style: const TextStyle(color: VStackColors.accent, fontSize: 11, fontWeight: FontWeight.w600),
-                  ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: VStackColors.accent.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                const Spacer(),
-                Text(widget.project.year, style: const TextStyle(color: VStackColors.muted, fontSize: 12)),
-              ],
+                child: Text(
+                  widget.project.category,
+                  style: const TextStyle(color: VStackColors.accent, fontSize: 11, fontWeight: FontWeight.w600),
+                ),
+              ),
             ),
             const SizedBox(height: 16),
             Text(
