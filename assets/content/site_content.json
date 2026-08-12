@@ -291,9 +291,12 @@
         "region": "Kerala, India",
         "highlights": [
           "Best software company in Thrissur",
+          "Best business solutions Thrissur",
           "Affordable IT solutions Thrissur",
           "Custom billing & POS Thrissur",
-          "Flutter app development Thrissur"
+          "Digital marketing Thrissur",
+          "Flutter app development Thrissur",
+          "CCTV & hardware setup Thrissur"
         ]
       },
       {
@@ -301,9 +304,12 @@
         "region": "Kerala, India",
         "highlights": [
           "Best software company in Kochi",
+          "Business solutions company Kochi",
           "Affordable software development Kochi",
+          "Digital marketing agency Kochi",
           "Website & mobile app company Kochi",
-          "Business automation Kochi"
+          "Business automation Kochi",
+          "Complete IT solutions Kochi"
         ]
       },
       {
@@ -311,8 +317,10 @@
         "region": "India",
         "highlights": [
           "Best software company in Kerala",
+          "Best business solutions Kerala",
           "Top IT company Kerala",
           "Affordable software Kerala",
+          "Digital marketing Kerala",
           "Kerala billing & POS software",
           "Kerala Flutter development company"
         ]
@@ -322,15 +330,147 @@
         "region": "Worldwide delivery",
         "highlights": [
           "Best software company in India",
+          "Business solutions company India",
           "Affordable custom software India",
+          "Digital marketing agency India",
           "Indian IT solutions partner",
           "Remote software development India"
         ]
       }
     ],
+    "serviceCategories": [
+      {
+        "category": "Business Solutions",
+        "description": "Complete end-to-end business technology — software, hardware, and digital under one roof.",
+        "keywords": [
+          "Business solutions company",
+          "Complete business solutions",
+          "Business technology partner",
+          "All-in-one IT solutions",
+          "Business digital transformation",
+          "SME business solutions Kerala",
+          "Shop & retail business solutions"
+        ]
+      },
+      {
+        "category": "Digital Marketing",
+        "description": "Grow your brand online with SEO, social media, ads, and result-driven digital strategies.",
+        "keywords": [
+          "Digital marketing agency Kerala",
+          "Digital marketing company India",
+          "Social media marketing Kerala",
+          "SEO services Kerala",
+          "Google ads management Kerala",
+          "Brand growth digital marketing",
+          "Affordable digital marketing Kerala"
+        ]
+      },
+      {
+        "category": "Custom Software",
+        "description": "Tailored software built around your business workflows and daily operations.",
+        "keywords": [
+          "Custom software development",
+          "Custom software company Kerala",
+          "Business software development",
+          "Affordable custom software",
+          "ERP software Kerala",
+          "Inventory management software",
+          "Shop management software"
+        ]
+      },
+      {
+        "category": "Billing & POS",
+        "description": "Smart billing, POS, and retail systems for shops, restaurants, and businesses.",
+        "keywords": [
+          "Billing software Kerala",
+          "POS system Kerala",
+          "Retail billing software",
+          "Restaurant POS system",
+          "GST billing software",
+          "Shop billing software Thrissur",
+          "Affordable POS system India"
+        ]
+      },
+      {
+        "category": "Mobile Apps & Flutter",
+        "description": "Cross-platform mobile and web apps with Flutter — fast, beautiful, and scalable.",
+        "keywords": [
+          "Flutter app development Kerala",
+          "Mobile app development company",
+          "Android app development Kerala",
+          "Cross-platform app development",
+          "Flutter developer Kerala",
+          "Business mobile app development",
+          "Affordable app development India"
+        ]
+      },
+      {
+        "category": "Website Development",
+        "description": "Modern, responsive, SEO-friendly websites that represent your business professionally.",
+        "keywords": [
+          "Website development company Kerala",
+          "Business website Kerala",
+          "Affordable website development",
+          "E-commerce website Kerala",
+          "Responsive website design",
+          "Company website development India",
+          "Professional website Kerala"
+        ]
+      },
+      {
+        "category": "Business Automation",
+        "description": "Automate daily tasks, reduce manual work, and streamline your business operations.",
+        "keywords": [
+          "Business automation solutions",
+          "Workflow automation Kerala",
+          "Process automation software",
+          "Business automation company India",
+          "Office automation solutions",
+          "Automated billing systems"
+        ]
+      },
+      {
+        "category": "Hardware & Office Setup",
+        "description": "Complete office technology — computers, printers, networking, and business equipment.",
+        "keywords": [
+          "Office IT setup Kerala",
+          "Computer sales & setup Kerala",
+          "Business hardware solutions",
+          "Printer & networking setup",
+          "Complete office setup company",
+          "IT hardware supplier Kerala"
+        ]
+      },
+      {
+        "category": "CCTV & Security",
+        "description": "Reliable CCTV, surveillance, and security systems for shops, offices, and premises.",
+        "keywords": [
+          "CCTV installation Kerala",
+          "CCTV company Thrissur",
+          "Security camera setup Kochi",
+          "Shop CCTV installation",
+          "Office security systems Kerala",
+          "Affordable CCTV Kerala"
+        ]
+      },
+      {
+        "category": "Technical Support",
+        "description": "Ongoing maintenance, troubleshooting, and support to keep your systems running smoothly.",
+        "keywords": [
+          "IT support Kerala",
+          "Computer repair & support",
+          "Business IT maintenance",
+          "Remote technical support India",
+          "Software support services",
+          "AMC IT services Kerala"
+        ]
+      }
+    ],
     "searchTopics": [
       "Best software company",
+      "Best business solutions company",
       "Affordable software development",
+      "Digital marketing agency",
       "Custom billing software",
       "POS system company",
       "Flutter app development",
@@ -338,7 +478,15 @@
       "Business automation solutions",
       "Complete IT solutions",
       "Hardware & CCTV setup",
-      "Digital marketing agency"
+      "Office IT setup",
+      "Shop billing software",
+      "Social media marketing",
+      "SEO services Kerala",
+      "Mobile app development",
+      "Custom software Kerala",
+      "Business technology partner",
+      "Affordable IT company",
+      "VStack Business Solutions"
     ]
   },
   "careers": {
@@ -377,13 +525,15 @@
     "phoneDisplay": "+91 81568 25205",
     "location": "Kerala, India · Remote worldwide",
     "enquiryTypes": [
+      "Business solutions",
       "Custom software",
       "Billing & POS systems",
       "Website development",
       "Mobile app development",
+      "Digital marketing",
+      "Business automation",
       "Hardware & office setup",
       "CCTV & security",
-      "Digital marketing",
       "Technical support",
       "Careers / vacancy enquiry"
     ]

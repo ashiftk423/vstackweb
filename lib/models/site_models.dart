@@ -243,12 +243,34 @@ class SeoLocation {
       );
 }
 
+class SeoServiceCategory {
+  const SeoServiceCategory({
+    required this.category,
+    required this.description,
+    required this.keywords,
+  });
+
+  final String category;
+  final String description;
+  final List<String> keywords;
+
+  factory SeoServiceCategory.fromJson(Map<String, dynamic> json) => SeoServiceCategory(
+        category: json['category'] as String? ?? '',
+        description: json['description'] as String? ?? '',
+        keywords: (json['keywords'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            const [],
+      );
+}
+
 class SeoSection {
   const SeoSection({
     required this.tag,
     required this.title,
     required this.subtitle,
     required this.locations,
+    required this.serviceCategories,
     required this.searchTopics,
   });
 
@@ -256,6 +278,7 @@ class SeoSection {
   final String title;
   final String subtitle;
   final List<SeoLocation> locations;
+  final List<SeoServiceCategory> serviceCategories;
   final List<String> searchTopics;
 
   factory SeoSection.fromJson(Map<String, dynamic> json) => SeoSection(
@@ -264,6 +287,10 @@ class SeoSection {
         subtitle: json['subtitle'] as String? ?? '',
         locations: (json['locations'] as List<dynamic>?)
                 ?.map((e) => SeoLocation.fromJson(e as Map<String, dynamic>))
+                .toList() ??
+            const [],
+        serviceCategories: (json['serviceCategories'] as List<dynamic>?)
+                ?.map((e) => SeoServiceCategory.fromJson(e as Map<String, dynamic>))
                 .toList() ??
             const [],
         searchTopics: (json['searchTopics'] as List<dynamic>?)

@@ -971,6 +971,80 @@ class _SeoSection extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           const Text(
+            'Our services — what people search for',
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          const SizedBox(height: 10),
+          LayoutBuilder(
+            builder: (context, c) {
+              final cols = AppLayout.gridColumns(context, desktop: 2, tablet: 2);
+              final w = (c.maxWidth - (cols - 1) * 16) / cols;
+              return Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: seo.serviceCategories.asMap().entries.map((e) {
+                  final cat = e.value;
+                  return SizedBox(
+                    width: cols == 1 ? c.maxWidth : w,
+                    child: ScrollReveal(
+                      id: 'svc-${e.key}',
+                      delay: Duration(milliseconds: 40 * e.key),
+                      child: Container(
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: VStackColors.surface,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: VStackColors.border),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  _serviceIcon(cat.category),
+                                  color: VStackColors.accent,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    cat.category,
+                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              cat.description,
+                              style: const TextStyle(color: VStackColors.muted, fontSize: 12, height: 1.45),
+                            ),
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 5,
+                              runSpacing: 5,
+                              children: cat.keywords.map((k) {
+                                return Chip(
+                                  label: Text(k, style: const TextStyle(fontSize: 10)),
+                                  backgroundColor: VStackColors.bg.withValues(alpha: 0.5),
+                                  side: const BorderSide(color: VStackColors.border),
+                                  padding: EdgeInsets.zero,
+                                  visualDensity: VisualDensity.compact,
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              );
+            },
+          ),
+          const SizedBox(height: 24),
+          const Text(
             'Popular searches',
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
@@ -1021,6 +1095,22 @@ class _SeoSection extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  static IconData _serviceIcon(String category) {
+    return switch (category) {
+      'Business Solutions' => Icons.business_center_outlined,
+      'Digital Marketing' => Icons.campaign_outlined,
+      'Custom Software' => Icons.code_outlined,
+      'Billing & POS' => Icons.point_of_sale_outlined,
+      'Mobile Apps & Flutter' => Icons.phone_android_outlined,
+      'Website Development' => Icons.language_outlined,
+      'Business Automation' => Icons.autorenew_outlined,
+      'Hardware & Office Setup' => Icons.computer_outlined,
+      'CCTV & Security' => Icons.videocam_outlined,
+      'Technical Support' => Icons.support_agent_outlined,
+      _ => Icons.build_outlined,
+    };
   }
 }
 
