@@ -161,6 +161,7 @@ class TeamMember {
     required this.initials,
     required this.isLeadership,
     this.photo,
+    this.searchAliases = const [],
   });
 
   final String id;
@@ -171,6 +172,8 @@ class TeamMember {
   final String initials;
   final bool isLeadership;
   final String? photo;
+  /// Extra name spellings so search engines can match people (e.g. Ashif T Saheer).
+  final List<String> searchAliases;
 
   factory TeamMember.fromJson(Map<String, dynamic> json) => TeamMember(
         id: json['id'] as String? ?? '',
@@ -181,6 +184,10 @@ class TeamMember {
         initials: json['initials'] as String? ?? '',
         isLeadership: json['isLeadership'] as bool? ?? false,
         photo: json['photo'] as String?,
+        searchAliases: (json['searchAliases'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            const [],
       );
 }
 

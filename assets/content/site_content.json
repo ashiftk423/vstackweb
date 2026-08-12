@@ -1,9 +1,9 @@
 {
   "site": {
     "companyName": "VStack Business Solutions",
-    "heroBadge": "VStack Business Solutions · Kerala · Remote worldwide",
-    "heroTitle": "Build. Grow. Scale.",
-    "heroSubtitle": "VStack Business Solutions delivers custom software, business automation, digital solutions, and complete technology setups — helping businesses operate smarter and grow faster.",
+    "heroBadge": "VStack · We Stack · V Stack India · Kerala · Worldwide",
+    "heroTitle": "We Stack Your Business.",
+    "heroSubtitle": "VStack Business Solutions (also known as We Stack / V Stack) delivers custom software, business automation, digital solutions, and complete technology setups — helping businesses in India and worldwide operate smarter and grow faster.",
     "stats": [
       { "value": "10+", "label": "Business solutions" },
       { "value": "6-D", "label": "Proven delivery process" },
@@ -193,7 +193,15 @@
       "bio": "Leads software development and technical delivery — turning business ideas into scalable digital products with quality and precision.",
       "initials": "AS",
       "isLeadership": true,
-      "photo": null
+      "photo": null,
+      "searchAliases": [
+        "Ashif Saheer",
+        "Ashif T Saheer",
+        "Ashif Saheer T",
+        "Ashif",
+        "Saheer",
+        "Ashif Saher"
+      ]
     },
     {
       "id": "abhinav",
@@ -203,7 +211,12 @@
       "bio": "Managing service operations and hardware solutions to deliver smooth, reliable, and complete technology experiences for clients.",
       "initials": "AG",
       "isLeadership": true,
-      "photo": null
+      "photo": null,
+      "searchAliases": [
+        "Abhinav Govind",
+        "Abhinav",
+        "Govind"
+      ]
     },
     {
       "id": "gokul",
@@ -213,7 +226,12 @@
       "bio": "Building growth strategies, digital marketing solutions, and technology initiatives that help brands expand their reach.",
       "initials": "GK",
       "isLeadership": true,
-      "photo": null
+      "photo": null,
+      "searchAliases": [
+        "Gokul Krishna",
+        "Gokul",
+        "Krishna"
+      ]
     },
     {
       "id": "gayathri",
@@ -223,7 +241,12 @@
       "bio": "Creates responsive and engaging user interfaces that deliver smooth and enjoyable digital experiences.",
       "initials": "GM",
       "isLeadership": false,
-      "photo": null
+      "photo": null,
+      "searchAliases": [
+        "Gayathri Mini Rajan",
+        "Gayathri",
+        "Gayathri Rajan"
+      ]
     },
     {
       "id": "edwin",
@@ -233,7 +256,13 @@
       "bio": "Develops secure, scalable backend systems that power reliable applications and business solutions.",
       "initials": "ER",
       "isLeadership": false,
-      "photo": null
+      "photo": null,
+      "searchAliases": [
+        "Edwin Reji John",
+        "Edwin",
+        "Edwin John",
+        "Edwin Reji"
+      ]
     }
   ],
   "contact": {

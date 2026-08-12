@@ -39,13 +39,19 @@ Copy this block into the `"projects"` array (change `id` to something unique):
   "bio": "Short bio.",
   "initials": "FN",
   "isLeadership": false,
-  "photo": "assets/images/team/member-id.jpg"
+  "photo": "assets/images/team/member-id.jpg",
+  "searchAliases": ["Full Name", "FirstName", "LastName"]
 }
 ```
 
 - **`photo`**: optional — put file in `assets/images/team/`
+- **`searchAliases`**: name spellings people might search (helps Google find them)
+- After adding a member, also update **`web/team.html`** and the Person list in **`web/index.html`** so search engines index the new name + role. Then push to GitHub.
 
-## Images
+## Search hooks (misspellings)
+
+Hero and SEO use phrases like **We Stack Your Business**, **We Stack**, **V Stack**, **VStack India** so clients who mistype the brand still find you.
+
 
 1. Save JPG or PNG in `assets/images/projects/` or `assets/images/team/`
 2. Reference the path in JSON, e.g. `"assets/images/projects/retail-pos.jpg"`

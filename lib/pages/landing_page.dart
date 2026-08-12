@@ -32,6 +32,25 @@ class _LandingPageState extends State<LandingPage> {
   void initState() {
     super.initState();
     _enquiry = widget.content.contact.enquiryTypes.first;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _handleDeepLink());
+  }
+
+  void _handleDeepLink() {
+    final fragment = Uri.base.fragment.toLowerCase();
+    GlobalKey? target;
+    if (fragment == 'team' || fragment == 'leadership') {
+      target = _teamKey;
+    } else if (fragment == 'contact' || fragment == 'enquiry') {
+      target = _contactKey;
+    } else if (fragment == 'work' || fragment == 'projects') {
+      target = _workKey;
+    }
+    if (target == null) return;
+    // Wait a beat so layout (and images) finish before scrolling.
+    Future<void>.delayed(const Duration(milliseconds: 350), () {
+      if (!mounted) return;
+      _scrollToSection(target!);
+    });
   }
 
   @override
