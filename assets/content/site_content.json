@@ -263,11 +263,118 @@
         "Edwin John",
         "Edwin Reji"
       ]
+    },
+    {
+      "id": "rizwan",
+      "sortOrder": 5,
+      "name": "Rizwan Abdul Azeez",
+      "role": "Frontend Developer · Flutter Specialist",
+      "bio": "Builds beautiful, high-performance cross-platform apps with Flutter — delivering smooth mobile and web experiences for every screen.",
+      "initials": "RA",
+      "isLeadership": false,
+      "photo": null,
+      "searchAliases": [
+        "Rizwan Abdul Azeez",
+        "Rizwan Azeez",
+        "Rizwan",
+        "Abdul Azeez"
+      ]
     }
   ],
+  "seo": {
+    "tag": "FIND US",
+    "title": "Trusted across Kerala, India & worldwide",
+    "subtitle": "Whether you search by city, service, or budget — VStack Business Solutions is your complete technology partner.",
+    "locations": [
+      {
+        "name": "Thrissur",
+        "region": "Kerala, India",
+        "highlights": [
+          "Best software company in Thrissur",
+          "Affordable IT solutions Thrissur",
+          "Custom billing & POS Thrissur",
+          "Flutter app development Thrissur"
+        ]
+      },
+      {
+        "name": "Kochi",
+        "region": "Kerala, India",
+        "highlights": [
+          "Best software company in Kochi",
+          "Affordable software development Kochi",
+          "Website & mobile app company Kochi",
+          "Business automation Kochi"
+        ]
+      },
+      {
+        "name": "Kerala",
+        "region": "India",
+        "highlights": [
+          "Best software company in Kerala",
+          "Top IT company Kerala",
+          "Affordable software Kerala",
+          "Kerala billing & POS software",
+          "Kerala Flutter development company"
+        ]
+      },
+      {
+        "name": "India",
+        "region": "Worldwide delivery",
+        "highlights": [
+          "Best software company in India",
+          "Affordable custom software India",
+          "Indian IT solutions partner",
+          "Remote software development India"
+        ]
+      }
+    ],
+    "searchTopics": [
+      "Best software company",
+      "Affordable software development",
+      "Custom billing software",
+      "POS system company",
+      "Flutter app development",
+      "Website development company",
+      "Business automation solutions",
+      "Complete IT solutions",
+      "Hardware & CCTV setup",
+      "Digital marketing agency"
+    ]
+  },
+  "careers": {
+    "tag": "CAREERS",
+    "title": "Join the VStack team",
+    "text": "We are always looking for talented developers, designers, and technology enthusiasts who want to build real products for real businesses. Send us your CV and tell us what you are passionate about.",
+    "cvEmail": "vstackitsolutions@gmail.com",
+    "cvSubject": "Job Application — VStack Business Solutions",
+    "cvNote": "Attach your CV/resume (PDF preferred). Mention the role you are applying for, your experience, and your contact number.",
+    "openRoles": [
+      {
+        "title": "Flutter Developer",
+        "type": "Full-time · Remote / Kerala",
+        "description": "Build cross-platform mobile and web apps with Flutter and Dart."
+      },
+      {
+        "title": "Frontend Developer",
+        "type": "Full-time · Remote / Kerala",
+        "description": "Create responsive, user-friendly interfaces for web and mobile products."
+      },
+      {
+        "title": "Backend Developer",
+        "type": "Full-time · Remote / Kerala",
+        "description": "Design secure, scalable APIs and server-side systems."
+      },
+      {
+        "title": "Open Application",
+        "type": "Any role",
+        "description": "Don't see your role listed? Send your CV anyway — we hire for talent and potential."
+      }
+    ]
+  },
   "contact": {
     "email": "vstackitsolutions@gmail.com",
     "whatsappNumber": "+918156825205",
+    "phoneDisplay": "+91 81568 25205",
     "location": "Kerala, India · Remote worldwide",
     "enquiryTypes": [
       "Custom software",
@@ -277,7 +384,8 @@
       "Hardware & office setup",
       "CCTV & security",
       "Digital marketing",
-      "Technical support"
+      "Technical support",
+      "Careers / vacancy enquiry"
     ]
   }
 }

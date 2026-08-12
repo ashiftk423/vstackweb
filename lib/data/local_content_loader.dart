@@ -34,6 +34,8 @@ class LocalContentLoader {
       projects: parseList('projects', Project.fromJson),
       process: parseList('process', Project.fromJson),
       team: parseList('team', TeamMember.fromJson),
+      seo: SeoSection.fromJson(json['seo'] as Map<String, dynamic>? ?? {}),
+      careers: CareersSection.fromJson(json['careers'] as Map<String, dynamic>? ?? {}),
       contact: ContactInfo.fromJson(json['contact'] as Map<String, dynamic>? ?? {}),
     );
   }

@@ -22,6 +22,7 @@ class _LandingPageState extends State<LandingPage> {
   final _formKey = GlobalKey<FormState>();
   final _workKey = GlobalKey();
   final _teamKey = GlobalKey();
+  final _careersKey = GlobalKey();
   final _contactKey = GlobalKey();
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
@@ -40,6 +41,8 @@ class _LandingPageState extends State<LandingPage> {
     GlobalKey? target;
     if (fragment == 'team' || fragment == 'leadership') {
       target = _teamKey;
+    } else if (fragment == 'careers' || fragment == 'jobs' || fragment == 'vacancy') {
+      target = _careersKey;
     } else if (fragment == 'contact' || fragment == 'enquiry') {
       target = _contactKey;
     } else if (fragment == 'work' || fragment == 'projects') {
@@ -86,6 +89,23 @@ class _LandingPageState extends State<LandingPage> {
     if (await canLaunchUrl(uri)) await launchUrl(uri);
   }
 
+  Future<void> _submitCv() async {
+    final careers = widget.content.careers;
+    final subject = Uri.encodeComponent(careers.cvSubject);
+    final body = Uri.encodeComponent(
+      'Dear VStack Team,\n\nI am interested in joining VStack Business Solutions.\n\nRole applying for: \nExperience: \nContact number: \n\nPlease find my CV attached.\n',
+    );
+    await _launch('mailto:${careers.cvEmail}?subject=$subject&body=$body');
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Opening your email app to send your CV.'),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: VStackColors.surfaceLight,
+      ),
+    );
+  }
+
   Future<void> _submitEnquiry() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final contact = widget.content.contact;
@@ -124,6 +144,7 @@ class _LandingPageState extends State<LandingPage> {
                   wide: wide,
                   onWork: () => _scrollToSection(_workKey),
                   onTeam: () => _scrollToSection(_teamKey),
+                  onCareers: () => _scrollToSection(_careersKey),
                   onContact: () => _scrollToSection(_contactKey),
                 ),
               ),
@@ -164,9 +185,27 @@ class _LandingPageState extends State<LandingPage> {
                 ),
               ),
               SliverToBoxAdapter(
+                child: _SeoSection(
+                  padding: pad,
+                  seo: widget.content.seo,
+                  contact: widget.content.contact,
+                ),
+              ),
+              SliverToBoxAdapter(
                 child: KeyedSubtree(
                   key: _teamKey,
                   child: _TeamSection(padding: pad, team: widget.content.team),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: KeyedSubtree(
+                  key: _careersKey,
+                  child: _CareersSection(
+                    padding: pad,
+                    careers: widget.content.careers,
+                    onSendCv: _submitCv,
+                    onContact: () => _scrollToSection(_contactKey),
+                  ),
                 ),
               ),
               SliverToBoxAdapter(
@@ -190,7 +229,10 @@ class _LandingPageState extends State<LandingPage> {
                     onEnquiry: (v) => setState(() => _enquiry = v),
                     onSubmit: _submitEnquiry,
                     onEmail: () => _launch('mailto:${widget.content.contact.email}'),
-                    onWhatsApp: () => _launch('https://wa.me/${widget.content.contact.whatsappNumber}'),
+                    onWhatsApp: () => _launch(
+                      'https://wa.me/${widget.content.contact.whatsappNumber.replaceAll(RegExp(r'[^0-9]'), '')}',
+                    ),
+                    onPhone: () => _launch('tel:${widget.content.contact.whatsappNumber.replaceAll(' ', '')}'),
                   ),
                 ),
               ),
@@ -252,6 +294,7 @@ class _NavBar extends StatelessWidget {
     required this.wide,
     required this.onWork,
     required this.onTeam,
+    required this.onCareers,
     required this.onContact,
   });
 
@@ -259,6 +302,7 @@ class _NavBar extends StatelessWidget {
   final bool wide;
   final VoidCallback onWork;
   final VoidCallback onTeam;
+  final VoidCallback onCareers;
   final VoidCallback onContact;
 
   @override
@@ -266,6 +310,7 @@ class _NavBar extends StatelessWidget {
     final links = [
       ('Work', onWork),
       ('Team', onTeam),
+      ('Careers', onCareers),
       ('Contact', onContact),
     ];
 
@@ -839,6 +884,285 @@ class _CtaSection extends StatelessWidget {
   }
 }
 
+class _SeoSection extends StatelessWidget {
+  const _SeoSection({
+    required this.padding,
+    required this.seo,
+    required this.contact,
+  });
+
+  final double padding;
+  final SeoSection seo;
+  final ContactInfo contact;
+
+  @override
+  Widget build(BuildContext context) {
+    return _sectionPad(
+      padding: padding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(
+            id: 'find-us-header',
+            tag: seo.tag,
+            title: seo.title,
+            subtitle: seo.subtitle,
+          ),
+          const SizedBox(height: 28),
+          LayoutBuilder(
+            builder: (context, c) {
+              final cols = AppLayout.gridColumns(context, desktop: 2, tablet: 2);
+              final w = (c.maxWidth - (cols - 1) * 16) / cols;
+              return Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: seo.locations.map((loc) {
+                  return SizedBox(
+                    width: cols == 1 ? c.maxWidth : w,
+                    child: ScrollReveal(
+                      id: 'loc-${loc.name.toLowerCase()}',
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: VStackColors.surface,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: VStackColors.border),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.location_on_outlined, color: VStackColors.accent, size: 20),
+                                const SizedBox(width: 8),
+                                Text(
+                                  loc.name,
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                                ),
+                                const Spacer(),
+                                Text(
+                                  loc.region,
+                                  style: const TextStyle(color: VStackColors.muted, fontSize: 12),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 6,
+                              runSpacing: 6,
+                              children: loc.highlights.map((h) {
+                                return Chip(
+                                  label: Text(h, style: const TextStyle(fontSize: 11)),
+                                  backgroundColor: VStackColors.bg.withValues(alpha: 0.6),
+                                  side: const BorderSide(color: VStackColors.border),
+                                  padding: EdgeInsets.zero,
+                                  visualDensity: VisualDensity.compact,
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              );
+            },
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'Popular searches',
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: seo.searchTopics.map((t) {
+              return Chip(
+                avatar: const Icon(Icons.search, size: 16, color: VStackColors.accent),
+                label: Text(t),
+                backgroundColor: VStackColors.surfaceLight.withValues(alpha: 0.5),
+                side: BorderSide(color: VStackColors.accent.withValues(alpha: 0.3)),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 28),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              gradient: LinearGradient(
+                colors: [
+                  VStackColors.accent.withValues(alpha: 0.12),
+                  VStackColors.accent2.withValues(alpha: 0.08),
+                ],
+              ),
+              border: Border.all(color: VStackColors.accent.withValues(alpha: 0.25)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Contact VStack Business Solutions',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Email: ${contact.email}'
+                  '${contact.phoneDisplay != null ? ' · Phone/WhatsApp: ${contact.phoneDisplay}' : ''}'
+                  ' · ${contact.location}',
+                  style: const TextStyle(color: VStackColors.muted, height: 1.5, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CareersSection extends StatelessWidget {
+  const _CareersSection({
+    required this.padding,
+    required this.careers,
+    required this.onSendCv,
+    required this.onContact,
+  });
+
+  final double padding;
+  final CareersSection careers;
+  final Future<void> Function() onSendCv;
+  final VoidCallback onContact;
+
+  @override
+  Widget build(BuildContext context) {
+    return _sectionPad(
+      padding: padding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(
+            id: 'careers-header',
+            tag: careers.tag,
+            title: careers.title,
+            subtitle: careers.text,
+          ),
+          const SizedBox(height: 28),
+          LayoutBuilder(
+            builder: (context, c) {
+              final cols = AppLayout.gridColumns(context, desktop: 2, tablet: 2);
+              final w = (c.maxWidth - (cols - 1) * 16) / cols;
+              return Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: careers.openRoles.asMap().entries.map((e) {
+                  final role = e.value;
+                  return SizedBox(
+                    width: cols == 1 ? c.maxWidth : w,
+                    child: ScrollReveal(
+                      id: 'role-${e.key}',
+                      delay: Duration(milliseconds: 60 * e.key),
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: VStackColors.surface,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: VStackColors.border),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              role.title,
+                              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                            ),
+                            Text(
+                              role.type,
+                              style: const TextStyle(color: VStackColors.accent2, fontSize: 12),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              role.description,
+                              style: const TextStyle(color: VStackColors.muted, fontSize: 13, height: 1.45),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              );
+            },
+          ),
+          const SizedBox(height: 28),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: VStackColors.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: VStackColors.accent.withValues(alpha: 0.35)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.work_outline, color: VStackColors.accent),
+                    SizedBox(width: 10),
+                    Text(
+                      'Send your CV',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  careers.cvNote,
+                  style: const TextStyle(color: VStackColors.muted, height: 1.5),
+                ),
+                const SizedBox(height: 8),
+                SelectableText(
+                  careers.cvEmail,
+                  style: const TextStyle(color: VStackColors.accent, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 20),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    FilledButton.icon(
+                      onPressed: onSendCv,
+                      icon: const Icon(Icons.email_outlined, size: 18),
+                      label: const Text('Email your CV'),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: VStackColors.accent,
+                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
+                      ),
+                    ),
+                    OutlinedButton(
+                      onPressed: onContact,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: VStackColors.text,
+                        side: const BorderSide(color: VStackColors.border),
+                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
+                      ),
+                      child: const Text('General enquiry'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _TeamSection extends StatelessWidget {
   const _TeamSection({required this.padding, required this.team});
 
@@ -971,6 +1295,7 @@ class _ContactSection extends StatelessWidget {
     required this.onSubmit,
     required this.onEmail,
     required this.onWhatsApp,
+    required this.onPhone,
   });
 
   final double padding;
@@ -984,6 +1309,7 @@ class _ContactSection extends StatelessWidget {
   final Future<void> Function() onSubmit;
   final VoidCallback onEmail;
   final VoidCallback onWhatsApp;
+  final VoidCallback onPhone;
 
   @override
   Widget build(BuildContext context) {
@@ -1011,7 +1337,7 @@ class _ContactSection extends StatelessWidget {
               ? Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(child: _contactInfo(context, onEmail, onWhatsApp)),
+                    Expanded(child: _contactInfo(context, onEmail, onWhatsApp, onPhone)),
                     const SizedBox(width: 32),
                     Expanded(flex: 2, child: _form(context)),
                   ],
@@ -1019,7 +1345,7 @@ class _ContactSection extends StatelessWidget {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _contactInfo(context, onEmail, onWhatsApp),
+                    _contactInfo(context, onEmail, onWhatsApp, onPhone),
                     const SizedBox(height: 28),
                     _form(context),
                   ],
@@ -1029,8 +1355,14 @@ class _ContactSection extends StatelessWidget {
     );
   }
 
-  Widget _contactInfo(BuildContext context, VoidCallback onEmail, VoidCallback onWhatsApp) {
+  Widget _contactInfo(
+    BuildContext context,
+    VoidCallback onEmail,
+    VoidCallback onWhatsApp,
+    VoidCallback onPhone,
+  ) {
     final mobile = AppLayout.isMobile(context);
+    final phone = contact.phoneDisplay ?? contact.whatsappNumber;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1043,11 +1375,13 @@ class _ContactSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         const Text(
-          'Pick how you want to reach us — enquiry form, email, or WhatsApp.',
+          'Pick how you want to reach us — enquiry form, email, phone, or WhatsApp.',
           style: TextStyle(color: VStackColors.muted, height: 1.5),
         ),
         const SizedBox(height: 28),
         _contactTile(Icons.email_outlined, contact.email, 'Email us', onEmail),
+        const SizedBox(height: 12),
+        _contactTile(Icons.phone_outlined, phone, 'Call or WhatsApp', onPhone),
         const SizedBox(height: 12),
         _contactTile(Icons.chat_outlined, 'WhatsApp chat', 'Quick questions', onWhatsApp),
         const SizedBox(height: 12),

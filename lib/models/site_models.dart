@@ -7,6 +7,8 @@ class SiteContent {
     required this.projects,
     required this.process,
     required this.team,
+    required this.seo,
+    required this.careers,
     required this.contact,
   });
 
@@ -17,6 +19,8 @@ class SiteContent {
   final List<Project> projects;
   final List<Project> process;
   final List<TeamMember> team;
+  final SeoSection seo;
+  final CareersSection careers;
   final ContactInfo contact;
 }
 
@@ -197,12 +201,14 @@ class ContactInfo {
     required this.whatsappNumber,
     required this.location,
     required this.enquiryTypes,
+    this.phoneDisplay,
   });
 
   final String email;
   final String whatsappNumber;
   final String location;
   final List<String> enquiryTypes;
+  final String? phoneDisplay;
 
   factory ContactInfo.fromJson(Map<String, dynamic> json) => ContactInfo(
         email: json['email'] as String? ?? '',
@@ -212,5 +218,108 @@ class ContactInfo {
                 ?.map((e) => e.toString())
                 .toList() ??
             const ['New project'],
+        phoneDisplay: json['phoneDisplay'] as String?,
+      );
+}
+
+class SeoLocation {
+  const SeoLocation({
+    required this.name,
+    required this.region,
+    required this.highlights,
+  });
+
+  final String name;
+  final String region;
+  final List<String> highlights;
+
+  factory SeoLocation.fromJson(Map<String, dynamic> json) => SeoLocation(
+        name: json['name'] as String? ?? '',
+        region: json['region'] as String? ?? '',
+        highlights: (json['highlights'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            const [],
+      );
+}
+
+class SeoSection {
+  const SeoSection({
+    required this.tag,
+    required this.title,
+    required this.subtitle,
+    required this.locations,
+    required this.searchTopics,
+  });
+
+  final String tag;
+  final String title;
+  final String subtitle;
+  final List<SeoLocation> locations;
+  final List<String> searchTopics;
+
+  factory SeoSection.fromJson(Map<String, dynamic> json) => SeoSection(
+        tag: json['tag'] as String? ?? 'FIND US',
+        title: json['title'] as String? ?? '',
+        subtitle: json['subtitle'] as String? ?? '',
+        locations: (json['locations'] as List<dynamic>?)
+                ?.map((e) => SeoLocation.fromJson(e as Map<String, dynamic>))
+                .toList() ??
+            const [],
+        searchTopics: (json['searchTopics'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            const [],
+      );
+}
+
+class CareerRole {
+  const CareerRole({
+    required this.title,
+    required this.type,
+    required this.description,
+  });
+
+  final String title;
+  final String type;
+  final String description;
+
+  factory CareerRole.fromJson(Map<String, dynamic> json) => CareerRole(
+        title: json['title'] as String? ?? '',
+        type: json['type'] as String? ?? '',
+        description: json['description'] as String? ?? '',
+      );
+}
+
+class CareersSection {
+  const CareersSection({
+    required this.tag,
+    required this.title,
+    required this.text,
+    required this.cvEmail,
+    required this.cvSubject,
+    required this.cvNote,
+    required this.openRoles,
+  });
+
+  final String tag;
+  final String title;
+  final String text;
+  final String cvEmail;
+  final String cvSubject;
+  final String cvNote;
+  final List<CareerRole> openRoles;
+
+  factory CareersSection.fromJson(Map<String, dynamic> json) => CareersSection(
+        tag: json['tag'] as String? ?? 'CAREERS',
+        title: json['title'] as String? ?? '',
+        text: json['text'] as String? ?? '',
+        cvEmail: json['cvEmail'] as String? ?? '',
+        cvSubject: json['cvSubject'] as String? ?? '',
+        cvNote: json['cvNote'] as String? ?? '',
+        openRoles: (json['openRoles'] as List<dynamic>?)
+                ?.map((e) => CareerRole.fromJson(e as Map<String, dynamic>))
+                .toList() ??
+            const [],
       );
 }
