@@ -353,92 +353,215 @@
   ],
   "demos": [
     {
-      "id": "erp",
+      "id": "saas-landing",
       "sortOrder": 0,
-      "slug": "erp",
-      "title": "ERP Dashboard",
-      "category": "ERP",
-      "description": "Interactive sample ERP with sales, inventory, customers, and reports.",
-      "previewImage": null,
-      "interactiveType": "erp",
-      "featured": true
-    },
-    {
-      "id": "crm",
-      "sortOrder": 1,
-      "slug": "crm",
-      "title": "CRM Pipeline",
-      "category": "CRM",
-      "description": "Sample CRM with contacts, deals, and pipeline stages.",
-      "previewImage": null,
-      "interactiveType": "crm",
-      "featured": true
-    },
-    {
-      "id": "pos",
-      "sortOrder": 2,
-      "slug": "pos",
-      "title": "POS System",
-      "category": "POS",
-      "description": "Point-of-sale demo with product grid, cart, and billing.",
-      "previewImage": null,
-      "interactiveType": "pos",
-      "featured": true
-    },
-    {
-      "id": "business-website",
-      "sortOrder": 3,
-      "slug": "business-website",
-      "title": "Business Website",
+      "slug": "saas-landing",
+      "title": "SaaS Landing Page",
       "category": "Website",
-      "description": "Scrollable mock business website inside a demo frame.",
+      "description": "Modern SaaS landing with hero, feature grid, pricing tiers, and animated CTAs.",
       "previewImage": null,
-      "interactiveType": "website",
-      "featured": false
+      "interactiveType": "website-saas",
+      "showcaseCategory": "website",
+      "featured": true,
+      "skills": ["UI Design", "Responsive Layout", "Motion"],
+      "highlights": [
+        "Conversion-focused hero and pricing sections",
+        "Smooth scroll-triggered animations",
+        "Mobile-first responsive grid system"
+      ],
+      "architectureNote": "Component-based sections make it easy to add pages, A/B test blocks, and connect to a CMS or API later."
     },
     {
-      "id": "ecommerce",
+      "id": "agency-portfolio",
+      "sortOrder": 1,
+      "slug": "agency-portfolio",
+      "title": "Agency Portfolio",
+      "category": "Website",
+      "description": "Creative agency site with filterable case studies and hover-driven project cards.",
+      "previewImage": null,
+      "interactiveType": "website-agency",
+      "showcaseCategory": "website",
+      "featured": false,
+      "skills": ["UI Design", "Typography", "Interaction"],
+      "highlights": [
+        "Category filters for portfolio browsing",
+        "Hover and scale micro-interactions",
+        "Clean visual hierarchy for case studies"
+      ],
+      "architectureNote": "Portfolio items can be driven from JSON or a headless CMS without redesigning the layout."
+    },
+    {
+      "id": "ecommerce-storefront",
+      "sortOrder": 2,
+      "slug": "ecommerce-storefront",
+      "title": "E-commerce Storefront",
+      "category": "Website",
+      "description": "Product grid with quick-view drawer, cart badge animation, and checkout-ready layout.",
+      "previewImage": null,
+      "interactiveType": "website-ecommerce",
+      "showcaseCategory": "website",
+      "featured": false,
+      "skills": ["E-commerce UX", "Animation", "Responsive"],
+      "highlights": [
+        "Product discovery with quick-view panel",
+        "Cart state with animated badge",
+        "Structured for payment gateway integration"
+      ],
+      "architectureNote": "Catalog, cart, and checkout can plug into Shopify, WooCommerce, or a custom backend."
+    },
+    {
+      "id": "admin-dashboard",
+      "sortOrder": 3,
+      "slug": "admin-dashboard",
+      "title": "Admin Dashboard",
+      "category": "Desktop App",
+      "description": "Desktop-style admin panel with sidebar navigation, KPI cards, and data tables.",
+      "previewImage": null,
+      "interactiveType": "desktop-admin",
+      "showcaseCategory": "desktop",
+      "featured": true,
+      "skills": ["Desktop UI", "Data Density", "Architecture"],
+      "highlights": [
+        "Native desktop window chrome and sidebar nav",
+        "KPI cards and sortable data tables",
+        "Role-based module layout ready for scale"
+      ],
+      "architectureNote": "Modular nav and widget slots map cleanly to feature modules, permissions, and real-time data feeds."
+    },
+    {
+      "id": "desktop-pos",
       "sortOrder": 4,
-      "slug": "ecommerce",
-      "title": "E-commerce Store",
-      "category": "E-commerce",
-      "description": "Product listing, cart, and checkout mock experience.",
+      "slug": "desktop-pos",
+      "title": "Desktop POS",
+      "category": "Desktop App",
+      "description": "Point-of-sale desktop app with product grid, live cart, and billing workflow.",
       "previewImage": null,
-      "interactiveType": "ecommerce",
-      "featured": false
+      "interactiveType": "desktop-pos",
+      "showcaseCategory": "desktop",
+      "featured": false,
+      "skills": ["Workflow UX", "Stateful UI", "Business Logic"],
+      "highlights": [
+        "Fast product selection and cart updates",
+        "Clear totals and print-ready billing flow",
+        "Built for keyboard + touch counter use"
+      ],
+      "architectureNote": "Cart and inventory layers can sync offline-first with cloud reporting and multi-store rollups."
     },
     {
-      "id": "mobile-app",
+      "id": "fintech-wallet",
       "sortOrder": 5,
-      "slug": "mobile-app",
-      "title": "Mobile Application",
+      "slug": "fintech-wallet",
+      "title": "Fintech Wallet",
       "category": "Mobile App",
-      "description": "Phone-frame UI mock with tab navigation.",
+      "description": "Mobile wallet UI with balance card, transactions, and bottom navigation.",
       "previewImage": null,
-      "interactiveType": "mobile",
-      "featured": false
+      "interactiveType": "mobile-fintech",
+      "showcaseCategory": "mobile",
+      "featured": true,
+      "skills": ["Mobile UI", "FinTech UX", "Navigation"],
+      "highlights": [
+        "Trust-focused balance and transaction UI",
+        "Tab-based navigation with clear hierarchy",
+        "Ready for secure API and KYC flows"
+      ],
+      "architectureNote": "Screen flow separates auth, wallet, and payments — standard pattern for banking and fintech apps."
     },
     {
-      "id": "3d-website",
+      "id": "delivery-tracker",
       "sortOrder": 6,
-      "slug": "3d-website",
-      "title": "3D Website",
-      "category": "3D Website",
-      "description": "Immersive 3D-style website experience preview.",
+      "slug": "delivery-tracker",
+      "title": "Delivery Tracker",
+      "category": "Mobile App",
+      "description": "Delivery app with map-style header, order timeline, and live status chips.",
       "previewImage": null,
-      "interactiveType": "3d",
-      "featured": false
+      "interactiveType": "mobile-delivery",
+      "showcaseCategory": "mobile",
+      "featured": false,
+      "skills": ["Mobile UI", "Real-time UX", "Logistics"],
+      "highlights": [
+        "Order timeline with status progression",
+        "Driver and ETA information layout",
+        "Push-notification friendly status model"
+      ],
+      "architectureNote": "Status events map to WebSocket or Firebase streams for live driver tracking."
     },
     {
-      "id": "business-management",
+      "id": "micro-interactions",
       "sortOrder": 7,
-      "slug": "business-management",
-      "title": "Business Management",
-      "category": "Business System",
-      "description": "All-in-one business management dashboard sample.",
+      "slug": "micro-interactions",
+      "title": "Micro-interactions",
+      "category": "Motion & UI",
+      "description": "Buttons, toggles, skeleton loaders, and toast notifications — polished motion design.",
       "previewImage": null,
-      "interactiveType": "management",
-      "featured": false
+      "interactiveType": "motion-micro",
+      "showcaseCategory": "motion",
+      "featured": true,
+      "skills": ["Motion Design", "UI Polish", "Feedback"],
+      "highlights": [
+        "Spring toggles and ripple buttons",
+        "Skeleton loading states",
+        "Toast and success feedback patterns"
+      ],
+      "architectureNote": "Reusable motion tokens keep animations consistent across your entire product."
+    },
+    {
+      "id": "scroll-storytelling",
+      "sortOrder": 8,
+      "slug": "scroll-storytelling",
+      "title": "Scroll Storytelling",
+      "category": "Motion & UI",
+      "description": "Scroll-driven reveals, parallax sections, and staggered content animations.",
+      "previewImage": null,
+      "interactiveType": "motion-scroll",
+      "showcaseCategory": "motion",
+      "featured": false,
+      "skills": ["Scroll Animation", "Storytelling", "Performance"],
+      "highlights": [
+        "Viewport-triggered fade and slide reveals",
+        "Staggered list and section entrances",
+        "Performance-conscious animation timing"
+      ],
+      "architectureNote": "Scroll sections are isolated components — easy to reorder for marketing campaigns."
+    },
+    {
+      "id": "character-viewer",
+      "sortOrder": 9,
+      "slug": "character-viewer",
+      "title": "3D Character Viewer",
+      "category": "3D & Games",
+      "description": "Interactive 3D character model with orbit controls and idle animation loop.",
+      "previewImage": null,
+      "interactiveType": "3d-character",
+      "showcaseCategory": "3d",
+      "featured": true,
+      "skills": ["3D Web", "GLB Pipeline", "Game Assets"],
+      "highlights": [
+        "Live GLB model with orbit and zoom",
+        "Rigged character with animation playback",
+        "Web-optimized asset delivery"
+      ],
+      "modelAsset": "assets/demos/3d/RobotExpressive.glb",
+      "architectureNote": "GLB assets swap without code changes — ideal for game characters, mascots, and product configurators."
+    },
+    {
+      "id": "game-asset-showcase",
+      "sortOrder": 10,
+      "slug": "game-asset-showcase",
+      "title": "Game Asset Showcase",
+      "category": "3D & Games",
+      "description": "3D prop model viewer with pipeline metadata — poly count, textures, and export info.",
+      "previewImage": null,
+      "interactiveType": "3d-asset",
+      "showcaseCategory": "3d",
+      "featured": false,
+      "skills": ["3D Assets", "Game Pipeline", "WebGL"],
+      "highlights": [
+        "Interactive prop model inspection",
+        "Pipeline metadata overlay",
+        "Production-ready web delivery"
+      ],
+      "modelAsset": "assets/demos/3d/DamagedHelmet.glb",
+      "architectureNote": "Same viewer supports weapons, vehicles, and environment props for game and AR previews."
     }
   ],
   "enquiry": {

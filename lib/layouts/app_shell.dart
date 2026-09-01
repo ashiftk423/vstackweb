@@ -69,9 +69,8 @@ class _VStackNavbarState extends State<VStackNavbar> {
     ('Solutions', '/solutions'),
     ('Products', '/products'),
     ('Our Work', '/work'),
+    ('Demo Lab', '/demo-lab'),
     ('Tools', '/tools'),
-    // TODO: Re-enable Demo Lab when ready.
-    // ('Demo Lab', '/demo-lab'),
     ('About', '/about'),
     ('Contact', '/contact'),
   ];
@@ -251,7 +250,7 @@ class VStackFooter extends StatelessWidget {
                 linkCol('Company', [
                   ('About', '/about'),
                   ('Our Work', '/work'),
-                  // ('Demo Lab', '/demo-lab'),
+                  ('Demo Lab', '/demo-lab'),
                   ('Careers', '/careers'),
                   ('Contact', '/contact'),
                 ]),
@@ -265,7 +264,7 @@ class VStackFooter extends StatelessWidget {
                       child: linkCol('Company', [
                         ('About', '/about'),
                         ('Our Work', '/work'),
-                        // ('Demo Lab', '/demo-lab'),
+                        ('Demo Lab', '/demo-lab'),
                         ('Careers', '/careers'),
                         ('Contact', '/contact'),
                       ]),

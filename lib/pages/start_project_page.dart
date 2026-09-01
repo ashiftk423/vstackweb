@@ -55,7 +55,17 @@ class _StartProjectPageState extends State<StartProjectPage> {
       };
     }
     if (widget.initialProduct != null) return 'Custom Software';
-    if (widget.initialDemo != null) return 'ERP / Business System';
+    if (widget.initialDemo != null) {
+      final demo = SiteContentScope.of(context).demoBySlug(widget.initialDemo!);
+      if (demo != null) {
+        return switch (demo.showcaseCategory) {
+          'website' => 'Website',
+          'mobile' => 'Mobile App',
+          'desktop' || 'motion' || '3d' => 'Custom Software',
+          _ => types.first,
+        };
+      }
+    }
     return types.first;
   }
 

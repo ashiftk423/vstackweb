@@ -5,8 +5,7 @@ import 'package:vstackweb/features/tools/data/tools_registry.dart';
 import 'package:vstackweb/features/tools/widgets/tool_card.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/widgets/cta_section.dart';
-// TODO: Re-enable when Demo Lab section is restored on home page.
-// import 'package:vstackweb/widgets/demo_card.dart';
+import 'package:vstackweb/widgets/demo_card.dart';
 import 'package:vstackweb/widgets/layout_widgets.dart';
 import 'package:vstackweb/widgets/page_hero.dart';
 import 'package:vstackweb/widgets/product_card.dart';
@@ -102,30 +101,30 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-          // TODO: Re-enable Demo Lab section when ready.
-          // PageSection(
-          //   child: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       SectionHeader(
-          //         id: 'demo-header',
-          //         tag: 'DEMO LAB',
-          //         title: 'Experience what VSTACK can build',
-          //         subtitle: 'Explore interactive examples of websites, apps, and business systems.',
-          //         trailing: TextButton(
-          //           onPressed: () => context.go('/demo-lab'),
-          //           child: const Text('Enter Demo Lab →'),
-          //         ),
-          //       ),
-          //       const SizedBox(height: VStackSpacing.xl),
-          //       ResponsiveGrid(
-          //         itemCount: content.featuredDemos.length,
-          //         desktopColumns: 3,
-          //         itemBuilder: (_, i) => DemoCard(demo: content.featuredDemos[i]),
-          //       ),
-          //     ],
-          //   ),
-          //           ),
+          PageSection(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SectionHeader(
+                  id: 'demo-header',
+                  tag: 'DEMO LAB',
+                  title: 'See what we can build',
+                  subtitle: 'Templates, motion design, 3D, and architecture — interactive showcases of our craft.',
+                  trailing: TextButton(
+                    onPressed: () => context.go('/demo-lab'),
+                    child: const Text('Enter Demo Lab →'),
+                  ),
+                ),
+                const SizedBox(height: VStackSpacing.xl),
+                ResponsiveGrid(
+                  itemCount: content.featuredDemos.length,
+                  desktopColumns: 4,
+                  tabletColumns: 2,
+                  itemBuilder: (_, i) => DemoCard(demo: content.featuredDemos[i]),
+                ),
+              ],
+            ),
+          ),
           PageSection(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

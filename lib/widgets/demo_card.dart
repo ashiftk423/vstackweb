@@ -29,13 +29,16 @@ class DemoCard extends StatelessWidget {
               ),
               border: Border.all(color: VStackColors.border),
             ),
-            child: Center(
-              child: Icon(_demoIcon(demo.interactiveType), size: 40, color: VStackColors.accent),
-            ),
+            clipBehavior: Clip.antiAlias,
+            child: demo.previewImage != null
+                ? Image.asset(demo.previewImage!, fit: BoxFit.cover, width: double.infinity)
+                : Center(
+                    child: Icon(_demoIcon(demo.interactiveType), size: 40, color: VStackColors.accent),
+                  ),
           ),
           const SizedBox(height: VStackSpacing.md),
           Text(
-            demo.category.toUpperCase(),
+            _categoryLabel(demo.showcaseCategory).toUpperCase(),
             style: const TextStyle(color: VStackColors.accent2, fontSize: 10, letterSpacing: 1.2),
           ),
           const SizedBox(height: 4),
@@ -44,11 +47,31 @@ class DemoCard extends StatelessWidget {
           Text(
             demo.description,
             style: const TextStyle(color: VStackColors.muted, fontSize: 13, height: 1.45),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
+          if (demo.skills.isNotEmpty) ...[
+            const SizedBox(height: VStackSpacing.sm),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: demo.skills.take(3).map((s) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: VStackColors.surface,
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(color: VStackColors.border),
+                  ),
+                  child: Text(s, style: const TextStyle(fontSize: 10, color: VStackColors.muted)),
+                );
+              }).toList(),
+            ),
+          ],
           const SizedBox(height: VStackSpacing.md),
           const Row(
             children: [
-              Text('Explore Demo', style: TextStyle(color: VStackColors.accent, fontWeight: FontWeight.w600, fontSize: 13)),
+              Text('Explore Showcase', style: TextStyle(color: VStackColors.accent, fontWeight: FontWeight.w600, fontSize: 13)),
               SizedBox(width: 4),
               Icon(Icons.arrow_forward, size: 16, color: VStackColors.accent),
             ],
@@ -58,16 +81,22 @@ class DemoCard extends StatelessWidget {
     );
   }
 
+  String _categoryLabel(String cat) => switch (cat) {
+        'website' => 'Website',
+        'desktop' => 'Desktop App',
+        'mobile' => 'Mobile App',
+        'motion' => 'Motion & UI',
+        '3d' => '3D & Games',
+        _ => demo.category,
+      };
+
   IconData _demoIcon(String type) {
     return switch (type) {
-      'erp' => Icons.dashboard_outlined,
-      'crm' => Icons.people_outline,
-      'pos' => Icons.point_of_sale_outlined,
-      'website' => Icons.language_outlined,
-      'ecommerce' => Icons.shopping_bag_outlined,
-      'mobile' => Icons.phone_android_outlined,
-      '3d' => Icons.view_in_ar_outlined,
-      'management' => Icons.business_center_outlined,
+      'website-saas' || 'website-agency' || 'website-ecommerce' => Icons.language_outlined,
+      'desktop-admin' || 'desktop-pos' => Icons.desktop_windows_outlined,
+      'mobile-fintech' || 'mobile-delivery' => Icons.phone_android_outlined,
+      'motion-micro' || 'motion-scroll' => Icons.animation_outlined,
+      '3d-character' || '3d-asset' => Icons.view_in_ar_outlined,
       _ => Icons.play_circle_outline,
     };
   }
