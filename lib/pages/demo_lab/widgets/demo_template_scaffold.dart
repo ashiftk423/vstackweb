@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vstackweb/pages/demo_lab/ui/demo_themes.dart';
 
 class DemoTemplateScaffold extends StatelessWidget {
   const DemoTemplateScaffold({
@@ -23,9 +24,25 @@ class DemoTemplateScaffold extends StatelessWidget {
       ],
     );
 
+    if (theme == null) {
+      return Container(color: backgroundColor, child: child);
+    }
+
+    final bodyStyle = theme!.textTheme.bodyMedium ??
+        const TextStyle(color: DemoThemes.inkSecondary, fontSize: 14, height: 1.4);
+
     return Container(
       color: backgroundColor,
-      child: theme != null ? Theme(data: theme!, child: child) : child,
+      child: Theme(
+        data: theme!,
+        child: DefaultTextStyle(
+          style: bodyStyle,
+          child: IconTheme(
+            data: IconThemeData(color: theme!.colorScheme.primary),
+            child: child,
+          ),
+        ),
+      ),
     );
   }
 }

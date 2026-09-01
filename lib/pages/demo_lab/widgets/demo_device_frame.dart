@@ -17,12 +17,23 @@ class DemoDeviceFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return switch (type) {
-      DemoFrameType.browser => _BrowserFrame(title: title, child: child),
-      DemoFrameType.desktop => _DesktopFrame(title: title, child: child),
-      DemoFrameType.phone => _PhoneFrame(child: child),
-      DemoFrameType.plain => child,
-    };
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: SizedBox(
+            width: constraints.maxWidth,
+            height: constraints.maxHeight,
+            child: switch (type) {
+              DemoFrameType.browser => _BrowserFrame(title: title, child: child),
+              DemoFrameType.desktop => _DesktopFrame(title: title, child: child),
+              DemoFrameType.phone => _PhoneFrame(child: child),
+              DemoFrameType.plain => child,
+            },
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -140,45 +151,56 @@ class _PhoneFrame extends StatelessWidget {
 
   final Widget child;
 
+  static const _frameWidth = 320.0;
+  static const _frameHeight = 640.0;
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: 320,
-        height: 640,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(36),
-          border: Border.all(color: VStackColors.border, width: 3),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.4),
-              blurRadius: 32,
-              offset: const Offset(0, 12),
-            ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          children: [
-            Container(
-              height: 28,
-              color: Colors.black,
-              alignment: Alignment.center,
-              child: Container(
-                width: 80,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: VStackColors.surfaceLight,
-                  borderRadius: BorderRadius.circular(3),
-                ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return FittedBox(
+          fit: BoxFit.contain,
+          alignment: Alignment.center,
+          child: SizedBox(
+            width: _frameWidth,
+            height: _frameHeight,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(36),
+                border: Border.all(color: VStackColors.border, width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.4),
+                    blurRadius: 32,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                children: [
+                  Container(
+                    height: 28,
+                    color: Colors.black,
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: 80,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: VStackColors.surfaceLight,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                  ),
+                  Expanded(child: child),
+                  Container(height: 20, color: Colors.black),
+                ],
               ),
             ),
-            Expanded(child: child),
-            Container(height: 20, color: Colors.black),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

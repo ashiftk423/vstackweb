@@ -15,6 +15,7 @@ class DemoCard extends StatelessWidget {
       onTap: () => context.go('/demo-lab/${demo.slug}'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             height: 120,
@@ -31,7 +32,14 @@ class DemoCard extends StatelessWidget {
             ),
             clipBehavior: Clip.antiAlias,
             child: demo.previewImage != null
-                ? Image.asset(demo.previewImage!, fit: BoxFit.cover, width: double.infinity)
+                ? Image.asset(
+                    demo.previewImage!,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    errorBuilder: (_, __, ___) => Center(
+                      child: Icon(_demoIcon(demo.interactiveType), size: 40, color: VStackColors.accent),
+                    ),
+                  )
                 : Center(
                     child: Icon(_demoIcon(demo.interactiveType), size: 40, color: VStackColors.accent),
                   ),

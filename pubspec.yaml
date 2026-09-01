@@ -76,7 +76,10 @@ flutter:
     - assets/tools/
     - assets/demos/previews/
     - assets/demos/3d/
-    - assets/demos/images/
+    - assets/demos/images/banners/
+    - assets/demos/images/food/
+    - assets/demos/images/portfolio/
+    - assets/demos/images/products/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

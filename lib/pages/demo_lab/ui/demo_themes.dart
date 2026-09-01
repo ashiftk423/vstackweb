@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 abstract final class DemoThemes {
+  static const ink = Color(0xFF0F172A);
+  static const inkSecondary = Color(0xFF1E293B);
+  static const inkMuted = Color(0xFF64748B);
   static ThemeData ecommerce() => _light(
         primary: const Color(0xFF2874F0),
         secondary: const Color(0xFFFF9F00),

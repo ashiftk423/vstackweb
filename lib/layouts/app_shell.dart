@@ -69,7 +69,8 @@ class _VStackNavbarState extends State<VStackNavbar> {
     ('Solutions', '/solutions'),
     ('Products', '/products'),
     ('Our Work', '/work'),
-    ('Demo Lab', '/demo-lab'),
+    // TODO: Re-enable when Demo Lab polish is complete.
+    // ('Demo Lab', '/demo-lab'),
     ('Tools', '/tools'),
     ('About', '/about'),
     ('Contact', '/contact'),
@@ -250,7 +251,8 @@ class VStackFooter extends StatelessWidget {
                 linkCol('Company', [
                   ('About', '/about'),
                   ('Our Work', '/work'),
-                  ('Demo Lab', '/demo-lab'),
+                  // TODO: Re-enable when Demo Lab polish is complete.
+                  // ('Demo Lab', '/demo-lab'),
                   ('Careers', '/careers'),
                   ('Contact', '/contact'),
                 ]),
@@ -264,7 +266,8 @@ class VStackFooter extends StatelessWidget {
                       child: linkCol('Company', [
                         ('About', '/about'),
                         ('Our Work', '/work'),
-                        ('Demo Lab', '/demo-lab'),
+                        // TODO: Re-enable when Demo Lab polish is complete.
+                        // ('Demo Lab', '/demo-lab'),
                         ('Careers', '/careers'),
                         ('Contact', '/contact'),
                       ]),

@@ -61,84 +61,136 @@ class _DesktopPosTemplateState extends State<DesktopPosTemplate> {
       child: DemoTemplateScaffold(
         theme: DemoThemes.pos(),
         backgroundColor: const Color(0xFFF5F7FA),
-        header: Container(
-          color: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: Row(
-            children: [
-              const Icon(Icons.restaurant, color: Color(0xFF00A651), size: 22),
-              const SizedBox(width: 8),
-              const Text('VSTACK Café — Thrissur', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-              const Spacer(),
-              ...['Dine-in', 'Takeaway'].map((t) {
-                final sel = _orderType == t;
-                return Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: ChoiceChip(
-                    label: Text(t, style: const TextStyle(fontSize: 11)),
-                    selected: sel,
-                    onSelected: (_) => setState(() => _orderType = t),
-                    selectedColor: const Color(0xFF00A651).withValues(alpha: 0.15),
-                  ),
-                );
-              }),
-              const SizedBox(width: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(6)),
-                child: const Text('Table 5', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-              ),
-            ],
-          ),
-        ),
-        body: Row(
-          children: [
-            Container(
-              width: 100,
+        header: LayoutBuilder(
+          builder: (context, constraints) {
+            final compact = constraints.maxWidth < 520;
+            return Container(
               color: Colors.white,
-              child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                children: DemoSampleData.posCategories.map((c) {
-                  final sel = _category == c;
-                  return Material(
-                    color: sel ? const Color(0xFFE8F5E9) : Colors.transparent,
-                    child: InkWell(
-                      onTap: () => setState(() => _category = c),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                        child: Text(c, textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: sel ? FontWeight.w700 : FontWeight.normal, color: sel ? const Color(0xFF00A651) : const Color(0xFF666666))),
-                      ),
+              padding: EdgeInsets.symmetric(horizontal: compact ? 10 : 16, vertical: 10),
+              child: compact
+                  ? Row(
+                      children: [
+                        const Icon(Icons.restaurant, color: Color(0xFF00A651), size: 20),
+                        const SizedBox(width: 6),
+                        const Expanded(
+                          child: Text(
+                            'VSTACK Café',
+                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: DemoThemes.ink),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        ChoiceChip(
+                          label: Text(_orderType, style: const TextStyle(fontSize: 10)),
+                          selected: true,
+                          onSelected: (_) {},
+                          selectedColor: const Color(0xFF00A651).withValues(alpha: 0.15),
+                        ),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        const Icon(Icons.restaurant, color: Color(0xFF00A651), size: 22),
+                        const SizedBox(width: 8),
+                        const Flexible(
+                          child: Text(
+                            'VSTACK Café — Thrissur',
+                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: DemoThemes.ink),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        ...['Dine-in', 'Takeaway'].map((t) {
+                          final sel = _orderType == t;
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: ChoiceChip(
+                              label: Text(t, style: const TextStyle(fontSize: 11)),
+                              selected: sel,
+                              onSelected: (_) => setState(() => _orderType = t),
+                              selectedColor: const Color(0xFF00A651).withValues(alpha: 0.15),
+                            ),
+                          );
+                        }),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(6)),
+                          child: const Text('Table 5', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: DemoThemes.inkSecondary)),
+                        ),
+                      ],
                     ),
-                  );
-                }).toList(),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.85,
+            );
+          },
+        ),
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final narrow = constraints.maxWidth < 560;
+            final sidebarW = narrow ? 72.0 : 100.0;
+            final cartW = narrow ? 180.0 : 260.0;
+            return Row(
+              children: [
+                SizedBox(
+                  width: sidebarW,
+                  child: ColoredBox(
+                    color: Colors.white,
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      children: DemoSampleData.posCategories.map((c) {
+                        final sel = _category == c;
+                        return Material(
+                          color: sel ? const Color(0xFFE8F5E9) : Colors.transparent,
+                          child: InkWell(
+                            onTap: () => setState(() => _category = c),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+                              child: Text(
+                                c,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: narrow ? 10 : 11,
+                                  fontWeight: sel ? FontWeight.w700 : FontWeight.normal,
+                                  color: sel ? const Color(0xFF00A651) : const Color(0xFF666666),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
-                  itemCount: _items.length,
-                  itemBuilder: (_, i) => DemoPosTile(item: _items[i], onTap: () => _addItem(_items[i])),
                 ),
-              ),
-            ),
-            SizedBox(
-              width: 260,
-              child: DemoCartPanel(
-                compact: true,
-                lines: _lines,
-                onQtyChanged: (p, q) => setState(() => _cart[p.id]?.qty = q),
-                onRemove: (p) => setState(() => _cart.remove(p.id)),
-                onCheckout: () => setState(() => _cart.clear()),
-              ),
-            ),
-          ],
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: LayoutBuilder(
+                      builder: (context, gridConstraints) {
+                        final cols = gridConstraints.maxWidth >= 420 ? 4 : gridConstraints.maxWidth >= 280 ? 3 : 2;
+                        return GridView.builder(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: cols,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: narrow ? 0.78 : 0.85,
+                          ),
+                          itemCount: _items.length,
+                          itemBuilder: (_, i) => DemoPosTile(item: _items[i], onTap: () => _addItem(_items[i])),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: cartW,
+                  child: DemoCartPanel(
+                    compact: true,
+                    lines: _lines,
+                    onQtyChanged: (p, q) => setState(() => _cart[p.id]?.qty = q),
+                    onRemove: (p) => setState(() => _cart.remove(p.id)),
+                    onCheckout: () => setState(() => _cart.clear()),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

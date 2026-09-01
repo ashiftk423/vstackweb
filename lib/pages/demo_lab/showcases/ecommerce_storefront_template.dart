@@ -5,7 +5,8 @@ import 'package:vstackweb/pages/demo_lab/ui/demo_product_card.dart';
 import 'package:vstackweb/pages/demo_lab/ui/demo_sample_data.dart';
 import 'package:vstackweb/pages/demo_lab/ui/demo_search_header.dart';
 import 'package:vstackweb/pages/demo_lab/ui/demo_themes.dart';
-import 'package:vstackweb/pages/demo_lab/widgets/demo_device_frame.dart';
+import 'package:vstackweb/pages/demo_lab/widgets/demo_viewport_scope.dart';
+import 'package:vstackweb/pages/demo_lab/widgets/demo_website_frame.dart';
 import 'package:vstackweb/pages/demo_lab/widgets/demo_template_scaffold.dart';
 
 class EcommerceStorefrontTemplate extends StatefulWidget {
@@ -43,8 +44,9 @@ class _EcommerceStorefrontTemplateState extends State<EcommerceStorefrontTemplat
 
   @override
   Widget build(BuildContext context) {
-    return DemoDeviceFrame(
-      type: DemoFrameType.browser,
+    final mobile = DemoViewportScope.isMobileView(context);
+
+    return DemoWebsiteFrame(
       title: 'shop',
       child: DemoTemplateScaffold(
         theme: DemoThemes.ecommerce(),
@@ -67,11 +69,11 @@ class _EcommerceStorefrontTemplateState extends State<EcommerceStorefrontTemplat
                 Expanded(
                   child: GridView.builder(
                     padding: const EdgeInsets.all(12),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: mobile ? 2 : 3,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      childAspectRatio: 0.62,
+                      childAspectRatio: mobile ? 0.68 : 0.62,
                     ),
                     itemCount: _filtered.length,
                     itemBuilder: (_, i) {
@@ -99,7 +101,7 @@ class _EcommerceStorefrontTemplateState extends State<EcommerceStorefrontTemplat
                 children: [
                   Expanded(child: GestureDetector(onTap: () => setState(() => _showCart = false), child: Container(color: Colors.black45))),
                   SizedBox(
-                    width: 300,
+                    width: mobile ? 280 : 300,
                     child: DemoCartPanel(
                       lines: _cart.values.toList(),
                       onQtyChanged: (p, q) => setState(() => _cart[p.id]?.qty = q),

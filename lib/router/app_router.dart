@@ -6,8 +6,9 @@ import 'package:vstackweb/models/site_models.dart';
 import 'package:vstackweb/pages/about_page.dart';
 import 'package:vstackweb/pages/careers_page.dart';
 import 'package:vstackweb/pages/contact_page.dart';
-import 'package:vstackweb/pages/demo_lab/demo_detail_page.dart';
-import 'package:vstackweb/pages/demo_lab/demo_lab_page.dart';
+// TODO: Re-enable when Demo Lab polish is complete.
+// import 'package:vstackweb/pages/demo_lab/demo_detail_page.dart';
+// import 'package:vstackweb/pages/demo_lab/demo_lab_page.dart';
 import 'package:vstackweb/pages/home_page.dart';
 import 'package:vstackweb/pages/products/product_detail_page.dart';
 import 'package:vstackweb/pages/products/products_page.dart';
@@ -45,11 +46,12 @@ GoRouter createAppRouter(SiteContent content) {
             path: '/work/:slug',
             builder: (_, state) => WorkDetailPage(slug: state.pathParameters['slug']!),
           ),
-          GoRoute(path: '/demo-lab', builder: (_, __) => const DemoLabPage()),
-          GoRoute(
-            path: '/demo-lab/:slug',
-            builder: (_, state) => DemoDetailPage(slug: state.pathParameters['slug']!),
-          ),
+          // TODO: Re-enable when Demo Lab polish is complete.
+          // GoRoute(path: '/demo-lab', builder: (_, __) => const DemoLabPage()),
+          // GoRoute(
+          //   path: '/demo-lab/:slug',
+          //   builder: (_, state) => DemoDetailPage(slug: state.pathParameters['slug']!),
+          // ),
           GoRoute(path: '/about', builder: (_, __) => const AboutPage()),
           GoRoute(path: '/contact', builder: (_, __) => const ContactPage()),
           GoRoute(path: '/careers', builder: (_, __) => const CareersPage()),
