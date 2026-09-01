@@ -16,20 +16,35 @@ import 'package:vstackweb/features/tools/widgets/tool_upload_area.dart';
 import 'package:vstackweb/widgets/layout_widgets.dart';
 
 class _LineItem {
-  _LineItem({String desc = '', this.qty = 1, this.rate = 0, this.discount = 0, this.tax = 18})
-      : descController = TextEditingController(text: desc);
+  _LineItem({
+    String desc = '',
+    String qty = '1',
+    String rate = '0',
+    String tax = '18',
+  })  : descController = TextEditingController(text: desc),
+        qtyController = TextEditingController(text: qty),
+        rateController = TextEditingController(text: rate),
+        taxController = TextEditingController(text: tax);
 
   final TextEditingController descController;
-  double qty;
-  double rate;
-  double discount;
-  double tax;
+  final TextEditingController qtyController;
+  final TextEditingController rateController;
+  final TextEditingController taxController;
 
   String get desc => descController.text;
-  double get amount => qty * rate * (1 - discount / 100);
+  double get qty => double.tryParse(qtyController.text) ?? 0;
+  double get rate => double.tryParse(rateController.text) ?? 0;
+  double get tax => double.tryParse(taxController.text) ?? 0;
+
+  double get amount => qty * rate;
   double get taxAmount => amount * tax / 100;
 
-  void dispose() => descController.dispose();
+  void dispose() {
+    descController.dispose();
+    qtyController.dispose();
+    rateController.dispose();
+    taxController.dispose();
+  }
 }
 
 class InvoiceGeneratorPage extends StatefulWidget {
@@ -46,7 +61,7 @@ class _InvoiceGeneratorPageState extends State<InvoiceGeneratorPage> {
   final _custName = TextEditingController(text: 'Customer');
   final _custAddr = TextEditingController();
   final _invNo = TextEditingController(text: 'INV-001');
-  final _items = [_LineItem(desc: 'Service / Product', rate: 1000)];
+  final _items = [_LineItem(desc: 'Service / Product', rate: '1000')];
 
   InvoiceCurrency _currency = InvoiceCurrency.inr;
   InvoiceLayout _layout = InvoiceLayout.classic;
@@ -65,7 +80,6 @@ class _InvoiceGeneratorPageState extends State<InvoiceGeneratorPage> {
                   desc: i.desc,
                   qty: i.qty,
                   rate: i.rate,
-                  discount: i.discount,
                   tax: i.tax,
                 ))
             .toList(),
@@ -190,27 +204,13 @@ class _InvoiceGeneratorPageState extends State<InvoiceGeneratorPage> {
               ..._items.asMap().entries.map((e) {
                 final index = e.key;
                 final item = e.value;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: item.descController,
-                          textDirection: TextDirection.ltr,
-                          decoration: _fieldDecoration('Item ${index + 1}'),
-                          onChanged: (_) => _refresh(),
-                        ),
-                      ),
-                      if (_items.length > 1)
-                        IconButton(
-                          icon: const Icon(Icons.close, size: 18),
-                          tooltip: 'Remove item',
-                          onPressed: () => _removeItem(index),
-                        ),
-                    ],
-                  ),
+                return _LineItemFields(
+                  index: index,
+                  item: item,
+                  canRemove: _items.length > 1,
+                  decoration: _fieldDecoration,
+                  onChanged: _refresh,
+                  onRemove: () => _removeItem(index),
                 );
               }),
               TextButton(onPressed: _addItem, child: const Text('+ Add item')),
@@ -241,6 +241,90 @@ class _InvoiceGeneratorPageState extends State<InvoiceGeneratorPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _LineItemFields extends StatelessWidget {
+  const _LineItemFields({
+    required this.index,
+    required this.item,
+    required this.canRemove,
+    required this.decoration,
+    required this.onChanged,
+    required this.onRemove,
+  });
+
+  final int index;
+  final _LineItem item;
+  final bool canRemove;
+  final InputDecoration Function(String label) decoration;
+  final VoidCallback onChanged;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: item.descController,
+                  textDirection: TextDirection.ltr,
+                  decoration: decoration('Item ${index + 1}'),
+                  onChanged: (_) => onChanged(),
+                ),
+              ),
+              if (canRemove)
+                IconButton(
+                  icon: const Icon(Icons.close, size: 18),
+                  tooltip: 'Remove item',
+                  onPressed: onRemove,
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: item.qtyController,
+                  textDirection: TextDirection.ltr,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: decoration('Qty'),
+                  onChanged: (_) => onChanged(),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                flex: 2,
+                child: TextField(
+                  controller: item.rateController,
+                  textDirection: TextDirection.ltr,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: decoration('Price'),
+                  onChanged: (_) => onChanged(),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: item.taxController,
+                  textDirection: TextDirection.ltr,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: decoration('GST %'),
+                  onChanged: (_) => onChanged(),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

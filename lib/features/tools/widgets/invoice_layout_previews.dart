@@ -43,6 +43,16 @@ class _ItemsTable extends StatelessWidget {
 
   final InvoiceData data;
 
+  static String _formatQty(double qty) {
+    if (qty % 1 == 0) return qty.toInt().toString();
+    return qty.toStringAsFixed(2);
+  }
+
+  static String _formatTax(double tax) {
+    if (tax % 1 == 0) return '${tax.toInt()}%';
+    return '${tax.toStringAsFixed(1)}%';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -52,6 +62,7 @@ class _ItemsTable extends StatelessWidget {
             Expanded(flex: 3, child: Text('Item', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12))),
             Expanded(child: Text('Qty', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12), textAlign: TextAlign.center)),
             Expanded(child: Text('Rate', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12), textAlign: TextAlign.end)),
+            Expanded(child: Text('GST%', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12), textAlign: TextAlign.end)),
             Expanded(child: Text('Amount', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12), textAlign: TextAlign.end)),
           ],
         ),
@@ -62,8 +73,9 @@ class _ItemsTable extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(flex: 3, child: Text(i.desc, textDirection: TextDirection.ltr)),
-                Expanded(child: Text('${i.qty}', textAlign: TextAlign.center)),
+                Expanded(child: Text(_formatQty(i.qty), textAlign: TextAlign.center)),
                 Expanded(child: Text(data.money(i.rate, forPdf: false, unicodeFontLoaded: true), textAlign: TextAlign.end)),
+                Expanded(child: Text(_formatTax(i.tax), textAlign: TextAlign.end)),
                 Expanded(child: Text(data.money(i.amount, forPdf: false, unicodeFontLoaded: true), textAlign: TextAlign.end)),
               ],
             ),

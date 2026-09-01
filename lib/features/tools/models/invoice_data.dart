@@ -8,17 +8,15 @@ class InvoiceLineItemData {
     required this.desc,
     required this.qty,
     required this.rate,
-    required this.discount,
     required this.tax,
   });
 
   final String desc;
   final double qty;
   final double rate;
-  final double discount;
   final double tax;
 
-  double get amount => qty * rate * (1 - discount / 100);
+  double get amount => qty * rate;
   double get taxAmount => amount * tax / 100;
 }
 

@@ -55,16 +55,32 @@ class InvoicePdfBuilder {
 
   static pw.Widget _itemsTable(InvoiceData data, String Function(double) fmt) {
     return pw.TableHelper.fromTextArray(
-      headers: ['Item', 'Qty', 'Rate', 'Amount'],
+      headers: ['Item', 'Qty', 'Rate', 'GST%', 'Amount'],
       headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10),
       cellStyle: const pw.TextStyle(fontSize: 10),
       data: [
-        ...data.items.map((i) => [i.desc, '${i.qty}', fmt(i.rate), fmt(i.amount)]),
-        ['', '', 'Subtotal', fmt(data.subtotal)],
-        ['', '', 'Tax', fmt(data.taxTotal)],
-        ['', '', 'Total', fmt(data.total)],
+        ...data.items.map((i) => [
+              i.desc,
+              _formatQty(i.qty),
+              fmt(i.rate),
+              _formatTax(i.tax),
+              fmt(i.amount),
+            ]),
+        ['', '', '', 'Subtotal', fmt(data.subtotal)],
+        ['', '', '', 'Tax', fmt(data.taxTotal)],
+        ['', '', '', 'Total', fmt(data.total)],
       ],
     );
+  }
+
+  static String _formatQty(double qty) {
+    if (qty % 1 == 0) return qty.toInt().toString();
+    return qty.toStringAsFixed(2);
+  }
+
+  static String _formatTax(double tax) {
+    if (tax % 1 == 0) return '${tax.toInt()}%';
+    return '${tax.toStringAsFixed(1)}%';
   }
 
   static pw.Widget _footer() {
