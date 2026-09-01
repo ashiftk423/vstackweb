@@ -1,23 +1,35 @@
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
 import 'package:vstackweb/features/tools/data/tools_registry.dart';
+import 'package:vstackweb/features/tools/models/invoice_currency.dart';
+import 'package:vstackweb/features/tools/models/invoice_data.dart';
+import 'package:vstackweb/features/tools/models/invoice_layout.dart';
 import 'package:vstackweb/features/tools/services/file_download.dart';
+import 'package:vstackweb/features/tools/services/invoice_pdf_builder.dart';
+import 'package:vstackweb/features/tools/widgets/invoice_layout_previews.dart';
 import 'package:vstackweb/features/tools/widgets/tool_page_shell.dart';
 import 'package:vstackweb/features/tools/widgets/tool_split_layout.dart';
 import 'package:vstackweb/features/tools/widgets/tool_status_widgets.dart';
-import 'package:vstackweb/theme/vstack_theme.dart';
+import 'package:vstackweb/features/tools/widgets/tool_upload_area.dart';
 import 'package:vstackweb/widgets/layout_widgets.dart';
 
 class _LineItem {
-  _LineItem({this.desc = '', this.qty = 1, this.rate = 0, this.discount = 0, this.tax = 18});
-  String desc;
+  _LineItem({String desc = '', this.qty = 1, this.rate = 0, this.discount = 0, this.tax = 18})
+      : descController = TextEditingController(text: desc);
+
+  final TextEditingController descController;
   double qty;
   double rate;
   double discount;
   double tax;
+
+  String get desc => descController.text;
   double get amount => qty * rate * (1 - discount / 100);
   double get taxAmount => amount * tax / 100;
+
+  void dispose() => descController.dispose();
 }
 
 class InvoiceGeneratorPage extends StatefulWidget {
@@ -34,46 +46,79 @@ class _InvoiceGeneratorPageState extends State<InvoiceGeneratorPage> {
   final _custName = TextEditingController(text: 'Customer');
   final _custAddr = TextEditingController();
   final _invNo = TextEditingController(text: 'INV-001');
-  final _items = [_LineItem(desc: 'Service / Product', qty: 1, rate: 1000)];
+  final _items = [_LineItem(desc: 'Service / Product', rate: 1000)];
 
-  double get _subtotal => _items.fold(0, (s, i) => s + i.amount);
-  double get _taxTotal => _items.fold(0, (s, i) => s + i.taxAmount);
-  double get _total => _subtotal + _taxTotal;
+  InvoiceCurrency _currency = InvoiceCurrency.inr;
+  InvoiceLayout _layout = InvoiceLayout.classic;
+  Uint8List? _logoBytes;
+  bool _downloading = false;
+
+  InvoiceData get _invoiceData => InvoiceData(
+        bizName: _bizName.text,
+        bizAddr: _bizAddr.text,
+        bizGst: _bizGst.text,
+        custName: _custName.text,
+        custAddr: _custAddr.text,
+        invNo: _invNo.text,
+        items: _items
+            .map((i) => InvoiceLineItemData(
+                  desc: i.desc,
+                  qty: i.qty,
+                  rate: i.rate,
+                  discount: i.discount,
+                  tax: i.tax,
+                ))
+            .toList(),
+        currency: _currency,
+        layout: _layout,
+        logoBytes: _logoBytes,
+      );
+
+  @override
+  void dispose() {
+    _bizName.dispose();
+    _bizAddr.dispose();
+    _bizGst.dispose();
+    _custName.dispose();
+    _custAddr.dispose();
+    _invNo.dispose();
+    for (final item in _items) {
+      item.dispose();
+    }
+    super.dispose();
+  }
+
+  void _refresh() => setState(() {});
+
+  void _addItem() {
+    setState(() => _items.add(_LineItem()));
+  }
+
+  void _removeItem(int index) {
+    if (_items.length <= 1) return;
+    setState(() {
+      _items[index].dispose();
+      _items.removeAt(index);
+    });
+  }
+
+  Future<void> _pickLogo() async {
+    final files = await ToolUploadArea.pickFiles(type: FileType.image);
+    if (files.isEmpty || files.first.bytes == null) return;
+    setState(() => _logoBytes = files.first.bytes);
+  }
 
   Future<void> _downloadPdf() async {
-    final pdf = pw.Document();
-    pdf.addPage(
-      pw.Page(
-        pageFormat: PdfPageFormat.a4,
-        build: (ctx) => pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
-            pw.Text(_bizName.text, style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
-            pw.Text(_bizAddr.text),
-            if (_bizGst.text.isNotEmpty) pw.Text('GSTIN: ${_bizGst.text}'),
-            pw.SizedBox(height: 24),
-            pw.Text('Invoice #${_invNo.text}', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
-            pw.Text('Bill To: ${_custName.text}'),
-            pw.Text(_custAddr.text),
-            pw.SizedBox(height: 16),
-            pw.Table.fromTextArray(
-              headers: ['Item', 'Qty', 'Rate', 'Amount'],
-              data: [
-                ..._items.map((i) => [i.desc, '${i.qty}', '₹${i.rate}', '₹${i.amount.toStringAsFixed(2)}']),
-                ['', '', 'Subtotal', '₹${_subtotal.toStringAsFixed(2)}'],
-                ['', '', 'Tax', '₹${_taxTotal.toStringAsFixed(2)}'],
-                ['', '', 'Total', '₹${_total.toStringAsFixed(2)}'],
-              ],
-            ),
-            pw.Spacer(),
-            pw.Text('Powered by VSTACK', style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600)),
-          ],
-        ),
-      ),
-    );
-    final bytes = await pdf.save();
-    downloadBytes(bytes, 'invoice-${_invNo.text}.pdf', mimeType: 'application/pdf');
+    setState(() => _downloading = true);
+    try {
+      final bytes = await InvoicePdfBuilder.build(_invoiceData);
+      downloadBytes(bytes, 'invoice-${_invNo.text}.pdf', mimeType: 'application/pdf');
+    } finally {
+      if (mounted) setState(() => _downloading = false);
+    }
   }
+
+  InputDecoration _fieldDecoration(String label) => InputDecoration(labelText: label);
 
   @override
   Widget build(BuildContext context) {
@@ -85,27 +130,90 @@ class _InvoiceGeneratorPageState extends State<InvoiceGeneratorPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text('Business', style: TextStyle(fontWeight: FontWeight.w700)),
-              TextField(controller: _bizName, decoration: const InputDecoration(labelText: 'Business name'), onChanged: (_) => setState(() {})),
-              TextField(controller: _bizAddr, decoration: const InputDecoration(labelText: 'Address'), onChanged: (_) => setState(() {})),
-              TextField(controller: _bizGst, decoration: const InputDecoration(labelText: 'GSTIN'), onChanged: (_) => setState(() {})),
+              TextField(
+                controller: _bizName,
+                textDirection: TextDirection.ltr,
+                decoration: _fieldDecoration('Business name'),
+                onChanged: (_) => _refresh(),
+              ),
+              TextField(
+                controller: _bizAddr,
+                textDirection: TextDirection.ltr,
+                decoration: _fieldDecoration('Address'),
+                onChanged: (_) => _refresh(),
+              ),
+              TextField(
+                controller: _bizGst,
+                textDirection: TextDirection.ltr,
+                decoration: _fieldDecoration('GSTIN'),
+                onChanged: (_) => _refresh(),
+              ),
+              const SizedBox(height: VStackSpacing.sm),
+              _LogoUploadRow(
+                logoBytes: _logoBytes,
+                onPick: _pickLogo,
+                onRemove: () => setState(() => _logoBytes = null),
+              ),
               const SizedBox(height: VStackSpacing.md),
               const Text('Customer', style: TextStyle(fontWeight: FontWeight.w700)),
-              TextField(controller: _custName, decoration: const InputDecoration(labelText: 'Customer name'), onChanged: (_) => setState(() {})),
-              TextField(controller: _custAddr, decoration: const InputDecoration(labelText: 'Address'), onChanged: (_) => setState(() {})),
-              TextField(controller: _invNo, decoration: const InputDecoration(labelText: 'Invoice number'), onChanged: (_) => setState(() {})),
+              TextField(
+                controller: _custName,
+                textDirection: TextDirection.ltr,
+                decoration: _fieldDecoration('Customer name'),
+                onChanged: (_) => _refresh(),
+              ),
+              TextField(
+                controller: _custAddr,
+                textDirection: TextDirection.ltr,
+                decoration: _fieldDecoration('Address'),
+                onChanged: (_) => _refresh(),
+              ),
+              TextField(
+                controller: _invNo,
+                textDirection: TextDirection.ltr,
+                decoration: _fieldDecoration('Invoice number'),
+                onChanged: (_) => _refresh(),
+              ),
               const SizedBox(height: VStackSpacing.md),
+              DropdownButtonFormField<InvoiceCurrency>(
+                value: _currency,
+                decoration: _fieldDecoration('Currency'),
+                items: InvoiceCurrency.values
+                    .map((c) => DropdownMenuItem(value: c, child: Text('${c.code} (${c.symbol})')))
+                    .toList(),
+                onChanged: (v) {
+                  if (v != null) setState(() => _currency = v);
+                },
+              ),
+              const SizedBox(height: VStackSpacing.md),
+              const Text('Line items', style: TextStyle(fontWeight: FontWeight.w700)),
               ..._items.asMap().entries.map((e) {
-                final i = e.value;
+                final index = e.key;
+                final item = e.value;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: TextField(
-                    decoration: InputDecoration(labelText: 'Item ${e.key + 1}'),
-                    controller: TextEditingController(text: i.desc),
-                    onChanged: (v) => setState(() => i.desc = v),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: item.descController,
+                          textDirection: TextDirection.ltr,
+                          decoration: _fieldDecoration('Item ${index + 1}'),
+                          onChanged: (_) => _refresh(),
+                        ),
+                      ),
+                      if (_items.length > 1)
+                        IconButton(
+                          icon: const Icon(Icons.close, size: 18),
+                          tooltip: 'Remove item',
+                          onPressed: () => _removeItem(index),
+                        ),
+                    ],
                   ),
                 );
               }),
-              TextButton(onPressed: () => setState(() => _items.add(_LineItem())), child: const Text('+ Add item')),
+              TextButton(onPressed: _addItem, child: const Text('+ Add item')),
             ],
           ),
         ),
@@ -113,31 +221,64 @@ class _InvoiceGeneratorPageState extends State<InvoiceGeneratorPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(_bizName.text, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-              Text(_custName.text, style: const TextStyle(color: VStackColors.muted)),
-              const Divider(height: 24),
-              ..._items.map((i) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [Expanded(child: Text(i.desc)), Text('₹${i.amount.toStringAsFixed(2)}')],
-                    ),
-                  )),
-              const Divider(height: 24),
-              ToolResultCard(
-                title: 'Summary',
-                rows: [
-                  ('Subtotal', '₹${_subtotal.toStringAsFixed(2)}'),
-                  ('Tax', '₹${_taxTotal.toStringAsFixed(2)}'),
-                  ('Total', '₹${_total.toStringAsFixed(2)}'),
-                ],
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SegmentedButton<InvoiceLayout>(
+                  segments: InvoiceLayout.values
+                      .map((l) => ButtonSegment(value: l, label: Text(l.label)))
+                      .toList(),
+                  selected: {_layout},
+                  onSelectionChanged: (s) => setState(() => _layout = s.first),
+                ),
               ),
+              const SizedBox(height: VStackSpacing.md),
+              InvoiceLayoutPreview(data: _invoiceData),
               const SizedBox(height: VStackSpacing.lg),
-              ToolDownloadButton(label: 'Download PDF', onPressed: _downloadPdf),
+              if (_downloading)
+                const ToolProcessingIndicator(label: 'Generating PDF…')
+              else
+                ToolDownloadButton(label: 'Download PDF', onPressed: _downloadPdf),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _LogoUploadRow extends StatelessWidget {
+  const _LogoUploadRow({
+    required this.logoBytes,
+    required this.onPick,
+    required this.onRemove,
+  });
+
+  final Uint8List? logoBytes;
+  final VoidCallback onPick;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        OutlinedButton.icon(
+          onPressed: onPick,
+          icon: const Icon(Icons.image_outlined, size: 18),
+          label: const Text('Upload logo'),
+        ),
+        if (logoBytes != null) ...[
+          const SizedBox(width: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: Image.memory(logoBytes!, width: 40, height: 40, fit: BoxFit.contain),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close, size: 18),
+            tooltip: 'Remove logo',
+            onPressed: onRemove,
+          ),
+        ],
+      ],
     );
   }
 }

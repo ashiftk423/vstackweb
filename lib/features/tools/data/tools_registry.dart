@@ -200,9 +200,9 @@ abstract final class ToolsRegistry {
     id: 'invoice-generator',
     name: 'Invoice Generator',
     slug: 'invoice-generator',
-    shortDescription: 'Create professional invoices with GST and download as PDF.',
+    shortDescription: 'Create professional invoices with logo, layouts, and multi-currency PDF.',
     description:
-        'Generate professional invoices with business details, line items, tax calculations, and PDF download. All data stays in your browser.',
+        'Generate professional invoices with business details, logo upload, regional layout templates, multi-currency support (INR, USD, EUR, SAR, and more), and PDF download. All data stays in your browser.',
     category: ToolCategory.business,
     icon: Icons.receipt_long_rounded,
     keywords: ['invoice', 'bill', 'gst', 'pdf', 'business'],

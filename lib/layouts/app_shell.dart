@@ -8,6 +8,7 @@ import 'package:vstackweb/models/site_models.dart';
 import 'package:vstackweb/theme/responsive.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/utils/enquiry_launcher.dart';
+import 'package:vstackweb/widgets/site_seo_listener.dart';
 import 'package:vstackweb/widgets/vstack_logo.dart';
 
 class AppShell extends StatefulWidget {
@@ -35,7 +36,7 @@ class _AppShellState extends State<AppShell> {
                 // onGestureMode: () => setState(() => _gestureMode = true),
               ),
               Expanded(
-                child: widget.child,
+                child: SiteSeoListener(child: widget.child),
                 // TODO: Re-enable gesture overlay when ready.
                 // child: _gestureMode
                 //     ? GestureModeOverlay(
@@ -78,7 +79,7 @@ class _VStackNavbarState extends State<VStackNavbar> {
 
   void _nav(String path) {
     setState(() => _menuOpen = false);
-    context.go(path);
+    _openSiteLink(context, path);
   }
 
   @override
@@ -202,7 +203,7 @@ class VStackFooter extends StatelessWidget {
             (l) => Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: InkWell(
-                onTap: () => context.go(l.$2),
+                onTap: () => _openSiteLink(context, l.$2),
                 child: Text(l.$1, style: const TextStyle(color: VStackColors.muted, fontSize: 13)),
               ),
             ),
@@ -251,10 +252,10 @@ class VStackFooter extends StatelessWidget {
                 linkCol('Company', [
                   ('About', '/about'),
                   ('Our Work', '/work'),
-                  // TODO: Re-enable when Demo Lab polish is complete.
-                  // ('Demo Lab', '/demo-lab'),
                   ('Careers', '/careers'),
                   ('Contact', '/contact'),
+                  ('FAQ', '/faq.html'),
+                  ('Locations', '/locations.html'),
                 ]),
               ] else
                 Row(
@@ -266,10 +267,10 @@ class VStackFooter extends StatelessWidget {
                       child: linkCol('Company', [
                         ('About', '/about'),
                         ('Our Work', '/work'),
-                        // TODO: Re-enable when Demo Lab polish is complete.
-                        // ('Demo Lab', '/demo-lab'),
                         ('Careers', '/careers'),
                         ('Contact', '/contact'),
+                        ('FAQ', '/faq.html'),
+                        ('Locations', '/locations.html'),
                       ]),
                     ),
                   ],
@@ -372,6 +373,17 @@ class _FooterContactButton extends StatelessWidget {
       ),
     );
   }
+}
+
+void _openSiteLink(BuildContext context, String path) {
+  if (path.endsWith('.html')) {
+    final uri = path.startsWith('http')
+        ? Uri.parse(path)
+        : Uri.parse('https://vstackbusinesssolutions.com$path');
+    launchUrl(uri, webOnlyWindowName: '_self');
+    return;
+  }
+  context.go(path);
 }
 
 class _AmbientBackground extends StatelessWidget {

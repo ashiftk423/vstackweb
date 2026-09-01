@@ -1,4 +1,17 @@
 User-agent: *
 Allow: /
 
+# AI crawlers — allowed for company discoverability in ChatGPT, Perplexity, etc.
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
 Sitemap: https://vstackbusinesssolutions.com/sitemap.xml
