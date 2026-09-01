@@ -69,6 +69,7 @@ class _VStackNavbarState extends State<VStackNavbar> {
     ('Solutions', '/solutions'),
     ('Products', '/products'),
     ('Our Work', '/work'),
+    ('Tools', '/tools'),
     // TODO: Re-enable Demo Lab when ready.
     // ('Demo Lab', '/demo-lab'),
     ('About', '/about'),

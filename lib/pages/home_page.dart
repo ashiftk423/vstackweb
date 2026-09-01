@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vstackweb/app/site_content_scope.dart';
+import 'package:vstackweb/features/tools/data/tools_registry.dart';
+import 'package:vstackweb/features/tools/widgets/tool_card.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/widgets/cta_section.dart';
 // TODO: Re-enable when Demo Lab section is restored on home page.
@@ -123,7 +125,31 @@ class HomePage extends StatelessWidget {
           //       ),
           //     ],
           //   ),
-          // ),
+          //           ),
+          PageSection(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SectionHeader(
+                  id: 'tools-header',
+                  tag: 'TOOLS',
+                  title: 'Tools',
+                  subtitle: 'Useful tools for everyday work.',
+                  trailing: TextButton(
+                    onPressed: () => context.go('/tools'),
+                    child: const Text('Explore All Tools →'),
+                  ),
+                ),
+                const SizedBox(height: VStackSpacing.xl),
+                ResponsiveGrid(
+                  itemCount: ToolsRegistry.popular.length,
+                  desktopColumns: 4,
+                  tabletColumns: 2,
+                  itemBuilder: (_, i) => ToolCard(tool: ToolsRegistry.popular[i]),
+                ),
+              ],
+            ),
+          ),
           PageSection(
             child: ScrollReveal(
               id: 'process-home',

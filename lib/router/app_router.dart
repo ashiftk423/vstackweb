@@ -16,6 +16,8 @@ import 'package:vstackweb/pages/solutions/solutions_hub_page.dart';
 import 'package:vstackweb/pages/start_project_page.dart';
 import 'package:vstackweb/pages/work/work_detail_page.dart';
 import 'package:vstackweb/pages/work/work_page.dart';
+import 'package:vstackweb/features/tools/pages/tools_hub_page.dart';
+import 'package:vstackweb/features/tools/tools_route.dart';
 
 GoRouter createAppRouter(SiteContent content) {
   return GoRouter(
@@ -51,6 +53,11 @@ GoRouter createAppRouter(SiteContent content) {
           GoRoute(path: '/about', builder: (_, __) => const AboutPage()),
           GoRoute(path: '/contact', builder: (_, __) => const ContactPage()),
           GoRoute(path: '/careers', builder: (_, __) => const CareersPage()),
+          GoRoute(path: '/tools', builder: (_, __) => const ToolsHubPage()),
+          GoRoute(
+            path: '/tools/:slug',
+            builder: (_, state) => buildToolPage(state.pathParameters['slug']!, state),
+          ),
           GoRoute(
             path: '/start-project',
             builder: (_, state) => StartProjectPage(
