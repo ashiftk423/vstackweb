@@ -1,3 +1,9 @@
+import 'package:vstackweb/models/demo.dart';
+import 'package:vstackweb/models/enquiry.dart';
+import 'package:vstackweb/models/product.dart';
+import 'package:vstackweb/models/solution.dart';
+import 'package:vstackweb/models/work_project.dart';
+
 class SiteContent {
   const SiteContent({
     required this.site,
@@ -10,6 +16,11 @@ class SiteContent {
     required this.seo,
     required this.careers,
     required this.contact,
+    required this.products,
+    required this.work,
+    required this.solutions,
+    required this.demos,
+    required this.enquiry,
   });
 
   final SiteInfo site;
@@ -22,6 +33,45 @@ class SiteContent {
   final SeoSection seo;
   final CareersSection careers;
   final ContactInfo contact;
+  final List<Product> products;
+  final List<WorkProject> work;
+  final List<Solution> solutions;
+  final List<DemoEntry> demos;
+  final EnquiryConfig enquiry;
+
+  Product? productBySlug(String slug) {
+    for (final p in products) {
+      if (p.slug == slug) return p;
+    }
+    return null;
+  }
+
+  WorkProject? workBySlug(String slug) {
+    for (final w in work) {
+      if (w.slug == slug) return w;
+    }
+    return null;
+  }
+
+  Solution? solutionBySlug(String slug) {
+    for (final s in solutions) {
+      if (s.slug == slug) return s;
+    }
+    return null;
+  }
+
+  DemoEntry? demoBySlug(String slug) {
+    for (final d in demos) {
+      if (d.slug == slug) return d;
+    }
+    return null;
+  }
+
+  List<Solution> get homeSolutions =>
+      solutions.where((s) => s.showOnHome).toList();
+
+  List<DemoEntry> get featuredDemos =>
+      demos.where((d) => d.featured).toList();
 }
 
 class SiteInfo {

@@ -10,12 +10,14 @@ class SectionHeader extends StatelessWidget {
     required this.tag,
     required this.title,
     this.subtitle,
+    this.trailing,
   });
 
   final String? id;
   final String tag;
   final String title;
   final String? subtitle;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +38,22 @@ class SectionHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
-                  height: 1.1,
-                  fontSize: mobile ? 26 : null,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.5,
+                        height: 1.1,
+                        fontSize: mobile ? 26 : null,
+                      ),
                 ),
+              ),
+              if (trailing != null) trailing!,
+            ],
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 12),

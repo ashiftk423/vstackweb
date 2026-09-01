@@ -30,11 +30,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
   cupertino_icons: ^1.0.8
   google_fonts: ^6.2.1
   flutter_animate: ^4.5.2
   visibility_detector: ^0.4.0+2
   url_launcher: ^6.3.1
+  go_router: ^16.0.0
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +66,8 @@ flutter:
     - assets/logo/
     - assets/images/projects/
     - assets/images/team/
+    - assets/images/work/
+    - assets/products/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -1,6 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:vstackweb/models/demo.dart';
+import 'package:vstackweb/models/enquiry.dart';
+import 'package:vstackweb/models/product.dart';
+import 'package:vstackweb/models/solution.dart';
+import 'package:vstackweb/models/work_project.dart';
 import 'package:vstackweb/models/site_models.dart';
 
 /// Loads all website content from assets/content/site_content.json
@@ -37,6 +42,11 @@ class LocalContentLoader {
       seo: SeoSection.fromJson(json['seo'] as Map<String, dynamic>? ?? {}),
       careers: CareersSection.fromJson(json['careers'] as Map<String, dynamic>? ?? {}),
       contact: ContactInfo.fromJson(json['contact'] as Map<String, dynamic>? ?? {}),
+      products: parseList('products', Product.fromJson),
+      work: parseList('work', WorkProject.fromJson),
+      solutions: parseList('solutions', Solution.fromJson),
+      demos: parseList('demos', DemoEntry.fromJson),
+      enquiry: EnquiryConfig.fromJson(json['enquiry'] as Map<String, dynamic>? ?? {}),
     );
   }
 }
