@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:vstackweb/pages/demo_lab/ui/demo_sample_data.dart';
 import 'package:vstackweb/pages/demo_lab/widgets/demo_device_frame.dart';
-import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/widgets/scroll_reveal.dart';
 
 class ScrollStoryDemo extends StatelessWidget {
@@ -12,69 +12,57 @@ class ScrollStoryDemo extends StatelessWidget {
       type: DemoFrameType.browser,
       title: 'story',
       child: Container(
-        color: const Color(0xFF0A1020),
+        color: Colors.white,
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
             ScrollReveal(
               id: 'story-hero',
-              child: const Text(
-                'Scroll-driven storytelling',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
-              ),
+              offsetY: 24,
+              child: const Text('Built for businesses that scale', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
             ),
             const SizedBox(height: 8),
             ScrollReveal(
               id: 'story-sub',
-              delay: const Duration(milliseconds: 100),
-              child: const Text(
-                'Sections animate in as you scroll — perfect for landing pages and product launches.',
-                style: TextStyle(color: VStackColors.muted, height: 1.5),
-              ),
+              delay: const Duration(milliseconds: 80),
+              offsetY: 16,
+              child: Text('From Kerala startups to pan-India brands — see how we deliver.', style: TextStyle(color: Colors.grey.shade600, height: 1.5, fontSize: 14)),
             ),
-            const SizedBox(height: 32),
-            ...List.generate(4, (i) {
+            const SizedBox(height: 28),
+            ...List.generate(3, (i) {
+              final product = DemoSampleData.products[i];
               return Padding(
-                padding: const EdgeInsets.only(bottom: 24),
+                padding: const EdgeInsets.only(bottom: 20),
                 child: ScrollReveal(
-                  id: 'story-block-$i',
-                  delay: Duration(milliseconds: i * 80),
+                  id: 'story-$i',
+                  delay: Duration(milliseconds: i * 60),
                   slideFromLeft: i.isOdd,
+                  offsetY: 20,
                   child: Container(
-                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          VStackColors.accent.withValues(alpha: 0.08 + i * 0.04),
-                          VStackColors.surface,
-                        ],
-                      ),
+                      color: const Color(0xFFF8FAFC),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: VStackColors.border),
+                      border: Border.all(color: Colors.grey.shade200),
                     ),
                     child: Row(
                       children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: VStackColors.accent.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(child: Text('${i + 1}', style: const TextStyle(fontWeight: FontWeight.w800))),
+                        ClipRRect(
+                          borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
+                          child: Image.asset(product.image, width: 140, height: 120, fit: BoxFit.cover),
                         ),
-                        const SizedBox(width: 16),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Chapter ${i + 1}', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Staggered reveal with viewport detection — replays when scrolling back.',
-                                style: TextStyle(color: VStackColors.muted.withValues(alpha: 0.9), fontSize: 13),
-                              ),
-                            ],
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(['Design', 'Development', 'Launch'][i], style: TextStyle(color: Colors.blue.shade700, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1)),
+                                const SizedBox(height: 4),
+                                Text(['Pixel-perfect UI', 'Scalable architecture', 'Go-live in weeks'][i], style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                                const SizedBox(height: 4),
+                                Text(['Every screen crafted for conversion.', 'Clean code that grows with you.', 'From idea to production smoothly.'][i], style: TextStyle(color: Colors.grey.shade600, fontSize: 12, height: 1.4)),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -84,15 +72,43 @@ class ScrollStoryDemo extends StatelessWidget {
               );
             }),
             ScrollReveal(
-              id: 'story-cta',
-              child: Center(
-                child: FilledButton(onPressed: () {}, child: const Text('See it on your project')),
+              id: 'story-stats',
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [Colors.blue.shade700, Colors.blue.shade900]),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: const [
+                    _Stat(value: '50+', label: 'Projects'),
+                    _Stat(value: '98%', label: 'Satisfaction'),
+                    _Stat(value: '24/7', label: 'Support'),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 32),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _Stat extends StatelessWidget {
+  const _Stat({required this.value, required this.label});
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(value, style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w800)),
+        Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+      ],
     );
   }
 }

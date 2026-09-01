@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:vstackweb/pages/demo_lab/ui/demo_sample_data.dart';
+import 'package:vstackweb/pages/demo_lab/ui/demo_themes.dart';
 import 'package:vstackweb/pages/demo_lab/widgets/demo_device_frame.dart';
 import 'package:vstackweb/pages/demo_lab/widgets/demo_template_scaffold.dart';
-import 'package:vstackweb/theme/vstack_theme.dart';
 
 class AgencyPortfolioTemplate extends StatefulWidget {
   const AgencyPortfolioTemplate({super.key});
@@ -12,50 +13,68 @@ class AgencyPortfolioTemplate extends StatefulWidget {
 
 class _AgencyPortfolioTemplateState extends State<AgencyPortfolioTemplate> {
   String _filter = 'All';
-  static const _projects = [
-    ('Brand Refresh', 'Branding', Color(0xFF5B8CFF)),
-    ('E-commerce Launch', 'Web', Color(0xFF7C5CFF)),
-    ('Mobile Banking', 'App', Color(0xFF2DD4BF)),
-    ('Campaign Site', 'Marketing', Color(0xFFF59E0B)),
-    ('SaaS Dashboard', 'Product', Color(0xFFEC4899)),
-    ('3D Product Config', '3D', Color(0xFF6366F1)),
-  ];
 
   @override
   Widget build(BuildContext context) {
-    final filtered = _filter == 'All'
-        ? _projects
-        : _projects.where((p) => p.$2 == _filter).toList();
+    final projects = _filter == 'All'
+        ? DemoSampleData.portfolio
+        : DemoSampleData.portfolio.where((p) => p.category == _filter).toList();
 
     return DemoDeviceFrame(
       type: DemoFrameType.browser,
       title: 'portfolio',
       child: DemoTemplateScaffold(
-        brand: 'Studio V',
-        navItems: const ['Work', 'Services', 'About', 'Contact'],
+        theme: DemoThemes.saas(),
+        backgroundColor: Colors.white,
+        header: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Row(
+            children: [
+              const Text('Studio V', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20)),
+              const Spacer(),
+              const Text('Work', style: TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(width: 24),
+              Text('About', style: TextStyle(color: Colors.grey.shade600)),
+              const SizedBox(width: 24),
+              FilledButton(onPressed: () {}, child: const Text('Start a project')),
+            ],
+          ),
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Selected Work', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
-              const SizedBox(height: 16),
+              const Text('Selected Work', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
+              const SizedBox(height: 4),
+              Text('Branding, web, apps & 3D — crafted for growth.', style: TextStyle(color: Colors.grey.shade600)),
+              const SizedBox(height: 20),
               Wrap(
                 spacing: 8,
-                children: ['All', 'Branding', 'Web', 'App', '3D'].map((f) {
-                  final selected = _filter == f;
+                children: ['All', 'Branding', 'Web', 'App', '3D', 'Marketing'].map((f) {
+                  final sel = _filter == f;
                   return FilterChip(
                     label: Text(f),
-                    selected: selected,
+                    selected: sel,
                     onSelected: (_) => setState(() => _filter = f),
+                    selectedColor: Colors.black,
+                    labelStyle: TextStyle(color: sel ? Colors.white : null, fontWeight: FontWeight.w600),
+                    showCheckmark: false,
                   );
                 }).toList(),
               ),
               const SizedBox(height: 24),
-              Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                children: filtered.map((p) => _ProjectCard(title: p.$1, tag: p.$2, color: p.$3)).toList(),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 1.4,
+                ),
+                itemCount: projects.length,
+                itemBuilder: (_, i) => _ProjectTile(project: projects[i]),
               ),
             ],
           ),
@@ -65,18 +84,15 @@ class _AgencyPortfolioTemplateState extends State<AgencyPortfolioTemplate> {
   }
 }
 
-class _ProjectCard extends StatefulWidget {
-  const _ProjectCard({required this.title, required this.tag, required this.color});
-
-  final String title;
-  final String tag;
-  final Color color;
+class _ProjectTile extends StatefulWidget {
+  const _ProjectTile({required this.project});
+  final DemoPortfolioProject project;
 
   @override
-  State<_ProjectCard> createState() => _ProjectCardState();
+  State<_ProjectTile> createState() => _ProjectTileState();
 }
 
-class _ProjectCardState extends State<_ProjectCard> {
+class _ProjectTileState extends State<_ProjectTile> {
   bool _hover = false;
 
   @override
@@ -85,26 +101,33 @@ class _ProjectCardState extends State<_ProjectCard> {
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
       child: AnimatedScale(
-        scale: _hover ? 1.03 : 1,
-        duration: const Duration(milliseconds: 200),
-        child: Container(
-          width: 220,
-          height: 160,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [widget.color.withValues(alpha: 0.35), VStackColors.surface],
-              begin: Alignment.topLeft,
-            ),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: VStackColors.border),
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        scale: _hover ? 1.02 : 1,
+        duration: const Duration(milliseconds: 250),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            fit: StackFit.expand,
             children: [
-              Text(widget.tag.toUpperCase(), style: TextStyle(color: widget.color, fontSize: 10, letterSpacing: 1)),
-              const Spacer(),
-              Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+              Image.asset(widget.project.image, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade300)),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                color: _hover ? Colors.black.withValues(alpha: 0.55) : Colors.black.withValues(alpha: 0.15),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.9), borderRadius: BorderRadius.circular(4)),
+                        child: Text(widget.project.category.toUpperCase(), style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: 1)),
+                      ),
+                      const Spacer(),
+                      Text(widget.project.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16)),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),

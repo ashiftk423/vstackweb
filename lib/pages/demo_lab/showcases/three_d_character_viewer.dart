@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:vstackweb/pages/demo_lab/services/demo_3d_bridge.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 
@@ -76,15 +77,29 @@ class _ThreeDCharacterViewerState extends State<ThreeDCharacterViewer> {
           else if (_error != null)
             Center(child: Text(_error!, style: const TextStyle(color: VStackColors.muted))),
           if (_loading)
-            const Center(child: CircularProgressIndicator()),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(color: VStackColors.surface, borderRadius: BorderRadius.circular(16)),
+                  ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms, color: VStackColors.accent.withValues(alpha: 0.1)),
+                  const SizedBox(height: 16),
+                  const Text('Loading 3D model…', style: TextStyle(color: VStackColors.muted, fontSize: 13)),
+                ],
+              ),
+            ),
           if (widget.overlay != null)
             Positioned(left: 16, bottom: 16, right: 16, child: widget.overlay!),
-          const Positioned(
+          Positioned(
             top: 12,
             right: 12,
-            child: Chip(
-              label: Text('Drag to orbit • Scroll to zoom', style: TextStyle(fontSize: 10)),
-              visualDensity: VisualDensity.compact,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(20)),
+              child: const Text('Drag to orbit • Scroll to zoom', style: TextStyle(color: Colors.white, fontSize: 10)),
             ),
           ),
         ],
