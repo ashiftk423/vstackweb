@@ -152,3 +152,46 @@ class PageSection extends StatelessWidget {
     );
   }
 }
+
+/// Edge-to-edge Instagram-style works grid (uses full screen width).
+class IgWorksGrid extends StatelessWidget {
+  const IgWorksGrid({
+    super.key,
+    required this.itemCount,
+    required this.itemBuilder,
+    this.crossAxisCount = 3,
+    this.spacing = 2,
+  });
+
+  final int itemCount;
+  final Widget Function(BuildContext context, int index) itemBuilder;
+  final int crossAxisCount;
+  final double spacing;
+
+  @override
+  Widget build(BuildContext context) {
+    final screenW = MediaQuery.sizeOf(context).width;
+    final cols = crossAxisCount;
+    final cellW = ((screenW - (cols - 1) * spacing) / cols).floorToDouble();
+    final usedW = cellW * cols + spacing * (cols - 1);
+    final leftover = screenW - usedW;
+
+    return SizedBox(
+      width: screenW,
+      child: Padding(
+        // Absorb rounding leftover so the grid stays flush (no left-only gap).
+        padding: EdgeInsets.only(left: leftover / 2, right: leftover / 2),
+        child: Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          children: List.generate(itemCount, (i) {
+            return SizedBox(
+              width: cellW,
+              child: itemBuilder(context, i),
+            );
+          }),
+        ),
+      ),
+    );
+  }
+}
