@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:vstackweb/app/site_content_scope.dart';
-import 'package:vstackweb/models/work_project.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/widgets/cta_section.dart';
 import 'package:vstackweb/widgets/layout_widgets.dart';
+import 'package:vstackweb/widgets/page_back_link.dart';
 import 'package:vstackweb/widgets/page_hero.dart';
 import 'package:vstackweb/widgets/page_scroll.dart';
 
@@ -24,6 +23,7 @@ class WorkDetailPage extends StatelessWidget {
     return PageScroll(
       child: Column(
         children: [
+          const PageBackLink(label: 'Back to Our Work', route: '/work'),
           PageHero(
             compact: true,
             badge: project.category,

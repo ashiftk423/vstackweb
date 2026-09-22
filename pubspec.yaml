@@ -43,6 +43,7 @@ dependencies:
   qr: ^3.0.2
   pdf: ^3.11.3
   archive: ^4.0.7
+  video_player: ^2.10.0
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +73,8 @@ flutter:
     - assets/images/projects/
     - assets/images/team/
     - assets/images/work/
+    - assets/images/work/digital-marketing/
+    - assets/videos/work/digital-marketing/
     - assets/products/
     - assets/tools/
     - assets/demos/previews/

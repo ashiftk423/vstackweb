@@ -4,9 +4,11 @@ import 'package:vstackweb/app/site_content_scope.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/widgets/cta_section.dart';
 import 'package:vstackweb/widgets/layout_widgets.dart';
+import 'package:vstackweb/widgets/page_back_link.dart';
 import 'package:vstackweb/widgets/page_hero.dart';
 import 'package:vstackweb/widgets/page_scroll.dart';
 import 'package:vstackweb/widgets/scroll_reveal.dart';
+import 'package:vstackweb/widgets/solution_work_card.dart';
 
 class SolutionDetailPage extends StatelessWidget {
   const SolutionDetailPage({super.key, required this.slug});
@@ -21,9 +23,13 @@ class SolutionDetailPage extends StatelessWidget {
       return const Center(child: Text('Solution not found'));
     }
 
+    final worksIntro = solution.worksIntro ??
+        'Posts, reels, and campaigns we are proud of.';
+
     return PageScroll(
       child: Column(
         children: [
+          const PageBackLink(label: 'Back to all Solutions', route: '/solutions'),
           PageHero(
             compact: true,
             badge: 'Solution',
@@ -51,6 +57,52 @@ class SolutionDetailPage extends StatelessWidget {
               ),
             ),
           ),
+          if (solution.differentiators.isNotEmpty)
+            PageSection(
+              top: VStackSpacing.lg,
+              child: ScrollReveal(
+                id: 'differentiators-$slug',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      solution.differentiatorsTitle,
+                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+                    ),
+                    const SizedBox(height: VStackSpacing.sm),
+                    const Text(
+                      'We are not a typical “post every day” digital marketing team.',
+                      style: TextStyle(color: VStackColors.muted, fontSize: 15, height: 1.5),
+                    ),
+                    const SizedBox(height: VStackSpacing.lg),
+                    ResponsiveGrid(
+                      itemCount: solution.differentiators.length,
+                      desktopColumns: 2,
+                      tabletColumns: 2,
+                      itemBuilder: (context, index) {
+                        final d = solution.differentiators[index];
+                        return VStackCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                d.title,
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                              ),
+                              const SizedBox(height: VStackSpacing.sm),
+                              Text(
+                                d.body,
+                                style: const TextStyle(color: VStackColors.muted, height: 1.5, fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
           PageSection(
             top: VStackSpacing.lg,
             child: Column(
@@ -62,6 +114,40 @@ class SolutionDetailPage extends StatelessWidget {
               ],
             ),
           ),
+          if (solution.works.isNotEmpty)
+            PageSection(
+              top: VStackSpacing.lg,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Latest & favorite works',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: VStackSpacing.sm),
+                  Text(
+                    worksIntro,
+                    style: const TextStyle(color: VStackColors.muted, fontSize: 15, height: 1.5),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Cards load as you scroll — tap to open, swipe for next.',
+                    style: TextStyle(color: VStackColors.muted, fontSize: 12),
+                  ),
+                  const SizedBox(height: VStackSpacing.lg),
+                  ResponsiveGrid(
+                    itemCount: solution.works.length,
+                    desktopColumns: 3,
+                    tabletColumns: 2,
+                    itemBuilder: (context, index) => SolutionWorkCard(
+                      work: solution.works[index],
+                      works: solution.works,
+                      index: index,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           PageSection(
             top: VStackSpacing.lg,
             child: Column(
@@ -104,8 +190,22 @@ class SolutionDetailPage extends StatelessWidget {
   List<(String, String)> _faqsFor(String slug) {
     return switch (slug) {
       'digital-marketing' => [
-        ('Do you manage social media accounts?', 'Yes — content planning, posting, reels, and engagement across platforms.'),
-        ('Can you run paid ad campaigns?', 'We manage Meta and Google ad campaigns with strategy, creative, and optimization.'),
+        (
+          'Do you only do social media and reels?',
+          'No. Creative is one part of the system. We lead with business strategy, validation, scripting & shooting with purpose, digital campaigns, and offline activation — not just posting.',
+        ),
+        (
+          'Do you handle offline / street / event marketing?',
+          'Yes. Our offline marketing work includes creative ads in walking areas, events, and local programs — coordinated with your online campaigns.',
+        ),
+        (
+          'Do you help validate business, product, or content before launch?',
+          'Yes. We validate the business offer, product positioning, and content/message before heavy spend — so campaigns are built on what actually converts.',
+        ),
+        (
+          'Can you still run Meta and Google ads?',
+          'Yes — Meta, Google, SEO, and social sit inside the same strategy as production and offline activation.',
+        ),
       ],
       'cctv-security' => [
         ('Do you provide installation and support?', 'Yes — site survey, installation, configuration, and ongoing maintenance.'),

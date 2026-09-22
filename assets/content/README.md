@@ -48,6 +48,26 @@ Copy this block into the `"projects"` array (change `id` to something unique):
 - **`searchAliases`**: name spellings people might search (helps Google find them)
 - After adding a member, also update **`web/team.html`** and the Person list in **`web/index.html`** so search engines index the new name + role. Then push to GitHub.
 
+## Add a Digital Marketing work (posts / reels)
+
+1. Put **images** (posts + Instagram insight screenshots) in `assets/images/work/digital-marketing/`
+2. Put **videos** in `assets/videos/work/digital-marketing/`
+3. Add an entry to `"works"` on the `digital-marketing` solution in `site_content.json`:
+
+```json
+{
+  "id": "brand-x-reels",
+  "title": "Brand X — Reels",
+  "mediaType": "video",
+  "media": "assets/videos/work/digital-marketing/brand-x-reel.mp4",
+  "description": "Optional campaign story — omit or \"\" to hide.",
+  "insightImage": "assets/images/work/digital-marketing/brand-x-insights.png"
+}
+```
+
+- **`description`** and **`insightImage`** are optional. If both are empty, the card has no “More info” button.
+- See also `assets/images/work/digital-marketing/README.md`
+
 ## Search hooks (misspellings)
 
 Hero and SEO use phrases like **We Stack Your Business**, **We Stack**, **V Stack**, **VStack India** so clients who mistype the brand still find you.

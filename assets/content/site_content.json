@@ -60,7 +60,7 @@
       "id": "digital-marketing",
       "sortOrder": 6,
       "title": "Digital Marketing & Brand Growth",
-      "description": "Result-driven digital marketing strategies that strengthen your brand and online presence."
+      "description": "Business-led marketing — strategy, validation, online & offline campaigns, scripting and shooting. Not just posting."
     },
     {
       "id": "tech-support",
@@ -253,17 +253,184 @@
       "sortOrder": 1,
       "slug": "digital-marketing",
       "title": "Digital Marketing",
-      "shortDescription": "Social media, content, branding, advertising and growth.",
-      "heroTitle": "Grow your brand online",
-      "heroSubtitle": "Social media, content creation, Meta ads, SEO, and campaigns that drive real business growth.",
-      "problem": "Great products fail when nobody knows about them. Random posting doesn't build a brand.",
-      "solutionText": "VSTACK delivers strategy-led digital marketing — content, social media, ads, and optimization.",
-      "features": ["Social media management", "Content & reels", "Meta & Google ads", "Branding", "SEO", "Campaign strategy"],
-      "process": ["Strategy", "Content", "Campaign", "Optimization", "Growth"],
+      "shortDescription": "Business-led marketing: strategy, validation, online & offline activation — not just posts and reels.",
+      "heroTitle": "Marketing that grows the business",
+      "heroSubtitle": "We are not just a content team. VSTACK builds full marketing systems — strategy, business & product validation, scripting & shooting, digital campaigns, and offline activation in streets, events, and local programs.",
+      "problem": "Feeds fill up while sales stay flat. Random posting, unvalidated messages, and one-channel “social media” teams waste budget. Great products still fail when marketing is treated as photos and reels only.",
+      "solutionText": "VSTACK is a business solutions partner. We validate your offer, product, and content first — then script, shoot, and activate online and offline so every creative serves a real growth goal. Digital ads, SEO, and social sit alongside street creatives, events, and local programs — one strategy, not a siloed agency.",
+      "features": [
+        "Business & product validation",
+        "Content & message validation",
+        "Scripting & professional shooting",
+        "Social, Meta & Google campaigns",
+        "Offline / street & event marketing",
+        "Brand & full campaign strategy"
+      ],
+      "process": [
+        "Validate business, product & message",
+        "Strategy & campaign plan",
+        "Script & shoot",
+        "Activate online + offline",
+        "Optimize & grow"
+      ],
       "ctaLabel": "Talk to Our Marketing Team",
       "ctaRoute": "/start-project?service=digital-marketing",
       "icon": "campaign",
-      "homeCardDescription": "Social media, content, branding, advertising and growth."
+      "homeCardDescription": "Strategy, validation, online & offline campaigns — not just posts and reels.",
+      "differentiatorsTitle": "Why we're different",
+      "differentiators": [
+        {
+          "title": "Business-first, not post-first",
+          "body": "We validate the business, product, and message before you spend on ads or content — so campaigns sell what people actually need."
+        },
+        {
+          "title": "Scripting & production with purpose",
+          "body": "Videos and photos are planned around a campaign goal. Scripting and shooting support strategy — they are not the whole service."
+        },
+        {
+          "title": "Online + offline activation",
+          "body": "Meta, Google, SEO, and social — plus an offline marketing team for creative ads in walking areas, events, and local programs."
+        },
+        {
+          "title": "One partner for growth",
+          "body": "Marketing sits next to VSTACK software, hardware, and business solutions — not a siloed social-media shop that disappears after posting."
+        }
+      ],
+      "worksIntro": "Campaign creatives from real client work — built inside strategy, not as standalone posts.",
+      "works": [
+        {
+          "id": "labhonitta-onam",
+          "title": "Labhonitta — Onam campaign",
+          "mediaType": "video",
+          "media": "assets/videos/work/digital-marketing/labhonitta-onam.mp4"
+        },
+        {
+          "id": "labhonitta-nandana-nandu-reel",
+          "title": "Labhonitta — Nandana Nandu reel",
+          "mediaType": "video",
+          "media": "assets/videos/work/digital-marketing/labhonitta-nandana-nandu-reel.mp4"
+        },
+        {
+          "id": "labhonitta-testimonial",
+          "title": "Labhonitta — Testimonial",
+          "mediaType": "video",
+          "media": "assets/videos/work/digital-marketing/labhonitta-testimonial.mp4"
+        },
+        {
+          "id": "labhonitta-re-edited",
+          "title": "Labhonitta — Re-edited reel",
+          "mediaType": "video",
+          "media": "assets/videos/work/digital-marketing/labhonitta-re-edited.mp4"
+        },
+        {
+          "id": "onam-special-looks",
+          "title": "Onam Special Looks",
+          "mediaType": "video",
+          "media": "assets/videos/work/digital-marketing/onam-special-looks.mp4"
+        },
+        {
+          "id": "exfoliation",
+          "title": "Exfoliation reel",
+          "mediaType": "video",
+          "media": "assets/videos/work/digital-marketing/exfoliation.mp4"
+        },
+        {
+          "id": "wa-video-01",
+          "title": "Client reel 01",
+          "mediaType": "video",
+          "media": "assets/videos/work/digital-marketing/wa-video-01.mp4"
+        },
+        {
+          "id": "wa-video-02",
+          "title": "Client reel 02",
+          "mediaType": "video",
+          "media": "assets/videos/work/digital-marketing/wa-video-02.mp4"
+        },
+        {
+          "id": "wa-video-03",
+          "title": "Client reel 03",
+          "mediaType": "video",
+          "media": "assets/videos/work/digital-marketing/wa-video-03.mp4"
+        },
+        {
+          "id": "wa-video-04",
+          "title": "Client reel 04",
+          "mediaType": "video",
+          "media": "assets/videos/work/digital-marketing/wa-video-04.mp4"
+        },
+        {
+          "id": "wa-video-05",
+          "title": "Client reel 05",
+          "mediaType": "video",
+          "media": "assets/videos/work/digital-marketing/wa-video-05.mp4"
+        },
+        {
+          "id": "labhonitta-brand",
+          "title": "Labhonitta — Brand post",
+          "mediaType": "image",
+          "media": "assets/images/work/digital-marketing/labhonitta.png"
+        },
+        {
+          "id": "post-idea",
+          "title": "Post idea",
+          "mediaType": "image",
+          "media": "assets/images/work/digital-marketing/post-idea.png"
+        },
+        {
+          "id": "post-1",
+          "title": "Campaign post 01",
+          "mediaType": "image",
+          "media": "assets/images/work/digital-marketing/post-1.jpeg"
+        },
+        {
+          "id": "post-2",
+          "title": "Campaign post 02",
+          "mediaType": "image",
+          "media": "assets/images/work/digital-marketing/post-2.jpeg"
+        },
+        {
+          "id": "post-3",
+          "title": "Campaign post 03",
+          "mediaType": "image",
+          "media": "assets/images/work/digital-marketing/post-3.jpeg"
+        },
+        {
+          "id": "post-4",
+          "title": "Campaign post 04",
+          "mediaType": "image",
+          "media": "assets/images/work/digital-marketing/post-4.jpeg"
+        },
+        {
+          "id": "wa-image-01",
+          "title": "Social post 01",
+          "mediaType": "image",
+          "media": "assets/images/work/digital-marketing/wa-image-01.jpeg"
+        },
+        {
+          "id": "wa-image-02",
+          "title": "Social post 02",
+          "mediaType": "image",
+          "media": "assets/images/work/digital-marketing/wa-image-02.jpeg"
+        },
+        {
+          "id": "wa-image-03",
+          "title": "Social post 03",
+          "mediaType": "image",
+          "media": "assets/images/work/digital-marketing/wa-image-03.jpeg"
+        },
+        {
+          "id": "wa-image-04",
+          "title": "Social post 04",
+          "mediaType": "image",
+          "media": "assets/images/work/digital-marketing/wa-image-04.jpeg"
+        },
+        {
+          "id": "wa-image-05",
+          "title": "Social post 05",
+          "mediaType": "image",
+          "media": "assets/images/work/digital-marketing/wa-image-05.jpeg"
+        }
+      ]
     },
     {
       "id": "hardware-it",

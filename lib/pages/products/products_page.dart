@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vstackweb/app/site_content_scope.dart';
 import 'package:vstackweb/widgets/layout_widgets.dart';
+import 'package:vstackweb/widgets/page_back_link.dart';
 import 'package:vstackweb/widgets/page_hero.dart';
 import 'package:vstackweb/widgets/page_scroll.dart';
 import 'package:vstackweb/widgets/product_card.dart';
@@ -14,6 +15,7 @@ class ProductsPage extends StatelessWidget {
     return PageScroll(
       child: Column(
         children: [
+          const PageBackLink(label: 'Back to Home', route: '/'),
           const PageHero(
             compact: true,
             badge: 'Products',
