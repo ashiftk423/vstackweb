@@ -5,6 +5,7 @@ abstract final class ToolsRegistry {
   static const all = <ToolDefinition>[
     qrCodeGenerator,
     imageCompressor,
+    videoCompressor,
     imageResizer,
     imageConverter,
     pdfToolkit,
@@ -104,13 +105,48 @@ abstract final class ToolsRegistry {
           'Compress JPG, PNG and WebP images online. Reduce file size with quality control. 100% browser-side — your images never leave your device.',
       h1: 'Image Compressor',
     ),
-    relatedToolIds: ['image-resizer', 'image-converter'],
+    relatedToolIds: ['image-resizer', 'image-converter', 'video-compressor'],
     tags: ['image'],
     howItWorks: [
       'Upload one or more images',
       'Adjust quality slider',
       'See size savings instantly',
       'Download compressed files',
+    ],
+    contextCtaLabel: 'Need professional digital marketing?',
+    contextCtaRoute: '/solutions/digital-marketing',
+  );
+
+  static const videoCompressor = ToolDefinition(
+    id: 'video-compressor',
+    name: 'Video Compressor',
+    slug: 'video-compressor',
+    shortDescription: 'Compress MP4 and other videos in your browser — no upload to a server.',
+    description:
+        'Reduce video file size locally with ffmpeg.wasm. Adjust quality, compress reels and clips up to 100 MB, and download H.264 MP4. Processing stays on your device.',
+    category: ToolCategory.popular,
+    icon: Icons.video_settings_rounded,
+    keywords: ['compress', 'video', 'mp4', 'reduce size', 'ffmpeg', 'reel', 'optimize'],
+    route: '/tools/video-compressor',
+    isPopular: true,
+    seo: ToolSeoMeta(
+      title: 'Free Video Compressor Online | VSTACK',
+      description:
+          'Compress MP4, WebM and MOV videos online in your browser. Reduce file size with quality control. Privacy-first — your video never leaves your device.',
+      h1: 'Video Compressor',
+      faq: [
+        ('Is video compression free?', 'Yes. This tool is free with no login required.'),
+        ('Are my videos uploaded?', 'No. Compression runs locally in your browser via ffmpeg.wasm.'),
+        ('What formats are supported?', 'MP4, WebM, MOV, MKV and AVI input; output is H.264/AAC MP4.'),
+      ],
+    ),
+    relatedToolIds: ['image-compressor', 'pdf'],
+    tags: ['video', 'media'],
+    howItWorks: [
+      'Upload a video (max 100 MB)',
+      'Choose quality',
+      'Wait while your browser compresses the file',
+      'Download the compressed MP4',
     ],
     contextCtaLabel: 'Need professional digital marketing?',
     contextCtaRoute: '/solutions/digital-marketing',

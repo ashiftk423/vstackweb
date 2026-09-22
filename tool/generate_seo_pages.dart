@@ -11,6 +11,10 @@ void main() {
   final seo = data['seo'] as Map<String, dynamic>;
   final locations = (seo['locations'] as List).cast<Map<String, dynamic>>();
 
+  Directory('web/solutions').createSync(recursive: true);
+  Directory('web/products').createSync(recursive: true);
+  Directory('web/locations').createSync(recursive: true);
+
   for (final s in solutions) {
     writeSolutionPage(s);
   }
@@ -19,12 +23,35 @@ void main() {
   }
   for (final loc in locations) {
     final name = loc['name'] as String;
-    if (name == 'Thrissur' || name == 'Kochi') {
-      writeCityPage(name.toLowerCase(), loc);
-    }
+    final slug = switch (name) {
+      'Thrissur' => 'thrissur',
+      'Kochi' => 'kochi',
+      'Ernakulam' => 'ernakulam',
+      _ => null,
+    };
+    if (slug != null) writeCityPage(slug, loc);
   }
-  print('Generated ${solutions.length} solution, ${products.length} product, and city SEO pages.');
+
+  writeToolRedirectShells();
+  writeToolsHubSeo();
+
+  // Remove directory index that hijacks /tools Flutter route.
+  final toolsIndex = File('web/tools/index.html');
+  if (toolsIndex.existsSync()) {
+    toolsIndex.deleteSync();
+    print('Deleted web/tools/index.html (was shadowing /tools SPA).');
+  }
+
+  print(
+    'Generated ${solutions.length} solution, ${products.length} product, '
+    'city SEO pages, and tool redirect shells.',
+  );
 }
+
+String _redirectHead(String cleanPath) => '''
+  <link rel="canonical" href="https://vstackbusinesssolutions.com$cleanPath">
+  <meta http-equiv="refresh" content="0;url=$cleanPath">
+  <script>location.replace('$cleanPath');</script>''';
 
 void writeSolutionPage(Map<String, dynamic> s) {
   final slug = s['slug'] as String;
@@ -32,22 +59,26 @@ void writeSolutionPage(Map<String, dynamic> s) {
   final desc = s['shortDescription'] as String;
   final hero = s['heroSubtitle'] as String;
   final features = (s['features'] as List).cast<String>();
-  final canonical = 'https://vstackbusinesssolutions.com/solutions/$slug';
+  final cleanPath = '/solutions/$slug';
+  final canonical = 'https://vstackbusinesssolutions.com$cleanPath';
   final path = 'web/solutions/$slug.html';
-  final featureLis = features.map((f) => '        <li>$f</li>').join('\n');
+  final featureLis = features.map((f) => '        <li>${_escapeHtml(f)}</li>').join('\n');
   final schemaDesc = _escapeJson(hero);
+  final areaServed = slug == 'digital-marketing'
+      ? '["Thrissur", "Kochi", "Ernakulam", "Kerala", "India"]'
+      : '["Thrissur", "Kochi", "Ernakulam", "Kerala", "India"]';
 
   File(path).writeAsStringSync('''<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>$title | VStack Business Solutions — Kerala &amp; India</title>
-  <meta name="description" content="${_escapeAttr('$desc — VStack Business Solutions, Kerala & India. Contact: vstackitsolutions@gmail.com · +91 81568 25205')}">
+  <title>${_escapeHtml(title)} | VStack Business Solutions — Kerala &amp; India</title>
+  <meta name="description" content="${_escapeAttr('$desc — VStack Business Solutions, Thrissur, Ernakulam, Kochi & Kerala. Contact: vstackitsolutions@gmail.com · +91 81568 25205')}">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="$canonical">
+${_redirectHead(cleanPath)}
   <link rel="icon" type="image/png" href="../favicon.png"/>
-  <meta property="og:title" content="$title | VStack Business Solutions">
+  <meta property="og:title" content="${_escapeAttr('$title | VStack Business Solutions')}">
   <meta property="og:description" content="${_escapeAttr(desc)}">
   <meta property="og:url" content="$canonical">
   <style>
@@ -76,23 +107,23 @@ void writeSolutionPage(Map<String, dynamic> s) {
       "name": "VStack Business Solutions",
       "url": "https://vstackbusinesssolutions.com/"
     },
-    "areaServed": ["Thrissur", "Kochi", "Kerala", "India"]
+    "areaServed": $areaServed
   }
   </script>
 </head>
 <body>
   <main>
-    <p class="nav"><a href="https://vstackbusinesssolutions.com/">Home</a> · <a href="../services.html">Services</a> · <a href="../faq.html">FAQ</a></p>
+    <p class="nav"><a href="/">Home</a> · <a href="/solutions">Solutions</a> · <a href="/contact">Contact</a></p>
     <p class="badge">Solution</p>
-    <h1>$title</h1>
-    <p class="lead">$hero</p>
+    <h1>${_escapeHtml(title)}</h1>
+    <p class="lead">${_escapeHtml(hero)}</p>
     <section>
       <ul>
 $featureLis
       </ul>
     </section>
-    <a class="cta" href="https://vstackbusinesssolutions.com/solutions/$slug">View $title on VStack →</a>
-    <a class="cta" href="https://vstackbusinesssolutions.com/start-project" style="margin-left:12px;background:#1E2A44;">Start a Project</a>
+    <p><a class="cta" href="$cleanPath">Continue to ${_escapeHtml(title)} →</a></p>
+    <p style="color:#9AA6C0;font-size:13px;">If you are not redirected automatically, use the button above.</p>
   </main>
 </body>
 </html>
@@ -105,21 +136,22 @@ void writeProductPage(Map<String, dynamic> p) {
   final desc = p['description'] as String;
   final tagline = p['tagline'] as String;
   final features = (p['features'] as List).cast<String>();
-  final canonical = 'https://vstackbusinesssolutions.com/products/$slug';
+  final cleanPath = '/products/$slug';
+  final canonical = 'https://vstackbusinesssolutions.com$cleanPath';
   final path = 'web/products/$slug.html';
-  final featureLis = features.map((f) => '        <li>$f</li>').join('\n');
+  final featureLis = features.map((f) => '        <li>${_escapeHtml(f)}</li>').join('\n');
 
   File(path).writeAsStringSync('''<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>$name — ${p['category']} | VStack Business Solutions</title>
+  <title>${_escapeHtml(name)} — ${_escapeHtml(p['category'] as String)} | VStack Business Solutions</title>
   <meta name="description" content="${_escapeAttr('$tagline $desc')}">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="$canonical">
+${_redirectHead(cleanPath)}
   <link rel="icon" type="image/png" href="../favicon.png"/>
-  <meta property="og:title" content="$name | VStack Business Solutions">
+  <meta property="og:title" content="${_escapeAttr('$name | VStack Business Solutions')}">
   <meta property="og:description" content="${_escapeAttr(tagline)}">
   <meta property="og:url" content="$canonical">
   <style>
@@ -149,14 +181,14 @@ void writeProductPage(Map<String, dynamic> p) {
 </head>
 <body>
   <main>
-    <p class="nav"><a href="https://vstackbusinesssolutions.com/">Home</a> · <a href="https://vstackbusinesssolutions.com/products">Products</a></p>
+    <p class="nav"><a href="/">Home</a> · <a href="/products">Products</a></p>
     <p class="badge">VStack Product</p>
-    <h1>$name</h1>
-    <p class="lead">$tagline</p>
-    <section><p style="color:#9AA6C0;margin:0 0 12px;">$desc</p><ul>
+    <h1>${_escapeHtml(name)}</h1>
+    <p class="lead">${_escapeHtml(tagline)}</p>
+    <section><p style="color:#9AA6C0;margin:0 0 12px;">${_escapeHtml(desc)}</p><ul>
 $featureLis
     </ul></section>
-    <a class="cta" href="https://vstackbusinesssolutions.com/products/$slug">View $name →</a>
+    <p><a class="cta" href="$cleanPath">Continue to ${_escapeHtml(name)} →</a></p>
   </main>
 </body>
 </html>
@@ -168,16 +200,18 @@ void writeCityPage(String slug, Map<String, dynamic> loc) {
   final region = loc['region'] as String;
   final highlights = (loc['highlights'] as List).cast<String>();
   final canonical = 'https://vstackbusinesssolutions.com/locations/$slug.html';
-  final lis = highlights.map((h) => '        <li>$h</li>').join('\n');
-  final titleName = name == 'Thrissur' ? 'Thrissur' : name;
+  final lis = highlights.map((h) => '        <li>${_escapeHtml(h)}</li>').join('\n');
+  final aliasNote = name == 'Ernakulam'
+      ? '<p class="lead">Ernakulam / Kochi metro — VStack serves shops, offices, and growing brands across Ernakulam district and Greater Kochi.</p>'
+      : '';
 
   File('web/locations/$slug.html').writeAsStringSync('''<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Best Software Company in $titleName | VStack Business Solutions</title>
-  <meta name="description" content="VStack Business Solutions — best software company in $titleName, $region. Custom software, billing, POS, Flutter apps, digital marketing, CCTV &amp; IT. vstackitsolutions@gmail.com · +91 81568 25205">
+  <title>Best Software &amp; Digital Marketing Company in ${_escapeHtml(name)} | VStack</title>
+  <meta name="description" content="VStack Business Solutions — affordable software, billing, POS, Flutter apps, and digital marketing in ${_escapeHtml(name)}, $region. Best local business technology partner. vstackitsolutions@gmail.com · +91 81568 25205">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="$canonical">
   <link rel="icon" type="image/png" href="../favicon.png"/>
@@ -191,38 +225,112 @@ void writeCityPage(String slug, Map<String, dynamic> loc) {
     .lead { color: #9AA6C0; margin-bottom: 24px; }
     section { background: #0E1424; border: 1px solid #1E2A44; border-radius: 16px; padding: 22px 24px; margin-bottom: 18px; }
     ul { margin: 0; padding-left: 20px; color: #9AA6C0; }
-    .cta { display: inline-block; margin-top: 20px; padding: 12px 20px; background: #3B6EF5; color: #fff; text-decoration: none; border-radius: 10px; font-weight: 600; }
+    .cta { display: inline-block; margin-top: 12px; margin-right: 12px; padding: 12px 20px; background: #3B6EF5; color: #fff; text-decoration: none; border-radius: 10px; font-weight: 600; }
     .nav { margin-bottom: 24px; font-size: 13px; color: #9AA6C0; }
   </style>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "VStack Business Solutions — $titleName",
-    "description": "Software company serving $titleName, $region",
+    "name": "VStack Business Solutions — ${_escapeJson(name)}",
+    "description": "Software and digital marketing company serving ${_escapeJson(name)}, $region",
     "url": "https://vstackbusinesssolutions.com/",
     "email": "vstackitsolutions@gmail.com",
     "telephone": "+918156825205",
-    "address": { "@type": "PostalAddress", "addressLocality": "$titleName", "addressRegion": "Kerala", "addressCountry": "IN" },
-    "areaServed": "$titleName"
+    "address": { "@type": "PostalAddress", "addressLocality": "${_escapeJson(name)}", "addressRegion": "Kerala", "addressCountry": "IN" },
+    "areaServed": "${_escapeJson(name)}"
   }
   </script>
 </head>
 <body>
   <main>
-    <p class="nav"><a href="https://vstackbusinesssolutions.com/">Home</a> · <a href="../locations.html">All locations</a> · <a href="../services.html">Services</a></p>
-    <p class="badge">$titleName · $region</p>
-    <h1>Best software company in $titleName</h1>
-    <p class="lead">VStack Business Solutions (We Stack) delivers affordable custom software, billing &amp; POS, Flutter apps, websites, digital marketing, hardware, and CCTV in $titleName and across Kerala.</p>
+    <p class="nav"><a href="/">Home</a> · <a href="/locations.html">All locations</a> · <a href="/solutions">Solutions</a> · <a href="/contact">Contact</a></p>
+    <p class="badge">${_escapeHtml(name)} · ${_escapeHtml(region)}</p>
+    <h1>Best software &amp; digital marketing in ${_escapeHtml(name)}</h1>
+    <p class="lead">VStack Business Solutions delivers affordable custom software, billing &amp; POS, Flutter apps, websites, business-led digital marketing, hardware, and CCTV in ${_escapeHtml(name)} and across Kerala.</p>
+    $aliasNote
     <section><ul>
 $lis
     </ul></section>
-    <a class="cta" href="https://vstackbusinesssolutions.com/contact">Contact VStack in $titleName →</a>
+    <a class="cta" href="/solutions/digital-marketing">Digital Marketing →</a>
+    <a class="cta" href="/contact">Contact VStack in ${_escapeHtml(name)} →</a>
   </main>
 </body>
 </html>
 ''');
 }
 
-String _escapeAttr(String s) => s.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
-String _escapeJson(String s) => s.replaceAll('\\', '\\\\').replaceAll('"', '\\"').replaceAll('\n', ' ');
+void writeToolsHubSeo() {
+  File('web/tools-hub-seo.html').writeAsStringSync('''<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Online Tools — QR, Image, PDF, Invoice &amp; More | VSTACK</title>
+  <meta name="description" content="Free browser-based tools from VSTACK: QR code generator, image compressor, PDF toolkit, invoice generator, GST calculator, UTM builder and more. Privacy-first — processed locally.">
+  <meta name="robots" content="index, follow">
+${_redirectHead('/tools')}
+  <link rel="icon" type="image/png" href="favicon.png"/>
+</head>
+<body style="font-family:system-ui,sans-serif;background:#06080F;color:#E8EEF8;padding:40px 20px;">
+  <main style="max-width:720px;margin:0 auto;">
+    <h1>Free Online Tools — VSTACK</h1>
+    <p>Redirecting to the full tools hub…</p>
+    <p><a href="/tools" style="color:#5B8CFF;">Open VSTACK Tools →</a></p>
+  </main>
+</body>
+</html>
+''');
+}
+
+void writeToolRedirectShells() {
+  Directory('web/tools').createSync(recursive: true);
+  final tools = <(String, String, String)>[
+    ('qr-code-generator', 'QR Code Generator', 'Create QR codes online for free.'),
+    ('image-compressor', 'Image Compressor', 'Compress images in your browser.'),
+    ('video-compressor', 'Video Compressor', 'Compress videos in your browser with ffmpeg.wasm.'),
+    ('image-resizer', 'Image Resizer', 'Resize images online.'),
+    ('image-converter', 'Image Converter', 'Convert image formats online.'),
+    ('pdf', 'PDF Toolkit', 'Merge, split, and convert PDFs locally.'),
+    ('invoice-generator', 'Invoice Generator', 'Create professional invoices with GST support.'),
+    ('gst-calculator', 'GST Calculator', 'Calculate GST amounts quickly.'),
+    ('profit-margin-calculator', 'Profit & Margin Calculator', 'Calculate profit and margins.'),
+    ('utm-builder', 'UTM Builder', 'Build UTM campaign URLs.'),
+    ('device-mockup', 'Device Mockup Generator', 'Create device mockups.'),
+    ('favicon-generator', 'Favicon Generator', 'Generate favicons from your logo.'),
+    ('json-formatter', 'JSON Formatter', 'Format and validate JSON.'),
+  ];
+
+  for (final t in tools) {
+    final (slug, name, desc) = t;
+    final cleanPath = '/tools/$slug';
+    File('web/tools/$slug.html').writeAsStringSync('''<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>$name | VSTACK</title>
+  <meta name="description" content="$desc">
+  <meta name="robots" content="index, follow">
+${_redirectHead(cleanPath)}
+  <link rel="icon" type="image/png" href="../favicon.png"/>
+</head>
+<body style="font-family:system-ui,sans-serif;background:#06080F;color:#E8EEF8;padding:40px 20px;">
+  <main style="max-width:720px;margin:0 auto;">
+    <h1>$name</h1>
+    <p>$desc</p>
+    <p><a href="$cleanPath" style="color:#5B8CFF;">Continue to tool →</a></p>
+    <p><a href="/tools" style="color:#5B8CFF;">Browse all VSTACK tools →</a></p>
+  </main>
+</body>
+</html>
+''');
+  }
+}
+
+String _escapeAttr(String s) =>
+    s.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;');
+String _escapeHtml(String s) =>
+    s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+String _escapeJson(String s) =>
+    s.replaceAll('\\', '\\\\').replaceAll('"', '\\"').replaceAll('\n', ' ');

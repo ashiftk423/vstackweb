@@ -12,6 +12,8 @@ import 'package:vstackweb/features/tools/pages/gst_calculator_page.dart'
     deferred as gst_calculator;
 import 'package:vstackweb/features/tools/pages/image_compressor_page.dart'
     deferred as image_compressor;
+import 'package:vstackweb/features/tools/pages/video_compressor_page.dart'
+    deferred as video_compressor;
 import 'package:vstackweb/features/tools/pages/image_converter_page.dart'
     deferred as image_converter;
 import 'package:vstackweb/features/tools/pages/image_resizer_page.dart'
@@ -73,6 +75,10 @@ class _DeferredToolPageState extends State<DeferredToolPage> {
         'image-compressor' => await _loadSimple(
             image_compressor.loadLibrary,
             () => image_compressor.ImageCompressorPage(),
+          ),
+        'video-compressor' => await _loadSimple(
+            video_compressor.loadLibrary,
+            () => video_compressor.VideoCompressorPage(),
           ),
         'image-resizer' => await _loadSimple(
             image_resizer.loadLibrary,

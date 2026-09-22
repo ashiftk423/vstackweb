@@ -32,13 +32,15 @@
   <link rel="alternate" type="text/plain" href="llms.txt" title="LLM context for AI assistants">
 
   <!-- Google Analytics 4 — replace G-XXXXXXXXXX with your Measurement ID from analytics.google.com -->
+  <!-- Keep the ID in sync with SiteSeoDefaults.gaMeasurementId in lib/services/site_seo_resolver.dart -->
   <!-- See docs/SEO_ANALYTICS_SETUP.md -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX');
+    // Initial pageview is sent by the Flutter SPA (SiteSeoListener) so routes count correctly.
+    gtag('config', 'G-XXXXXXXXXX', { send_page_view: false });
   </script>
 
   <!-- Open Graph -->
@@ -115,7 +117,7 @@
         "alternateName": ["Ashif T Saheer", "Ashif Saheer T", "Ashif", "Saheer", "Ashif Saher"],
         "jobTitle": "Co-Founder · Programming Department Head",
         "description": "Ashif Saheer is Co-Founder and Programming Department Head at VStack Business Solutions. He leads software development and technical delivery.",
-        "url": "https://vstackbusinesssolutions.com/#team",
+        "url": "https://vstackbusinesssolutions.com/about",
         "worksFor": { "@type": "Organization", "name": "VStack Business Solutions" }
       },
       {
@@ -124,7 +126,7 @@
         "alternateName": ["Abhinav", "Govind"],
         "jobTitle": "Co-Founder · Service & Hardware Department Head",
         "description": "Abhinav Govind is Co-Founder and Service & Hardware Department Head at VStack Business Solutions.",
-        "url": "https://vstackbusinesssolutions.com/#team",
+        "url": "https://vstackbusinesssolutions.com/about",
         "worksFor": { "@type": "Organization", "name": "VStack Business Solutions" }
       },
       {
@@ -133,7 +135,7 @@
         "alternateName": ["Gokul", "Krishna"],
         "jobTitle": "Co-Founder · Marketing & Hardware Department Head",
         "description": "Gokul Krishna is Co-Founder and Marketing & Hardware Department Head at VStack Business Solutions.",
-        "url": "https://vstackbusinesssolutions.com/#team",
+        "url": "https://vstackbusinesssolutions.com/about",
         "worksFor": { "@type": "Organization", "name": "VStack Business Solutions" }
       },
       {
@@ -142,7 +144,7 @@
         "alternateName": ["Gayathri", "Gayathri Rajan"],
         "jobTitle": "Frontend Developer",
         "description": "Gayathri Mini Rajan is a Frontend Developer at VStack Business Solutions.",
-        "url": "https://vstackbusinesssolutions.com/#team",
+        "url": "https://vstackbusinesssolutions.com/about",
         "worksFor": { "@type": "Organization", "name": "VStack Business Solutions" }
       },
       {
@@ -151,7 +153,7 @@
         "alternateName": ["Edwin", "Edwin John", "Edwin Reji"],
         "jobTitle": "Backend Developer",
         "description": "Edwin Reji John is a Backend Developer at VStack Business Solutions.",
-        "url": "https://vstackbusinesssolutions.com/#team",
+        "url": "https://vstackbusinesssolutions.com/about",
         "worksFor": { "@type": "Organization", "name": "VStack Business Solutions" }
       },
       {
@@ -160,7 +162,7 @@
         "alternateName": ["Rizwan Azeez", "Rizwan", "Abdul Azeez"],
         "jobTitle": "Frontend Developer · Flutter Specialist",
         "description": "Rizwan Abdul Azeez is a Frontend Developer and Flutter Specialist at VStack Business Solutions.",
-        "url": "https://vstackbusinesssolutions.com/#team",
+        "url": "https://vstackbusinesssolutions.com/about",
         "worksFor": { "@type": "Organization", "name": "VStack Business Solutions" }
       }
     ]
@@ -212,7 +214,7 @@
       <li>Custom billing &amp; POS software</li>
       <li>Complete business technology solutions</li>
     </ul>
-    <p>Location pages: <a href="locations.html">Software company in Thrissur, Kochi &amp; Kerala</a> · <a href="locations/thrissur.html">Thrissur</a> · <a href="locations/kochi.html">Kochi</a> · <a href="services.html">All services</a> · <a href="faq.html">FAQ</a> · <a href="llms.txt">Company facts for AI</a></p>
+    <p>Location pages: <a href="locations.html">Software company in Thrissur, Kochi, Ernakulam &amp; Kerala</a> · <a href="locations/thrissur.html">Thrissur</a> · <a href="locations/kochi.html">Kochi</a> · <a href="locations/ernakulam.html">Ernakulam</a> · <a href="services.html">All services</a> · <a href="faq.html">FAQ</a> · <a href="llms.txt">Company facts for AI</a></p>
 
     <h2>Business Solutions &amp; Digital Marketing</h2>
     <p>
@@ -237,7 +239,7 @@
     <h2>Demo Lab Showcase</h2>
     <p>
       VSTACK interactive showcases — temporarily unavailable while we polish the experience.
-      Browse our <a href="tools/index.html">free online tools</a> and <a href="services.html">services</a> in the meantime.
+      Browse our <a href="/tools">free online tools</a> and <a href="services.html">services</a> in the meantime.
     </p>
 
     <h2>Free Online Tools</h2>
@@ -245,7 +247,7 @@
       VSTACK Tools — free browser-based utilities for QR codes, image compression and resizing,
       PDF merge/split, invoice generation, GST calculator, UTM builder, JSON formatter, favicon generator and more.
       All tools process data locally in your browser for privacy.
-      <a href="tools/index.html">Browse all tools</a>.
+      <a href="/tools">Browse all tools</a>.
     </p>
 
     <h2>Contact VStack Business Solutions</h2>
@@ -259,17 +261,17 @@
     <p>
       VStack is hiring Flutter Developers, Frontend Developers, and Backend Developers in Kerala, India.
       Send your CV to <a href="mailto:vstackitsolutions@gmail.com">vstackitsolutions@gmail.com</a>.
-      <a href="careers.html">View careers &amp; vacancies</a> · <a href="https://vstackbusinesssolutions.com/#careers">Apply on main site</a>
+      <a href="careers.html">View careers &amp; vacancies</a> · <a href="https://vstackbusinesssolutions.com/careers">Apply on main site</a>
     </p>
 
     <h2>Leadership &amp; Team</h2>
     <ul>
-      <li><a href="#team"><strong>Ashif Saheer</strong> (also Ashif T Saheer) — Co-Founder · Programming Department Head at VStack Business Solutions.</a></li>
-      <li><a href="#team"><strong>Abhinav Govind</strong> — Co-Founder · Service &amp; Hardware Department Head at VStack Business Solutions.</a></li>
-      <li><a href="#team"><strong>Gokul Krishna</strong> — Co-Founder · Marketing &amp; Hardware Department Head at VStack Business Solutions.</a></li>
-      <li><a href="#team"><strong>Gayathri Mini Rajan</strong> — Frontend Developer at VStack Business Solutions.</a></li>
-      <li><a href="#team"><strong>Edwin Reji John</strong> — Backend Developer at VStack Business Solutions.</a></li>
-      <li><a href="#team"><strong>Rizwan Abdul Azeez</strong> — Frontend Developer · Flutter Specialist at VStack Business Solutions.</a></li>
+      <li><a href="/about"><strong>Ashif Saheer</strong> (also Ashif T Saheer) — Co-Founder · Programming Department Head at VStack Business Solutions.</a></li>
+      <li><a href="/about"><strong>Abhinav Govind</strong> — Co-Founder · Service &amp; Hardware Department Head at VStack Business Solutions.</a></li>
+      <li><a href="/about"><strong>Gokul Krishna</strong> — Co-Founder · Marketing &amp; Hardware Department Head at VStack Business Solutions.</a></li>
+      <li><a href="/about"><strong>Gayathri Mini Rajan</strong> — Frontend Developer at VStack Business Solutions.</a></li>
+      <li><a href="/about"><strong>Edwin Reji John</strong> — Backend Developer at VStack Business Solutions.</a></li>
+      <li><a href="/about"><strong>Rizwan Abdul Azeez</strong> — Frontend Developer · Flutter Specialist at VStack Business Solutions.</a></li>
     </ul>
     <p>Full team profiles: <a href="team.html">Leadership &amp; Team page</a></p>
   </div>

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:html' as html;
 
 import 'package:vstackweb/services/site_seo_resolver.dart';
@@ -23,6 +24,28 @@ class SiteSeoServiceWeb implements SiteSeoService {
     html.document.title = SiteSeoDefaults.defaultTitle;
     _setMeta('description', SiteSeoDefaults.defaultDescription);
     _setCanonical('${SiteSeoDefaults.baseUrl}/');
+  }
+
+  @override
+  void trackPageView({required String path, required String title}) {
+    try {
+      if ((html.window as dynamic).gtag == null) return;
+      // Eval keeps the config object as real JS (Maps alone are unreliable via dynamic).
+      final script = html.ScriptElement()
+        ..text = '''
+(function(){
+  if (typeof gtag !== 'function') return;
+  gtag('config', ${jsonEncode(SiteSeoDefaults.gaMeasurementId)}, {
+    page_path: ${jsonEncode(path)},
+    page_title: ${jsonEncode(title)}
+  });
+})();
+''';
+      html.document.head?.append(script);
+      script.remove();
+    } catch (_) {
+      // Analytics must never break navigation.
+    }
   }
 
   void _setMeta(String name, String content, {bool property = false}) {

@@ -1,6 +1,7 @@
 /// Resolves page title, description, and canonical path for site-wide SEO.
 library;
 
+import 'package:vstackweb/features/tools/data/tools_registry.dart';
 import 'package:vstackweb/models/site_models.dart';
 
 class SiteSeoMeta {
@@ -18,6 +19,8 @@ class SiteSeoMeta {
 abstract final class SiteSeoDefaults {
   static const baseUrl = 'https://vstackbusinesssolutions.com';
   static const siteTitle = 'VStack Business Solutions';
+  /// Must match the Measurement ID in `web/index.html` (replace both when activating GA4).
+  static const gaMeasurementId = 'G-XXXXXXXXXX';
   static const defaultTitle =
       'We Stack Your Business | VStack Business Solutions — Best Software Company Kerala & India';
   static const defaultDescription =
@@ -47,9 +50,14 @@ SiteSeoMeta resolveSiteSeo(SiteContent content, String path) {
     final slug = normalized.split('/').last;
     final s = content.solutionBySlug(slug);
     if (s != null) {
+      final isDm = slug == 'digital-marketing';
       return SiteSeoMeta(
-        title: '${s.title} | ${SiteSeoDefaults.siteTitle}',
-        description: '${s.shortDescription} — Kerala & India. ${SiteSeoDefaults.siteTitle}.',
+        title: isDm
+            ? 'Digital Marketing Thrissur, Ernakulam & Kerala | ${SiteSeoDefaults.siteTitle}'
+            : '${s.title} | ${SiteSeoDefaults.siteTitle}',
+        description: isDm
+            ? 'Affordable business-led digital marketing in Thrissur, Ernakulam, Kochi & Kerala — strategy, validation, online & offline campaigns. Not just posts and reels. ${SiteSeoDefaults.siteTitle}.'
+            : '${s.shortDescription} — Kerala & India. ${SiteSeoDefaults.siteTitle}.',
         canonicalPath: '/solutions/$slug',
       );
     }
@@ -142,8 +150,17 @@ SiteSeoMeta resolveSiteSeo(SiteContent content, String path) {
   }
 
   if (normalized.startsWith('/tools/')) {
+    final slug = normalized.substring('/tools/'.length);
+    final tool = ToolsRegistry.bySlug(slug);
+    if (tool != null) {
+      return SiteSeoMeta(
+        title: tool.seo.title,
+        description: tool.seo.description,
+        canonicalPath: tool.route,
+      );
+    }
     return const SiteSeoMeta(
-      title: SiteSeoDefaults.defaultTitle,
+      title: 'Free Online Tools | ${SiteSeoDefaults.siteTitle}',
       description: SiteSeoDefaults.defaultDescription,
       canonicalPath: '/tools',
     );
