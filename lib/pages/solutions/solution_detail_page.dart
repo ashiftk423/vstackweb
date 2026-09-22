@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vstackweb/app/site_content_scope.dart';
+import 'package:vstackweb/theme/responsive.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/widgets/cta_section.dart';
 import 'package:vstackweb/widgets/layout_widgets.dart';
@@ -131,20 +132,48 @@ class SolutionDetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   const Text(
-                    'Cards load as you scroll — tap to open, swipe for next.',
+                    'Cards load as you scroll — on phone: tap to open, hold to preview, swipe for next.',
                     style: TextStyle(color: VStackColors.muted, fontSize: 12),
                   ),
                   const SizedBox(height: VStackSpacing.lg),
-                  ResponsiveGrid(
-                    itemCount: solution.works.length,
-                    desktopColumns: 3,
-                    tabletColumns: 2,
-                    itemBuilder: (context, index) => SolutionWorkCard(
-                      work: solution.works[index],
-                      works: solution.works,
-                      index: index,
+                  if (AppLayout.isMobile(context))
+                    Builder(
+                      builder: (context) {
+                        final pad = AppLayout.pagePadding(context);
+                        final screenW = MediaQuery.sizeOf(context).width;
+                        return Transform.translate(
+                          offset: Offset(-pad, 0),
+                          child: SizedBox(
+                            width: screenW,
+                            child: ResponsiveGrid(
+                              itemCount: solution.works.length,
+                              desktopColumns: 3,
+                              tabletColumns: 2,
+                              mobileColumns: 3,
+                              spacing: 2,
+                              itemBuilder: (context, index) => SolutionWorkCard(
+                                work: solution.works[index],
+                                works: solution.works,
+                                index: index,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  else
+                    ResponsiveGrid(
+                      itemCount: solution.works.length,
+                      desktopColumns: 3,
+                      tabletColumns: 2,
+                      mobileColumns: 3,
+                      spacing: VStackSpacing.md,
+                      itemBuilder: (context, index) => SolutionWorkCard(
+                        work: solution.works[index],
+                        works: solution.works,
+                        index: index,
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),

@@ -27,9 +27,14 @@ abstract final class AppLayout {
     return 56;
   }
 
-  static int gridColumns(BuildContext context, {int desktop = 4, int tablet = 2}) {
+  static int gridColumns(
+    BuildContext context, {
+    int desktop = 4,
+    int tablet = 2,
+    int mobile = 1,
+  }) {
     final w = width(context);
-    if (w < mobileMax) return 1;
+    if (w < mobileMax) return mobile;
     if (w < tabletMax) return tablet;
     return desktop;
   }

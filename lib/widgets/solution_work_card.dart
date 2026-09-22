@@ -137,6 +137,13 @@ class SolutionWorkCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (AppLayout.isMobile(context)) {
+      return _IgGridCell(
+        work: work,
+        onOpen: () => _openViewer(context),
+      );
+    }
+
     return VStackCard(
       padding: EdgeInsets.zero,
       child: Column(
@@ -150,10 +157,12 @@ class SolutionWorkCard extends StatelessWidget {
                   ? _WorkVideoThumb(
                       assetPath: work.media,
                       onOpen: () => _openViewer(context),
+                      compact: false,
                     )
                   : _WorkImageThumb(
                       assetPath: work.media,
                       onOpen: () => _openViewer(context),
+                      compact: false,
                     ),
             ),
           ),
@@ -184,6 +193,206 @@ class SolutionWorkCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Dense Instagram-style grid cell (mobile): thumb only + long-press peek.
+class _IgGridCell extends StatefulWidget {
+  const _IgGridCell({
+    required this.work,
+    required this.onOpen,
+  });
+
+  final SolutionWork work;
+  final VoidCallback onOpen;
+
+  @override
+  State<_IgGridCell> createState() => _IgGridCellState();
+}
+
+class _IgGridCellState extends State<_IgGridCell> {
+  OverlayEntry? _peekEntry;
+
+  void _showPeek() {
+    if (_peekEntry != null) return;
+    HapticFeedback.mediumImpact();
+    final overlay = Overlay.of(context);
+    _peekEntry = OverlayEntry(
+      builder: (ctx) => _WorkPeekOverlay(
+        work: widget.work,
+        onDismiss: _hidePeek,
+      ),
+    );
+    overlay.insert(_peekEntry!);
+  }
+
+  void _hidePeek() {
+    _peekEntry?.remove();
+    _peekEntry = null;
+  }
+
+  @override
+  void dispose() {
+    _hidePeek();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 4 / 5,
+      child: widget.work.isVideo
+          ? _WorkVideoThumb(
+              assetPath: widget.work.media,
+              onOpen: widget.onOpen,
+              compact: true,
+              onPeekStart: _showPeek,
+              onPeekEnd: _hidePeek,
+            )
+          : _WorkImageThumb(
+              assetPath: widget.work.media,
+              onOpen: widget.onOpen,
+              compact: true,
+              onPeekStart: _showPeek,
+              onPeekEnd: _hidePeek,
+            ),
+    );
+  }
+}
+
+class _WorkPeekOverlay extends StatefulWidget {
+  const _WorkPeekOverlay({
+    required this.work,
+    required this.onDismiss,
+  });
+
+  final SolutionWork work;
+  final VoidCallback onDismiss;
+
+  @override
+  State<_WorkPeekOverlay> createState() => _WorkPeekOverlayState();
+}
+
+class _WorkPeekOverlayState extends State<_WorkPeekOverlay>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _anim;
+  VideoPlayerController? _video;
+  bool _videoReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _anim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 180),
+    )..forward();
+    if (widget.work.isVideo) _initVideo();
+  }
+
+  Future<void> _initVideo() async {
+    try {
+      final c = VideoPlayerController.asset(widget.work.media);
+      _video = c;
+      await c.initialize();
+      await c.setLooping(true);
+      await c.setVolume(0);
+      await c.play();
+      if (!mounted) return;
+      setState(() => _videoReady = true);
+    } catch (_) {
+      // Fall back to static frame / image path failure handled below.
+    }
+  }
+
+  @override
+  void dispose() {
+    _anim.dispose();
+    _video?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    final cardW = size.width * 0.82;
+
+    return Material(
+      color: Colors.transparent,
+      child: GestureDetector(
+        onTap: widget.onDismiss,
+        behavior: HitTestBehavior.opaque,
+        child: FadeTransition(
+          opacity: _anim,
+          child: ColoredBox(
+            color: Colors.black.withValues(alpha: 0.55),
+            child: Center(
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 0.88, end: 1).animate(
+                  CurvedAnimation(parent: _anim, curve: Curves.easeOutCubic),
+                ),
+                child: GestureDetector(
+                  onTap: () {}, // absorb taps on card
+                  child: Material(
+                    elevation: 24,
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(16),
+                    clipBehavior: Clip.antiAlias,
+                    child: SizedBox(
+                      width: cardW,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AspectRatio(
+                            aspectRatio: 4 / 5,
+                            child: _buildMedia(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+                            child: Text(
+                              widget.work.title,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMedia() {
+    if (widget.work.isVideo) {
+      if (_videoReady && _video != null) {
+        return FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: _video!.value.size.width,
+            height: _video!.value.size.height,
+            child: VideoPlayer(_video!),
+          ),
+        );
+      }
+      return const ColoredBox(
+        color: Colors.black87,
+        child: Center(child: CircularProgressIndicator(color: Colors.white54, strokeWidth: 2)),
+      );
+    }
+    return Image.asset(
+      widget.work.media,
+      fit: BoxFit.cover,
+      errorBuilder: (_, error, stackTrace) => const _MediaFallback(isVideo: false),
     );
   }
 }
@@ -359,10 +568,19 @@ class _MediaLoadingSkeletonState extends State<_MediaLoadingSkeleton>
 }
 
 class _WorkImageThumb extends StatefulWidget {
-  const _WorkImageThumb({required this.assetPath, required this.onOpen});
+  const _WorkImageThumb({
+    required this.assetPath,
+    required this.onOpen,
+    this.compact = false,
+    this.onPeekStart,
+    this.onPeekEnd,
+  });
 
   final String assetPath;
   final VoidCallback onOpen;
+  final bool compact;
+  final VoidCallback? onPeekStart;
+  final VoidCallback? onPeekEnd;
 
   @override
   State<_WorkImageThumb> createState() => _WorkImageThumbState();
@@ -396,30 +614,53 @@ class _WorkImageThumbState extends State<_WorkImageThumb> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_loaded) return const _MediaLoadingSkeleton(isVideo: false);
+    if (!_loaded) {
+      return widget.compact
+          ? ColoredBox(color: VStackColors.surfaceLight)
+          : const _MediaLoadingSkeleton(isVideo: false);
+    }
     if (_failed) return const _MediaFallback(isVideo: false);
+
+    final useOverlayPeek = widget.onPeekStart != null;
 
     return GestureDetector(
       onTap: widget.onOpen,
       onLongPressStart: (_) {
+        if (useOverlayPeek) {
+          widget.onPeekStart!();
+          return;
+        }
         HapticFeedback.selectionClick();
         setState(() => _holding = true);
       },
-      onLongPressEnd: (_) => setState(() => _holding = false),
-      onLongPressCancel: () => setState(() => _holding = false),
+      onLongPressEnd: (_) {
+        if (useOverlayPeek) {
+          widget.onPeekEnd?.call();
+          return;
+        }
+        setState(() => _holding = false);
+      },
+      onLongPressCancel: () {
+        if (useOverlayPeek) {
+          widget.onPeekEnd?.call();
+          return;
+        }
+        setState(() => _holding = false);
+      },
       child: Stack(
         fit: StackFit.expand,
         children: [
           AnimatedScale(
-            scale: _holding ? 1.04 : 1,
+            scale: (!useOverlayPeek && _holding) ? 1.04 : 1,
             duration: const Duration(milliseconds: 180),
             child: Image.asset(widget.assetPath, fit: BoxFit.cover),
           ),
-          const Positioned(
-            left: 10,
-            top: 10,
-            child: _TypeBadge(label: 'PHOTO', icon: Icons.image_outlined),
-          ),
+          if (!widget.compact)
+            const Positioned(
+              left: 10,
+              top: 10,
+              child: _TypeBadge(label: 'PHOTO', icon: Icons.image_outlined),
+            ),
         ],
       ),
     );
@@ -428,10 +669,19 @@ class _WorkImageThumbState extends State<_WorkImageThumb> {
 
 /// Lazy-loads video only when the card is on screen.
 class _WorkVideoThumb extends StatefulWidget {
-  const _WorkVideoThumb({required this.assetPath, required this.onOpen});
+  const _WorkVideoThumb({
+    required this.assetPath,
+    required this.onOpen,
+    this.compact = false,
+    this.onPeekStart,
+    this.onPeekEnd,
+  });
 
   final String assetPath;
   final VoidCallback onOpen;
+  final bool compact;
+  final VoidCallback? onPeekStart;
+  final VoidCallback? onPeekEnd;
 
   @override
   State<_WorkVideoThumb> createState() => _WorkVideoThumbState();
@@ -486,6 +736,10 @@ class _WorkVideoThumbState extends State<_WorkVideoThumb> {
   }
 
   Future<void> _startHoldPreview() async {
+    if (widget.onPeekStart != null) {
+      widget.onPeekStart!();
+      return;
+    }
     final c = _controller;
     if (c == null || !_ready) return;
     HapticFeedback.selectionClick();
@@ -496,6 +750,10 @@ class _WorkVideoThumbState extends State<_WorkVideoThumb> {
   }
 
   Future<void> _endHoldPreview() async {
+    if (widget.onPeekEnd != null) {
+      widget.onPeekEnd!();
+      return;
+    }
     final c = _controller;
     if (c == null) return;
     await c.pause();
@@ -516,7 +774,9 @@ class _WorkVideoThumbState extends State<_WorkVideoThumb> {
   Widget _buildBody() {
     if (_failed) return const _MediaFallback(isVideo: true);
     if (!_ready || _controller == null) {
-      return const _MediaLoadingSkeleton(isVideo: true);
+      return widget.compact
+          ? ColoredBox(color: VStackColors.surfaceLight)
+          : const _MediaLoadingSkeleton(isVideo: true);
     }
 
     return GestureDetector(
@@ -535,24 +795,41 @@ class _WorkVideoThumbState extends State<_WorkVideoThumb> {
               child: VideoPlayer(_controller!),
             ),
           ),
-          if (!_holding)
+          if (!_holding && widget.onPeekStart == null)
             ColoredBox(
               color: Colors.black.withValues(alpha: 0.28),
-              child: const Center(
-                child: Icon(Icons.play_circle_fill, size: 56, color: Colors.white),
+              child: Center(
+                child: Icon(
+                  Icons.play_circle_fill,
+                  size: widget.compact ? 28 : 56,
+                  color: Colors.white,
+                ),
               ),
             ),
-          const Positioned(
-            left: 10,
-            top: 10,
-            child: _TypeBadge(label: 'VIDEO', icon: Icons.play_arrow_rounded),
-          ),
-          if (_holding)
+          if (widget.compact)
+            Positioned(
+              right: 6,
+              top: 6,
+              child: Icon(
+                Icons.play_arrow_rounded,
+                size: 18,
+                color: Colors.white.withValues(alpha: 0.95),
+                shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
+              ),
+            )
+          else ...[
             const Positioned(
-              right: 10,
-              bottom: 10,
-              child: _TypeBadge(label: 'PREVIEW', icon: Icons.visibility_outlined),
+              left: 10,
+              top: 10,
+              child: _TypeBadge(label: 'VIDEO', icon: Icons.play_arrow_rounded),
             ),
+            if (_holding)
+              const Positioned(
+                right: 10,
+                bottom: 10,
+                child: _TypeBadge(label: 'PREVIEW', icon: Icons.visibility_outlined),
+              ),
+          ],
         ],
       ),
     );
@@ -727,6 +1004,7 @@ class _WorkMediaViewerState extends State<_WorkMediaViewer> {
               children: [
                 Positioned.fill(
                   child: PageView.builder(
+                    scrollDirection: isMobile ? Axis.vertical : Axis.horizontal,
                     controller: _pageController,
                     itemCount: widget.works.length,
                     onPageChanged: _onPageChanged,
@@ -739,16 +1017,21 @@ class _WorkMediaViewerState extends State<_WorkMediaViewer> {
                             setState(() => _showControls = !_showControls);
                           }
                         },
-                        onVerticalDragEnd: (details) {
-                          final v = details.primaryVelocity ?? 0;
-                          if (v < -400) {
-                            _goTo(_index + 1);
-                          } else if (v > 400) {
-                            _goTo(_index - 1);
-                          }
-                        },
+                        // Desktop: optional vertical fling; mobile uses vertical PageView.
+                        onVerticalDragEnd: isMobile
+                            ? null
+                            : (details) {
+                                final v = details.primaryVelocity ?? 0;
+                                if (v < -400) {
+                                  _goTo(_index + 1);
+                                } else if (v > 400) {
+                                  _goTo(_index - 1);
+                                }
+                              },
                         child: Center(
-                          child: active ? _buildActiveMedia(item) : _buildInactivePlaceholder(item),
+                          child: active
+                              ? _buildActiveMedia(item, fullBleed: isMobile)
+                              : _buildInactivePlaceholder(item, fullBleed: isMobile),
                         ),
                       );
                     },
@@ -808,28 +1091,6 @@ class _WorkMediaViewerState extends State<_WorkMediaViewer> {
                       ),
                     ),
                 ],
-                if (isMobile)
-                  Positioned(
-                    right: 12,
-                    top: 64,
-                    child: Column(
-                      children: [
-                        if (_hasPrev)
-                          _NavCircleButton(
-                            icon: Icons.keyboard_arrow_up,
-                            tooltip: 'Previous',
-                            onPressed: () => _goTo(_index - 1),
-                          ),
-                        if (_hasPrev && _hasNext) const SizedBox(height: 10),
-                        if (_hasNext)
-                          _NavCircleButton(
-                            icon: Icons.keyboard_arrow_down,
-                            tooltip: 'Next',
-                            onPressed: () => _goTo(_index + 1),
-                          ),
-                      ],
-                    ),
-                  ),
                 if (_work.isVideo && _ready && _showControls && _controller != null)
                   Positioned(
                     left: 16,
@@ -851,7 +1112,7 @@ class _WorkMediaViewerState extends State<_WorkMediaViewer> {
                     right: 0,
                     bottom: _work.isVideo && _ready && _showControls ? 130 : 18,
                     child: const Text(
-                      'Swipe left/right or up/down for next',
+                      'Swipe up for next · down for previous',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white54, fontSize: 11),
                     ),
@@ -864,7 +1125,19 @@ class _WorkMediaViewerState extends State<_WorkMediaViewer> {
     );
   }
 
-  Widget _buildInactivePlaceholder(SolutionWork item) {
+  Widget _buildInactivePlaceholder(SolutionWork item, {required bool fullBleed}) {
+    if (fullBleed) {
+      return ColoredBox(
+        color: Colors.black,
+        child: Center(
+          child: Icon(
+            item.isVideo ? Icons.play_circle_outline : Icons.image_outlined,
+            color: Colors.white38,
+            size: 48,
+          ),
+        ),
+      );
+    }
     return AspectRatio(
       aspectRatio: 9 / 16,
       child: DecoratedBox(
@@ -883,31 +1156,48 @@ class _WorkMediaViewerState extends State<_WorkMediaViewer> {
     );
   }
 
-  Widget _buildActiveMedia(SolutionWork item) {
+  Widget _buildActiveMedia(SolutionWork item, {required bool fullBleed}) {
     if (!item.isVideo) {
-      return InteractiveViewer(
-        child: Image.asset(
-          item.media,
-          fit: BoxFit.contain,
-          errorBuilder: (_, error, stackTrace) => const _MediaFallback(isVideo: false),
-        ),
+      final image = Image.asset(
+        item.media,
+        fit: fullBleed ? BoxFit.contain : BoxFit.contain,
+        errorBuilder: (_, error, stackTrace) => const _MediaFallback(isVideo: false),
       );
+      if (fullBleed) {
+        return SizedBox.expand(child: InteractiveViewer(child: image));
+      }
+      return InteractiveViewer(child: image);
     }
     if (_loading) {
-      return const SizedBox(
-        width: 220,
-        height: 320,
-        child: _MediaLoadingSkeleton(isVideo: true),
-      );
+      return fullBleed
+          ? const Center(child: SizedBox(width: 220, height: 320, child: _MediaLoadingSkeleton(isVideo: true)))
+          : const SizedBox(
+              width: 220,
+              height: 320,
+              child: _MediaLoadingSkeleton(isVideo: true),
+            );
     }
     if (_failed) return const _MediaFallback(isVideo: true);
     if (!_ready || _controller == null) {
       return const CircularProgressIndicator(color: Colors.white);
     }
-    return AspectRatio(
+    final player = AspectRatio(
       aspectRatio: _controller!.value.aspectRatio == 0 ? 9 / 16 : _controller!.value.aspectRatio,
       child: VideoPlayer(_controller!),
     );
+    if (fullBleed) {
+      return SizedBox.expand(
+        child: FittedBox(
+          fit: BoxFit.contain,
+          child: SizedBox(
+            width: _controller!.value.size.width,
+            height: _controller!.value.size.height,
+            child: VideoPlayer(_controller!),
+          ),
+        ),
+      );
+    }
+    return player;
   }
 }
 

@@ -54,6 +54,7 @@ class ResponsiveGrid extends StatelessWidget {
     required this.itemBuilder,
     this.desktopColumns = 3,
     this.tabletColumns = 2,
+    this.mobileColumns = 1,
     this.spacing = VStackSpacing.md,
   });
 
@@ -61,6 +62,7 @@ class ResponsiveGrid extends StatelessWidget {
   final Widget Function(BuildContext context, int index) itemBuilder;
   final int desktopColumns;
   final int tabletColumns;
+  final int mobileColumns;
   final double spacing;
 
   @override
@@ -69,6 +71,7 @@ class ResponsiveGrid extends StatelessWidget {
       context,
       desktop: desktopColumns,
       tablet: tabletColumns,
+      mobile: mobileColumns,
     );
     return LayoutBuilder(
       builder: (context, constraints) {
