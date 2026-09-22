@@ -21,8 +21,17 @@ import 'package:vstackweb/features/tools/pages/tools_hub_page.dart';
 import 'package:vstackweb/features/tools/tools_route.dart';
 
 GoRouter createAppRouter(SiteContent content) {
+  // Prefer the browser path on web so shared deep links open the right page.
+  final uri = Uri.base;
+  final path = uri.path;
+  final initial = (path.isEmpty || path == '/')
+      ? '/'
+      : uri.hasQuery
+          ? '$path?${uri.query}'
+          : path;
+
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: initial,
     routes: [
       ShellRoute(
         builder: (context, state, child) => SiteContentScope(

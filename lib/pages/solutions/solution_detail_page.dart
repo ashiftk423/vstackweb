@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vstackweb/app/site_content_scope.dart';
-import 'package:vstackweb/features/tools/services/file_download.dart';
-import 'package:vstackweb/models/solution.dart';
-import 'package:vstackweb/services/marketing_portfolio_pdf_builder.dart';
 import 'package:vstackweb/theme/responsive.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/widgets/cta_section.dart';
@@ -139,8 +136,6 @@ class SolutionDetailPage extends StatelessWidget {
                     'Cards load as you scroll — on phone: tap to open, hold to preview, swipe for next.',
                     style: TextStyle(color: VStackColors.muted, fontSize: 12),
                   ),
-                  const SizedBox(height: VStackSpacing.md),
-                  _PortfolioDownloadButton(solution: solution),
                 ],
               ),
             ),
@@ -261,75 +256,6 @@ class _Block extends StatelessWidget {
         Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
         const SizedBox(height: VStackSpacing.md),
         Text(body, style: const TextStyle(color: VStackColors.muted, fontSize: 16, height: 1.6)),
-      ],
-    );
-  }
-}
-
-class _PortfolioDownloadButton extends StatefulWidget {
-  const _PortfolioDownloadButton({required this.solution});
-
-  final Solution solution;
-
-  @override
-  State<_PortfolioDownloadButton> createState() => _PortfolioDownloadButtonState();
-}
-
-class _PortfolioDownloadButtonState extends State<_PortfolioDownloadButton> {
-  bool _busy = false;
-  String? _status;
-
-  Future<void> _download() async {
-    if (_busy) return;
-    setState(() {
-      _busy = true;
-      _status = 'Building portfolio PDF from current works…';
-    });
-    try {
-      final content = SiteContentScope.of(context);
-      final bytes = await MarketingPortfolioPdfBuilder.build(
-        solution: widget.solution,
-        contact: content.contact,
-      );
-      final slug = widget.solution.slug;
-      downloadBytes(
-        bytes,
-        'vstack-$slug-portfolio.pdf',
-        mimeType: 'application/pdf',
-      );
-      if (!mounted) return;
-      setState(() => _status = 'Downloaded — share the PDF on WhatsApp anytime.');
-    } catch (e) {
-      debugPrint('[portfolio] PDF build failed: $e');
-      if (!mounted) return;
-      setState(() => _status = 'Could not build PDF. Please try again.');
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        FilledButton.icon(
-          onPressed: _busy ? null : _download,
-          icon: _busy
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                )
-              : const Icon(Icons.download_rounded),
-          label: Text(_busy ? 'Preparing…' : 'Download portfolio (PDF)'),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          _status ??
-              'Always built from the live site — images, titles, and links to watch videos online. Easy to share on WhatsApp.',
-          style: const TextStyle(color: VStackColors.muted, fontSize: 12, height: 1.4),
-        ),
       ],
     );
   }

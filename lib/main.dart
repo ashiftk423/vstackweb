@@ -9,60 +9,65 @@ import 'package:vstackweb/theme/vstack_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
-  runApp(const VStackWebApp());
+
+  // Load content before runApp so GoRouter is created on the first frame with
+  // the real browser URL (deep links like /solutions/digital-marketing).
+  // Creating MaterialApp.router only after a FutureBuilder made GoRouter
+  // start at initialLocation '/' and wipe the shared path.
+  try {
+    final content = await LocalContentLoader.load();
+    runApp(VStackWebApp(content: content));
+  } catch (e, st) {
+    debugPrint('Failed to load site content: $e\n$st');
+    runApp(VStackWebAppError(error: e));
+  }
 }
 
 class VStackWebApp extends StatefulWidget {
-  const VStackWebApp({super.key});
+  const VStackWebApp({super.key, required this.content});
+
+  final SiteContent content;
 
   @override
   State<VStackWebApp> createState() => _VStackWebAppState();
 }
 
 class _VStackWebAppState extends State<VStackWebApp> {
-  late final Future<SiteContent> _contentFuture = LocalContentLoader.load();
-  GoRouter? _router;
+  late final GoRouter _router = createAppRouter(widget.content);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _contentFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return MaterialApp(
-            theme: buildVStackTheme(),
-            home: const Scaffold(
-              backgroundColor: VStackColors.bg,
-              body: Center(child: CircularProgressIndicator()),
+    return MaterialApp.router(
+      title: 'VStack Business Solutions',
+      debugShowCheckedModeBanner: false,
+      theme: buildVStackTheme(),
+      routerConfig: _router,
+    );
+  }
+}
+
+class VStackWebAppError extends StatelessWidget {
+  const VStackWebAppError({super.key, required this.error});
+
+  final Object error;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: buildVStackTheme(),
+      home: Scaffold(
+        backgroundColor: VStackColors.bg,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              'Could not load site content.\n$error',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white70),
             ),
-          );
-        }
-        if (snapshot.hasError) {
-          return MaterialApp(
-            theme: buildVStackTheme(),
-            home: Scaffold(
-              backgroundColor: VStackColors.bg,
-              body: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(
-                    'Could not load site content.\n${snapshot.error}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                ),
-              ),
-            ),
-          );
-        }
-        _router ??= createAppRouter(snapshot.data!);
-        return MaterialApp.router(
-          title: 'VStack Business Solutions',
-          debugShowCheckedModeBanner: false,
-          theme: buildVStackTheme(),
-          routerConfig: _router,
-        );
-      },
+          ),
+        ),
+      ),
     );
   }
 }
