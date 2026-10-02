@@ -32,6 +32,7 @@ GoRouter createAppRouter(SiteContent content) {
 
   return GoRouter(
     initialLocation: initial,
+    redirect: (_, state) => _legacyHtmlRedirect(state.uri.path),
     routes: [
       ShellRoute(
         builder: (context, state, child) => SiteContentScope(
@@ -89,4 +90,15 @@ GoRouter createAppRouter(SiteContent content) {
       ),
     ),
   );
+}
+
+/// Old indexed URLs like /solutions/digital-marketing.html → clean live route;
+/// any other legacy .html page → home.
+String? _legacyHtmlRedirect(String path) {
+  if (!path.endsWith('.html')) return null;
+  final clean = path.substring(0, path.length - '.html'.length);
+  for (final prefix in ['/solutions/', '/products/', '/tools/', '/work/']) {
+    if (clean.startsWith(prefix) && clean.length > prefix.length) return clean;
+  }
+  return '/';
 }

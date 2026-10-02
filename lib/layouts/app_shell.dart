@@ -254,8 +254,6 @@ class VStackFooter extends StatelessWidget {
                   ('Our Work', '/work'),
                   ('Careers', '/careers'),
                   ('Contact', '/contact'),
-                  ('FAQ', '/faq.html'),
-                  ('Locations', '/locations.html'),
                 ]),
               ] else
                 Row(
@@ -269,8 +267,6 @@ class VStackFooter extends StatelessWidget {
                         ('Our Work', '/work'),
                         ('Careers', '/careers'),
                         ('Contact', '/contact'),
-                        ('FAQ', '/faq.html'),
-                        ('Locations', '/locations.html'),
                       ]),
                     ),
                   ],
