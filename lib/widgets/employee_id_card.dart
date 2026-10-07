@@ -1,15 +1,20 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:barcode/barcode.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:vstackweb/models/site_models.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/widgets/barcode_view.dart';
 
 enum IdCardSide { front, back }
 
-/// Landscape CR80 ID card (85.6 × 54 mm), drawn on a fixed 856 × 540 canvas and
+/// Portrait CR80 ID card (54 × 85.6 mm), drawn on a fixed 540 × 856 canvas and
 /// scaled to fit, so the layout is identical on screen and in PNG exports.
+///
+/// Employee photos should be background-removed PNGs; they are shown large with
+/// a faded oversized copy behind them.
 class EmployeeIdCard extends StatelessWidget {
   const EmployeeIdCard({
     super.key,
@@ -19,7 +24,7 @@ class EmployeeIdCard extends StatelessWidget {
     this.boundaryKey,
   });
 
-  static const designSize = Size(856, 540);
+  static const designSize = Size(540, 856);
 
   final TeamMember member;
   final ContactInfo contact;
@@ -106,8 +111,12 @@ class _FlippableIdCardState extends State<FlippableIdCard> with SingleTickerProv
   }
 }
 
-const _cardRadius = 36.0;
+const _cardRadius = 30.0;
 const _ink = Color(0xFF0A0F1D);
+const _bgTop = Color(0xFF060A14);
+const _bgBottom = Color(0xFF03050B);
+const _beamBlue = Color(0xFF1E6BFF);
+const _roleBlue = Color(0xFF2F8BFF);
 
 class _CardSurface extends StatelessWidget {
   const _CardSurface({required this.child});
@@ -121,46 +130,38 @@ class _CardSurface extends StatelessWidget {
       child: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0B1224), Color(0xFF070A14), Color(0xFF120B26)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [_bgTop, Color(0xFF070B18), _bgBottom],
           ),
         ),
         child: Stack(
           children: [
-            Positioned(
-              right: -140,
-              top: -160,
-              child: _Glow(color: VStackColors.accent.withValues(alpha: 0.32), size: 460),
-            ),
-            Positioned(
-              left: -160,
-              bottom: -200,
-              child: _Glow(color: VStackColors.accent2.withValues(alpha: 0.28), size: 480),
-            ),
-            Positioned.fill(child: CustomPaint(painter: _GridPainter())),
+            Positioned.fill(child: CustomPaint(painter: _LightBeamsPainter())),
             const Positioned(
               left: 0,
               right: 0,
               bottom: 0,
               child: SizedBox(
-                height: 10,
+                height: 8,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [VStackColors.accent, VStackColors.accent2]),
+                    gradient: LinearGradient(colors: [_beamBlue, VStackColors.accent2]),
                   ),
                 ),
               ),
             ),
+            Positioned.fill(child: child),
             Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(_cardRadius),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.12), width: 2),
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(_cardRadius),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 2),
+                  ),
                 ),
               ),
             ),
-            Positioned.fill(child: child),
           ],
         ),
       ),
@@ -168,37 +169,42 @@ class _CardSurface extends StatelessWidget {
   }
 }
 
-class _Glow extends StatelessWidget {
-  const _Glow({required this.color, required this.size});
-
-  final Color color;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(colors: [color, color.withValues(alpha: 0)]),
-      ),
-    );
-  }
-}
-
-class _GridPainter extends CustomPainter {
+/// Diagonal blue light streaks along the right edge.
+class _LightBeamsPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.025)
-      ..strokeWidth = 1;
-    for (double x = 0; x < size.width; x += 36) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    final w = size.width;
+    final h = size.height;
+
+    void beam(List<Offset> pts, double alpha, {double glow = 0}) {
+      final path = Path()..addPolygon(pts, true);
+      final bounds = path.getBounds();
+      final shader = LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          _beamBlue.withValues(alpha: alpha * 0.25),
+          _beamBlue.withValues(alpha: alpha),
+          const Color(0xFF0B2A7A).withValues(alpha: alpha * 0.6),
+        ],
+        stops: const [0, 0.55, 1],
+      ).createShader(bounds);
+      if (glow > 0) {
+        canvas.drawPath(
+          path,
+          Paint()
+            ..color = _beamBlue.withValues(alpha: alpha * 0.55)
+            ..maskFilter = MaskFilter.blur(BlurStyle.normal, glow),
+        );
+      }
+      canvas.drawPath(path, Paint()..shader = shader);
     }
-    for (double y = 0; y < size.height; y += 36) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
+
+    // Dark wedge that the light streaks sit on.
+    beam([Offset(w * 0.52, 0), Offset(w * 0.86, 0), Offset(w, h * 0.30), Offset(w, h * 0.62)], 0.10);
+    beam([Offset(w * 0.70, 0), Offset(w * 0.80, 0), Offset(w, h * 0.33), Offset(w, h * 0.45)], 0.55, glow: 26);
+    beam([Offset(w * 0.88, 0), Offset(w * 0.905, 0), Offset(w, h * 0.155), Offset(w, h * 0.19)], 0.9, glow: 10);
+    beam([Offset(w * 0.60, h * 0.02), Offset(w * 0.615, h * 0.02), Offset(w, h * 0.66), Offset(w, h * 0.69)], 0.85, glow: 14);
   }
 
   @override
@@ -206,41 +212,46 @@ class _GridPainter extends CustomPainter {
 }
 
 class _Brand extends StatelessWidget {
-  const _Brand({this.compact = false});
+  const _Brand({this.scale = 1});
 
-  final bool compact;
+  final double scale;
 
   @override
   Widget build(BuildContext context) {
-    final logo = compact ? 44.0 : 58.0;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: logo,
-          height: logo,
-          padding: EdgeInsets.all(logo * 0.12),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.94),
-            borderRadius: BorderRadius.circular(logo * 0.28),
+        ColorFiltered(
+          colorFilter: const ColorFilter.mode(_roleBlue, BlendMode.srcIn),
+          child: Image.asset(
+            'assets/logo/v_stack_logo-removebg-preview.png',
+            width: 64 * scale,
+            height: 64 * scale,
           ),
-          child: Image.asset('assets/logo/v_stack_logo-removebg-preview.png'),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 14 * scale),
+        Container(width: 2, height: 54 * scale, color: Colors.white.withValues(alpha: 0.85)),
+        SizedBox(width: 14 * scale),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'VStack',
-              style: TextStyle(fontSize: compact ? 24 : 30, fontWeight: FontWeight.w800, height: 1.05),
-            ),
-            Text(
-              'Business Solutions',
+              'VSTACK',
               style: TextStyle(
-                fontSize: compact ? 13 : 15,
-                color: VStackColors.muted,
-                letterSpacing: 1.2,
+                fontSize: 42 * scale,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 3 * scale,
+                height: 1,
+              ),
+            ),
+            SizedBox(height: 4 * scale),
+            Text(
+              'BUSINESS SOLUTIONS',
+              style: TextStyle(
+                fontSize: 14 * scale,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 3.2 * scale,
               ),
             ),
           ],
@@ -250,77 +261,117 @@ class _Brand extends StatelessWidget {
   }
 }
 
-class _IdPill extends StatelessWidget {
-  const _IdPill({required this.id});
+ImageProvider _photoProvider(String photo) =>
+    photo.startsWith('http') ? NetworkImage(photo) : AssetImage(photo) as ImageProvider;
 
-  final String id;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: VStackColors.accent.withValues(alpha: 0.12),
-        border: Border.all(color: VStackColors.accent.withValues(alpha: 0.55), width: 1.5),
-      ),
-      child: Text(
-        id,
-        style: const TextStyle(
-          fontSize: 23,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 2.5,
-          fontFeatures: [FontFeature.tabularFigures()],
-        ),
-      ),
-    );
-  }
-}
-
-class _Avatar extends StatelessWidget {
-  const _Avatar({required this.member});
+/// Big cut-out photo with an oversized faded copy behind it, as in the
+/// VStack poster style. Falls back to large initials when there is no photo.
+class _HeroPortrait extends StatelessWidget {
+  const _HeroPortrait({required this.member});
 
   final TeamMember member;
 
   @override
   Widget build(BuildContext context) {
     final photo = member.photo;
-    final Widget inner = photo == null || photo.isEmpty
-        ? Container(
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+    if (photo == null || photo.isEmpty) return _InitialsPortrait(initials: member.initials);
+    final image = _photoProvider(photo);
+
+    Widget fadedBottom(Widget child) => ShaderMask(
+          blendMode: BlendMode.dstIn,
+          shaderCallback: (rect) => const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.white, Colors.white, Colors.transparent],
+            stops: [0, 0.8, 1],
+          ).createShader(rect),
+          child: child,
+        );
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // Oversized faded copy, offset left.
+        Positioned(
+          left: -190,
+          top: 40,
+          width: 560,
+          height: 700,
+          child: Opacity(
+            opacity: 0.22,
+            child: ColorFiltered(
+              colorFilter: const ColorFilter.matrix([
+                0.35, 0.35, 0.35, 0, 0, //
+                0.35, 0.35, 0.35, 0, 0,
+                0.40, 0.40, 0.40, 0, 6,
+                0, 0, 0, 1, 0,
+              ]),
+              child: fadedBottom(Image(image: image, fit: BoxFit.contain, alignment: Alignment.topCenter)),
+            ),
+          ),
+        ),
+        // Soft shadow behind the main photo.
+        Positioned(
+          left: 70,
+          right: -6,
+          top: 152,
+          bottom: 132,
+          child: ImageFiltered(
+            imageFilter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+            child: ColorFiltered(
+              colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: 0.6), BlendMode.srcIn),
+              child: Image(image: image, fit: BoxFit.contain, alignment: Alignment.bottomCenter),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 50,
+          right: -20,
+          top: 136,
+          bottom: 140,
+          child: fadedBottom(Image(image: image, fit: BoxFit.contain, alignment: Alignment.bottomCenter)),
+        ),
+      ],
+    );
+  }
+}
+
+class _InitialsPortrait extends StatelessWidget {
+  const _InitialsPortrait({required this.initials});
+
+  final String initials;
+
+  @override
+  Widget build(BuildContext context) {
+    final serif = GoogleFonts.bodoniModa(fontWeight: FontWeight.w600, height: 1);
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Positioned(
+          left: -60,
+          top: 120,
+          child: Text(
+            initials,
+            style: serif.copyWith(fontSize: 400, color: Colors.white.withValues(alpha: 0.05)),
+          ),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          top: 230,
+          child: Center(
+            child: ShaderMask(
+              blendMode: BlendMode.srcIn,
+              shaderCallback: (rect) => const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF16233F), Color(0xFF1C1240)],
-              ),
+                colors: [Colors.white, Color(0xFF8FB8FF), _roleBlue],
+              ).createShader(rect),
+              child: Text(initials, style: serif.copyWith(fontSize: 220)),
             ),
-            child: Text(
-              member.initials,
-              style: const TextStyle(fontSize: 64, fontWeight: FontWeight.w800, letterSpacing: 2),
-            ),
-          )
-        : (photo.startsWith('http')
-            ? Image.network(photo, fit: BoxFit.cover)
-            : Image.asset(photo, fit: BoxFit.cover));
-    return Container(
-      width: 184,
-      height: 184,
-      padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: const SweepGradient(
-          colors: [VStackColors.accent, VStackColors.accent2, VStackColors.accent],
+          ),
         ),
-        boxShadow: [
-          BoxShadow(color: VStackColors.accent.withValues(alpha: 0.35), blurRadius: 30),
-        ],
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: const BoxDecoration(shape: BoxShape.circle, color: _ink),
-        child: ClipOval(child: SizedBox.expand(child: inner)),
-      ),
+      ],
     );
   }
 }
@@ -332,111 +383,150 @@ class _CardFront extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final nameParts = member.displayCardName.toUpperCase().split(RegExp(r'\s+'));
+    final firstLine = nameParts.first;
+    final secondLine = nameParts.skip(1).join(' ');
+    final roleParts = member.role.split('·').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+    final roleTitle = roleParts.first.replaceAll('-', ' ').toUpperCase();
+    final roleDetail = (roleParts.length > 1 ? roleParts.skip(1).join(' · ') : member.department ?? '').toUpperCase();
+    final nameStyle = GoogleFonts.bodoniModa(
+      fontSize: 66,
+      fontWeight: FontWeight.w500,
+      height: 0.95,
+      color: Colors.white,
+    );
+
     return _CardSurface(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(44, 38, 44, 34),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const _Brand(),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
-                    color: Colors.white.withValues(alpha: 0.05),
-                  ),
-                  child: const Text(
-                    'EMPLOYEE ID CARD',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: 3),
-                  ),
+      child: Stack(
+        children: [
+          Positioned.fill(child: _HeroPortrait(member: member)),
+          // Darken the lower area so the name stays readable over the photo.
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 330,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0x0003050B), Color(0xCC03050B), _bgBottom],
+                  stops: [0, 0.45, 1],
                 ),
-              ],
+              ),
             ),
-            const Spacer(),
-            Row(
+          ),
+          const Positioned(left: 0, right: 0, top: 34, child: Center(child: _Brand())),
+          Positioned(
+            left: 32,
+            right: 28,
+            bottom: 142,
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _Avatar(member: member),
-                const SizedBox(width: 34),
+                Flexible(
+                  flex: 6,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(firstLine, style: nameStyle),
+                        if (secondLine.isNotEmpty) Text(secondLine, style: nameStyle),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Container(width: 2.5, height: 104, color: _roleBlue),
+                const SizedBox(width: 16),
                 Expanded(
+                  flex: 5,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        member.displayCardName,
+                        roleTitle,
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w800, height: 1.1),
+                        style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w800, height: 1.1),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        member.role,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 19,
-                          color: Color(0xFFB79CFF),
-                          fontWeight: FontWeight.w600,
-                          height: 1.3,
-                        ),
-                      ),
-                      if (member.department != null) ...[
+                      if (roleDetail.isNotEmpty) ...[
                         const SizedBox(height: 6),
                         Text(
-                          'Department · ${member.department}',
-                          style: const TextStyle(fontSize: 16, color: VStackColors.muted),
+                          roleDetail,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: _roleBlue,
+                            letterSpacing: 0.6,
+                            height: 1.25,
+                          ),
                         ),
                       ],
-                      const SizedBox(height: 18),
-                      _IdPill(id: member.employeeId),
                     ],
                   ),
                 ),
-                const SizedBox(width: 24),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: BarcodeView(
-                        barcode: Barcode.qrCode(errorCorrectLevel: BarcodeQRCorrectionLevel.medium),
-                        data: member.cardUrl,
-                        width: 138,
-                        height: 138,
-                        color: _ink,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'SCAN TO VERIFY',
-                      style: TextStyle(fontSize: 12, color: VStackColors.muted, letterSpacing: 2),
-                    ),
-                  ],
-                ),
               ],
             ),
-            const Spacer(),
-            const Row(
+          ),
+          Positioned(
+            left: 32,
+            right: 32,
+            bottom: 30,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text('vstackbusinesssolutions.com', style: TextStyle(fontSize: 15, color: VStackColors.muted)),
-                Spacer(),
-                Text(
-                  'We Stack Your Business',
-                  style: TextStyle(fontSize: 15, color: VStackColors.accent, fontWeight: FontWeight.w600),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'EMPLOYEE ID',
+                        style: TextStyle(fontSize: 12, color: VStackColors.muted, letterSpacing: 2.4),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        member.employeeId,
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 2,
+                          fontFeatures: [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'vstackbusinesssolutions.com',
+                        style: TextStyle(fontSize: 13, color: VStackColors.muted),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: BarcodeView(
+                    barcode: Barcode.qrCode(errorCorrectLevel: BarcodeQRCorrectionLevel.medium),
+                    data: member.cardUrl,
+                    width: 84,
+                    height: 84,
+                    color: _ink,
+                  ),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -450,118 +540,121 @@ class _CardBack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final phone = contact.phoneDisplay ?? contact.whatsappNumber;
     final details = <(String, String)>[
+      ('NAME', member.displayCardName),
+      ('DESIGNATION', member.role),
+      if (member.department != null) ('DEPARTMENT', member.department!),
       if (member.joinedOn != null) ('JOINED', member.joinedOn!),
       if (member.validUntil != null) ('VALID UNTIL', member.validUntil!),
       if (member.bloodGroup != null) ('BLOOD GROUP', member.bloodGroup!),
       if (member.phone != null) ('PHONE', member.phone!),
       if (member.email != null) ('EMAIL', member.email!),
     ];
-    if (details.isEmpty) {
-      details.addAll([
-        ('DEPARTMENT', member.department ?? 'VStack'),
-        ('OFFICE', contact.phoneDisplay ?? contact.whatsappNumber),
-        ('EMAIL', contact.email),
-      ]);
-    }
-    final phone = contact.phoneDisplay ?? contact.whatsappNumber;
 
     return _CardSurface(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(44, 36, 44, 32),
+        padding: const EdgeInsets.fromLTRB(32, 34, 32, 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                const _Brand(compact: true),
-                const Spacer(),
-                Text(
-                  member.employeeId,
-                  style: const TextStyle(fontSize: 18, color: VStackColors.muted, letterSpacing: 2),
-                ),
-              ],
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                for (final (i, d) in details.take(3).indexed) ...[
-                  if (i > 0) const SizedBox(width: 18),
-                  Expanded(child: _DetailTile(label: d.$1, value: d.$2)),
-                ],
-              ],
-            ),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.fromLTRB(26, 18, 26, 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Column(
+            const Center(child: _Brand(scale: 0.8)),
+            const SizedBox(height: 30),
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  LayoutBuilder(
-                    builder: (context, c) => BarcodeView(
-                      barcode: Barcode.code128(),
-                      data: member.cardUrl,
-                      width: c.maxWidth,
-                      height: 104,
-                      color: _ink,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'EMPLOYEE ID',
+                          style: TextStyle(fontSize: 12, color: VStackColors.muted, letterSpacing: 2.4),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          member.employeeId,
+                          style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: 1.5),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(width: 56, height: 3, color: _roleBlue),
+                        const SizedBox(height: 18),
+                        for (final d in details.take(7))
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  d.$1,
+                                  style: const TextStyle(fontSize: 11.5, color: VStackColors.muted, letterSpacing: 1.8),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  d.$2,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700, height: 1.25),
+                                ),
+                              ],
+                            ),
+                          ),
+                        const Spacer(),
+                        Text(
+                          'This card is the property of VStack Business Solutions. If found, please return it or call $phone.',
+                          style: const TextStyle(fontSize: 12.5, color: VStackColors.muted, height: 1.4),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          contact.email,
+                          style: const TextStyle(fontSize: 12.5, color: _roleBlue, fontWeight: FontWeight.w600),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    member.employeeId,
-                    style: const TextStyle(
-                      color: _ink,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 8,
+                  const SizedBox(width: 20),
+                  // Vertical barcode along the long edge gives the dense card URL more room.
+                  Container(
+                    width: 118,
+                    padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: RotatedBox(
+                      quarterTurns: 1,
+                      child: LayoutBuilder(
+                        builder: (context, c) => Column(
+                          children: [
+                            BarcodeView(
+                              barcode: Barcode.code128(),
+                              data: member.cardUrl,
+                              width: c.maxWidth,
+                              height: c.maxHeight - 26,
+                              color: _ink,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              member.employeeId,
+                              style: const TextStyle(
+                                color: _ink,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 6,
+                                height: 1.1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'This card is the property of VStack Business Solutions. If found, please return it or call $phone.',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13.5, color: VStackColors.muted, height: 1.4),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _DetailTile extends StatelessWidget {
-  const _DetailTile({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        color: Colors.white.withValues(alpha: 0.05),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(fontSize: 11.5, color: VStackColors.muted, letterSpacing: 1.6)),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
-          ),
-        ],
       ),
     );
   }

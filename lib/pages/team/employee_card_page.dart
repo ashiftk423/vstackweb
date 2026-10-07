@@ -82,7 +82,7 @@ class _EmployeeCardViewState extends State<_EmployeeCardView> {
               const _VerifiedBadge(),
               const SizedBox(height: VStackSpacing.lg),
               ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 680),
+                constraints: BoxConstraints(maxWidth: mobile ? 340 : 400),
                 child: FlippableIdCard(member: m, contact: widget.contact),
               ),
               const SizedBox(height: VStackSpacing.sm),
@@ -159,14 +159,17 @@ class _EmployeeCardViewState extends State<_EmployeeCardView> {
               const Text('Print-ready card', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
               const SizedBox(height: 4),
               const Text(
-                'Download both sides as high-resolution PNGs for printing (CR80 size, 85.6 × 54 mm).',
+                'Download both sides as high-resolution PNGs for printing (CR80 portrait, 54 × 85.6 mm).',
                 style: TextStyle(color: VStackColors.muted, fontSize: 13),
               ),
               const SizedBox(height: VStackSpacing.md),
-              ResponsiveGrid(
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 720),
+                child: ResponsiveGrid(
                 itemCount: 2,
                 desktopColumns: 2,
                 tabletColumns: 2,
+                mobileColumns: 2,
                 spacing: VStackSpacing.lg,
                 itemBuilder: (context, i) {
                   final front = i == 0;
@@ -180,7 +183,8 @@ class _EmployeeCardViewState extends State<_EmployeeCardView> {
                         boundaryKey: front ? _frontKey : _backKey,
                       ),
                       const SizedBox(height: VStackSpacing.sm),
-                      Align(
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
                         alignment: Alignment.centerLeft,
                         child: FilledButton.icon(
                           onPressed: () => _download(front ? _frontKey : _backKey, front ? 'front' : 'back'),
@@ -191,6 +195,7 @@ class _EmployeeCardViewState extends State<_EmployeeCardView> {
                     ],
                   );
                 },
+                ),
               ),
             ],
           ),

@@ -27,8 +27,9 @@ class TeamCardsPage extends StatelessWidget {
             top: VStackSpacing.lg,
             child: ResponsiveGrid(
               itemCount: content.team.length,
-              desktopColumns: 2,
-              tabletColumns: 2,
+              desktopColumns: 4,
+              tabletColumns: 3,
+              mobileColumns: 2,
               spacing: VStackSpacing.lg,
               itemBuilder: (context, i) {
                 final m = content.team[i];
@@ -55,19 +56,15 @@ class TeamCardsPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: VStackSpacing.sm),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${m.name} · ${m.employeeId}',
-                            style: const TextStyle(color: VStackColors.muted, fontSize: 13),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => context.go(m.cardPath),
-                          child: const Text('View card'),
-                        ),
-                      ],
+                    Text(
+                      m.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                    ),
+                    Text(
+                      m.employeeId,
+                      style: const TextStyle(color: VStackColors.muted, fontSize: 12),
                     ),
                   ],
                 );
