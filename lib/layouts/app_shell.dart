@@ -251,6 +251,7 @@ class VStackFooter extends StatelessWidget {
                 const SizedBox(height: 20),
                 linkCol('Company', [
                   ('About', '/about'),
+                  ('Team ID Cards', '/team'),
                   ('Our Work', '/work'),
                   ('Careers', '/careers'),
                   ('Contact', '/contact'),
@@ -264,6 +265,7 @@ class VStackFooter extends StatelessWidget {
                     Expanded(
                       child: linkCol('Company', [
                         ('About', '/about'),
+                        ('Team ID Cards', '/team'),
                         ('Our Work', '/work'),
                         ('Careers', '/careers'),
                         ('Contact', '/contact'),

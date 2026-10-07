@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:vstackweb/app/site_content_scope.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/widgets/layout_widgets.dart';
@@ -43,6 +44,7 @@ class AboutPage extends StatelessWidget {
                   itemBuilder: (_, i) {
                     final m = content.team[i];
                     return VStackCard(
+                      onTap: () => context.go(m.cardPath),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -55,6 +57,17 @@ class AboutPage extends StatelessWidget {
                           Text(m.role, style: const TextStyle(color: VStackColors.accent2, fontSize: 12)),
                           const SizedBox(height: VStackSpacing.sm),
                           Text(m.bio, style: const TextStyle(color: VStackColors.muted, fontSize: 13, height: 1.45)),
+                          const SizedBox(height: VStackSpacing.sm),
+                          Row(
+                            children: [
+                              const Icon(Icons.badge_outlined, size: 16, color: VStackColors.accent),
+                              const SizedBox(width: 6),
+                              Text(
+                                'ID card · ${m.employeeId}',
+                                style: const TextStyle(color: VStackColors.accent, fontSize: 12, fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     );

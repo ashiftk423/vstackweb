@@ -15,6 +15,8 @@ import 'package:vstackweb/pages/products/products_page.dart';
 import 'package:vstackweb/pages/solutions/solution_detail_page.dart';
 import 'package:vstackweb/pages/solutions/solutions_hub_page.dart';
 import 'package:vstackweb/pages/start_project_page.dart';
+import 'package:vstackweb/pages/team/employee_card_page.dart';
+import 'package:vstackweb/pages/team/team_cards_page.dart';
 import 'package:vstackweb/pages/work/work_detail_page.dart';
 import 'package:vstackweb/pages/work/work_page.dart';
 import 'package:vstackweb/features/tools/pages/tools_hub_page.dart';
@@ -62,6 +64,11 @@ GoRouter createAppRouter(SiteContent content) {
           //   path: '/demo-lab/:slug',
           //   builder: (_, state) => DemoDetailPage(slug: state.pathParameters['slug']!),
           // ),
+          GoRoute(path: '/team', builder: (_, _) => const TeamCardsPage()),
+          GoRoute(
+            path: '/team/:employeeId',
+            builder: (_, state) => EmployeeCardPage(employeeId: state.pathParameters['employeeId']!),
+          ),
           GoRoute(path: '/about', builder: (_, __) => const AboutPage()),
           GoRoute(path: '/contact', builder: (_, __) => const ContactPage()),
           GoRoute(path: '/careers', builder: (_, __) => const CareersPage()),
@@ -96,6 +103,7 @@ GoRouter createAppRouter(SiteContent content) {
 /// any other legacy .html page → home.
 String? _legacyHtmlRedirect(String path) {
   if (!path.endsWith('.html')) return null;
+  if (path == '/team.html') return '/team';
   final clean = path.substring(0, path.length - '.html'.length);
   for (final prefix in ['/solutions/', '/products/', '/tools/', '/work/']) {
     if (clean.startsWith(prefix) && clean.length > prefix.length) return clean;

@@ -4,6 +4,10 @@ import 'package:vstackweb/features/tools/data/tools_registry.dart';
 import 'package:vstackweb/layouts/app_shell.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 
+import 'package:vstackweb/features/tools/pages/barcode_generator_page.dart'
+    deferred as barcode_generator;
+import 'package:vstackweb/features/tools/pages/barcode_reader_page.dart'
+    deferred as barcode_reader;
 import 'package:vstackweb/features/tools/pages/device_mockup_page.dart'
     deferred as device_mockup;
 import 'package:vstackweb/features/tools/pages/favicon_generator_page.dart'
@@ -72,6 +76,11 @@ class _DeferredToolPageState extends State<DeferredToolPage> {
       final query = widget.state.uri.queryParameters;
       final page = switch (widget.slug) {
         'qr-code-generator' => await _loadQr(query['data']),
+        'barcode-generator' => await _loadBarcodeGenerator(query['data']),
+        'barcode-reader' => await _loadSimple(
+            barcode_reader.loadLibrary,
+            () => barcode_reader.BarcodeReaderPage(),
+          ),
         'image-compressor' => await _loadSimple(
             image_compressor.loadLibrary,
             () => image_compressor.ImageCompressorPage(),
@@ -138,6 +147,11 @@ class _DeferredToolPageState extends State<DeferredToolPage> {
   Future<Widget> _loadQr(String? data) async {
     await qr_tool.loadLibrary();
     return qr_tool.QrCodeGeneratorPage(initialData: data);
+  }
+
+  Future<Widget> _loadBarcodeGenerator(String? data) async {
+    await barcode_generator.loadLibrary();
+    return barcode_generator.BarcodeGeneratorPage(initialData: data);
   }
 
   Future<Widget> _loadUtm(String? url) async {

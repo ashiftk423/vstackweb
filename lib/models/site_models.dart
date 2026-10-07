@@ -60,6 +60,20 @@ class SiteContent {
     return null;
   }
 
+  TeamMember? memberByEmployeeId(String employeeId) {
+    final id = employeeId.trim().toUpperCase();
+    for (final m in team) {
+      if (m.employeeId == id) return m;
+    }
+    return null;
+  }
+
+  /// Finds a team member from a scanned value: a card URL or a bare employee ID.
+  TeamMember? memberFromScan(String value) {
+    final match = RegExp(r'VBS-OR-\d{4}', caseSensitive: false).firstMatch(value);
+    return match == null ? null : memberByEmployeeId(match.group(0)!);
+  }
+
   DemoEntry? demoBySlug(String slug) {
     for (final d in demos) {
       if (d.slug == slug) return d;
@@ -208,41 +222,89 @@ class Project {
 class TeamMember {
   const TeamMember({
     required this.id,
+    required this.employeeId,
     required this.sortOrder,
     required this.name,
     required this.role,
     required this.bio,
     required this.initials,
     required this.isLeadership,
+    this.cardName,
+    this.department,
+    this.joinedOn,
+    this.validUntil,
+    this.bloodGroup,
+    this.email,
+    this.phone,
     this.photo,
     this.searchAliases = const [],
   });
 
+  /// Employee IDs look like VBS-OR-0001 and must be unique across the team.
+  static final employeeIdPattern = RegExp(r'^VBS-OR-\d{4}$');
+
   final String id;
+  final String employeeId;
   final int sortOrder;
   final String name;
   final String role;
   final String bio;
   final String initials;
   final bool isLeadership;
+  /// Full name printed on the ID card when it differs from [name].
+  final String? cardName;
+  final String? department;
+  final String? joinedOn;
+  final String? validUntil;
+  final String? bloodGroup;
+  final String? email;
+  final String? phone;
   final String? photo;
   /// Extra name spellings so search engines can match people (e.g. Ashif T Saheer).
   final List<String> searchAliases;
 
+  String get displayCardName => cardName ?? name;
+
+  /// Public employee card page; the ID card barcode and QR code both encode this.
+  String get cardPath => '/team/$employeeId';
+
+  String get cardUrl => 'https://vstackbusinesssolutions.com$cardPath';
+
   factory TeamMember.fromJson(Map<String, dynamic> json) => TeamMember(
         id: json['id'] as String? ?? '',
+        employeeId: (json['employeeId'] as String? ?? '').toUpperCase(),
         sortOrder: json['sortOrder'] as int? ?? 0,
         name: json['name'] as String? ?? '',
         role: json['role'] as String? ?? '',
         bio: json['bio'] as String? ?? '',
         initials: json['initials'] as String? ?? '',
         isLeadership: json['isLeadership'] as bool? ?? false,
+        cardName: json['cardName'] as String?,
+        department: json['department'] as String?,
+        joinedOn: json['joinedOn'] as String?,
+        validUntil: json['validUntil'] as String?,
+        bloodGroup: json['bloodGroup'] as String?,
+        email: json['email'] as String?,
+        phone: json['phone'] as String?,
         photo: json['photo'] as String?,
         searchAliases: (json['searchAliases'] as List<dynamic>?)
                 ?.map((e) => e.toString())
                 .toList() ??
             const [],
       );
+
+  /// Throws if any employee ID is missing, malformed, or duplicated.
+  static void validateEmployeeIds(List<TeamMember> team) {
+    final seen = <String>{};
+    for (final m in team) {
+      if (!employeeIdPattern.hasMatch(m.employeeId)) {
+        throw FormatException('Invalid employeeId "${m.employeeId}" for ${m.name}');
+      }
+      if (!seen.add(m.employeeId)) {
+        throw FormatException('Duplicate employeeId ${m.employeeId}');
+      }
+    }
+  }
 }
 
 class ContactInfo {

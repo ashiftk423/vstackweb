@@ -4,6 +4,8 @@ import 'package:vstackweb/features/tools/models/tool_definition.dart';
 abstract final class ToolsRegistry {
   static const all = <ToolDefinition>[
     qrCodeGenerator,
+    barcodeGenerator,
+    barcodeReader,
     imageCompressor,
     videoCompressor,
     imageResizer,
@@ -85,6 +87,72 @@ abstract final class ToolsRegistry {
     ],
     contextCtaLabel: 'Need a custom app with QR scanning?',
     contextCtaRoute: '/start-project',
+  );
+
+  static const barcodeGenerator = ToolDefinition(
+    id: 'barcode-generator',
+    name: 'Barcode Generator',
+    slug: 'barcode-generator',
+    shortDescription: 'Create Code 128, EAN-13, UPC, Code 39, Data Matrix and more barcodes.',
+    description:
+        'VSTACK Barcode Generator creates printable barcodes for products, inventory, ID cards and labels — Code 128, Code 39, Code 93, EAN-13, EAN-8, UPC-A, ITF, Codabar, QR, Data Matrix, PDF417 and Aztec. Download PNG or SVG. All processing happens in your browser.',
+    category: ToolCategory.business,
+    icon: Icons.view_week_rounded,
+    keywords: ['barcode', 'code128', 'ean', 'ean13', 'upc', 'code39', 'label', 'inventory', 'sku', 'id card'],
+    route: '/tools/barcode-generator',
+    isPopular: true,
+    seo: ToolSeoMeta(
+      title: 'Free Barcode Generator Online — Code 128, EAN-13, UPC | VSTACK',
+      description:
+          'Generate Code 128, EAN-13, EAN-8, UPC-A, Code 39, ITF, Codabar, Data Matrix, PDF417 and Aztec barcodes online. Download PNG or SVG — free, no login, processed in your browser.',
+      h1: 'Barcode Generator',
+      faq: [
+        ('Is this barcode generator free?', 'Yes. Generate and download as many barcodes as you need, with no login.'),
+        ('Which barcode should I use for retail products?', 'Use EAN-13 (or UPC-A in the US) with a number registered through GS1. For internal stock and labels, Code 128 is the most flexible.'),
+      ],
+    ),
+    relatedToolIds: ['barcode-reader', 'qr-code-generator', 'invoice-generator'],
+    tags: ['barcode', 'business'],
+    howItWorks: [
+      'Choose a barcode type',
+      'Enter the text or number to encode',
+      'Adjust size and label',
+      'Download as PNG or SVG',
+    ],
+    contextCtaLabel: 'Need billing or inventory software with barcode support?',
+    contextCtaRoute: '/solutions/software-business-solutions',
+  );
+
+  static const barcodeReader = ToolDefinition(
+    id: 'barcode-reader',
+    name: 'Barcode & QR Reader',
+    slug: 'barcode-reader',
+    shortDescription: 'Scan barcodes and QR codes with your camera or from an image.',
+    description:
+        'Read barcodes and QR codes online using your phone or laptop camera, or by uploading a photo. Supports Code 128, EAN, UPC, Code 39, QR, Data Matrix, PDF417 and more. Scanning runs locally in your browser.',
+    category: ToolCategory.popular,
+    icon: Icons.qr_code_scanner_rounded,
+    keywords: ['barcode reader', 'barcode scanner', 'qr scanner', 'scan', 'reader', 'ean', 'code128', 'camera'],
+    route: '/tools/barcode-reader',
+    isPopular: true,
+    seo: ToolSeoMeta(
+      title: 'Free Online Barcode & QR Code Scanner | VSTACK',
+      description:
+          'Scan barcodes and QR codes online with your camera or an uploaded image. Code 128, EAN-13, UPC, QR, Data Matrix and more — free and private, processed in your browser.',
+      h1: 'Barcode & QR Reader',
+      faq: [
+        ('Do I need to install an app?', 'No. The scanner works in your browser on phones and computers.'),
+        ('Are images or camera frames uploaded?', 'No. Decoding happens locally on your device.'),
+      ],
+    ),
+    relatedToolIds: ['barcode-generator', 'qr-code-generator'],
+    tags: ['barcode', 'qr'],
+    howItWorks: [
+      'Tap "Scan with camera" and allow camera access, or upload an image',
+      'Point the camera at the barcode or QR code',
+      'See the decoded text instantly',
+      'Copy it or open the link',
+    ],
   );
 
   static const imageCompressor = ToolDefinition(

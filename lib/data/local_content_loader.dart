@@ -31,6 +31,12 @@ class LocalContentLoader {
         });
     }
 
+    final team = parseList('team', TeamMember.fromJson);
+    assert(() {
+      TeamMember.validateEmployeeIds(team);
+      return true;
+    }());
+
     return SiteContent(
       site: SiteInfo.fromJson(json['site'] as Map<String, dynamic>? ?? {}),
       about: AboutSection.fromJson(json['about'] as Map<String, dynamic>? ?? {}),
@@ -38,7 +44,7 @@ class LocalContentLoader {
       capabilities: parseList('capabilities', Capability.fromJson),
       projects: parseList('projects', Project.fromJson),
       process: parseList('process', Project.fromJson),
-      team: parseList('team', TeamMember.fromJson),
+      team: team,
       seo: SeoSection.fromJson(json['seo'] as Map<String, dynamic>? ?? {}),
       careers: CareersSection.fromJson(json['careers'] as Map<String, dynamic>? ?? {}),
       contact: ContactInfo.fromJson(json['contact'] as Map<String, dynamic>? ?? {}),

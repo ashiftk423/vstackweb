@@ -8,8 +8,9 @@ import 'dart:io';
 /// the main solution pages, About/Careers, or home). Targets must never equal
 /// the shell's own path, or GitHub Pages will serve the shell again and loop.
 ///
-/// Do NOT write HTML under web/solutions/, web/products/, or web/tools/{slug}.html:
-/// GitHub Pages maps /solutions/foo → solutions/foo.html, which would shadow the SPA.
+/// Do NOT write HTML under web/solutions/, web/products/, or web/tools/{slug}.html,
+/// or web/team.html: GitHub Pages maps /solutions/foo → solutions/foo.html and
+/// /team → team.html, which would shadow the SPA routes.
 void main() {
   const redirects = <String, String>{
     'web/locations.html': '/',
@@ -18,7 +19,6 @@ void main() {
     'web/locations/ernakulam.html': '/',
     'web/services.html': '/',
     'web/faq.html': '/',
-    'web/team.html': '/about',
     'web/careers.html': '/careers',
     'web/demo-lab/index.html': '/',
     'web/tools-hub-seo.html': '/tools',

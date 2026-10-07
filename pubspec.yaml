@@ -44,6 +44,7 @@ dependencies:
   pdf: ^3.11.3
   archive: ^4.0.7
   video_player: ^2.10.0
+  barcode: ^2.2.9
 
 dev_dependencies:
   flutter_test:

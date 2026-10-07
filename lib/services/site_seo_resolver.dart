@@ -113,6 +113,27 @@ SiteSeoMeta resolveSiteSeo(SiteContent content, String path) {
     );
   }
 
+  if (normalized == '/team') {
+    return const SiteSeoMeta(
+      title: 'Team ID Cards | ${SiteSeoDefaults.siteTitle}',
+      description:
+          'Verified VStack Business Solutions employee ID cards. Scan the barcode or QR code on any VStack ID card to confirm the employee.',
+      canonicalPath: '/team',
+    );
+  }
+
+  if (normalized.startsWith('/team/')) {
+    final m = content.memberByEmployeeId(normalized.split('/').last);
+    if (m != null) {
+      return SiteSeoMeta(
+        title: '${m.name} (${m.employeeId}) — ${m.role} | ${SiteSeoDefaults.siteTitle}',
+        description:
+            'Verified employee card: ${m.displayCardName}, ${m.role} at VStack Business Solutions. Employee ID ${m.employeeId}.',
+        canonicalPath: m.cardPath,
+      );
+    }
+  }
+
   if (normalized == '/contact') {
     return SiteSeoMeta(
       title: 'Contact | ${SiteSeoDefaults.siteTitle}',
