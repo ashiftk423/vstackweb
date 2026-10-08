@@ -4,6 +4,7 @@ import 'package:vstackweb/app/site_content_scope.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/widgets/employee_id_card.dart';
 import 'package:vstackweb/widgets/layout_widgets.dart';
+import 'package:vstackweb/widgets/page_back_link.dart';
 import 'package:vstackweb/widgets/page_hero.dart';
 import 'package:vstackweb/widgets/page_scroll.dart';
 
@@ -16,6 +17,7 @@ class TeamCardsPage extends StatelessWidget {
     return PageScroll(
       child: Column(
         children: [
+          const PageBackLink(label: 'Back to About', route: '/about'),
           const PageHero(
             compact: true,
             badge: 'THE TEAM',
@@ -45,13 +47,18 @@ class TeamCardsPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(18),
                             boxShadow: [
                               BoxShadow(
-                                color: VStackColors.accent.withValues(alpha: 0.12),
+                                color: VStackColors.accent.withValues(
+                                  alpha: 0.12,
+                                ),
                                 blurRadius: 40,
                                 offset: const Offset(0, 16),
                               ),
                             ],
                           ),
-                          child: EmployeeIdCard(member: m, contact: content.contact),
+                          child: EmployeeIdCard(
+                            member: m,
+                            contact: content.contact,
+                          ),
                         ),
                       ),
                     ),
@@ -60,11 +67,17 @@ class TeamCardsPage extends StatelessWidget {
                       m.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
                     ),
                     Text(
                       m.employeeId,
-                      style: const TextStyle(color: VStackColors.muted, fontSize: 12),
+                      style: const TextStyle(
+                        color: VStackColors.muted,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 );
