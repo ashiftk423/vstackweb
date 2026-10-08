@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vstackweb/app/site_content_scope.dart';
 // TODO: Re-enable when gesture camera UI is finished.
 // import 'package:vstackweb/features/gesture_mode/gesture_mode_overlay.dart';
 import 'package:vstackweb/models/site_models.dart';
+import 'package:vstackweb/pages/team/staff_login_page.dart';
 import 'package:vstackweb/theme/responsive.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/utils/enquiry_launcher.dart';
@@ -23,6 +25,31 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   // TODO: Re-enable when gesture camera UI is finished.
   // bool _gestureMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    HardwareKeyboard.instance.addHandler(_onKey);
+  }
+
+  @override
+  void dispose() {
+    HardwareKeyboard.instance.removeHandler(_onKey);
+    super.dispose();
+  }
+
+  /// Ctrl + A + G opens the hidden staff sign-in page.
+  bool _onKey(KeyEvent event) {
+    if (event is! KeyDownEvent) return false;
+    final keyboard = HardwareKeyboard.instance;
+    final pressed = keyboard.logicalKeysPressed;
+    final combo = (keyboard.isControlPressed || keyboard.isMetaPressed) &&
+        pressed.contains(LogicalKeyboardKey.keyA) &&
+        pressed.contains(LogicalKeyboardKey.keyG);
+    if (!combo) return false;
+    if (mounted) context.go(StaffLoginPage.path);
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -251,7 +278,6 @@ class VStackFooter extends StatelessWidget {
                 const SizedBox(height: 20),
                 linkCol('Company', [
                   ('About', '/about'),
-                  ('Team ID Cards', '/team'),
                   ('Our Work', '/work'),
                   ('Careers', '/careers'),
                   ('Contact', '/contact'),
@@ -265,7 +291,6 @@ class VStackFooter extends StatelessWidget {
                     Expanded(
                       child: linkCol('Company', [
                         ('About', '/about'),
-                        ('Team ID Cards', '/team'),
                         ('Our Work', '/work'),
                         ('Careers', '/careers'),
                         ('Contact', '/contact'),

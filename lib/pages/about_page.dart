@@ -13,6 +13,7 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = SiteContentScope.of(context);
+    final team = content.team.where((m) => !m.hideFromPublic).toList();
     return PageScroll(
       child: Column(
         children: [
@@ -39,10 +40,10 @@ class AboutPage extends StatelessWidget {
                 ),
                 const SizedBox(height: VStackSpacing.xl),
                 ResponsiveGrid(
-                  itemCount: content.team.length,
+                  itemCount: team.length,
                   desktopColumns: 3,
                   itemBuilder: (_, i) {
-                    final m = content.team[i];
+                    final m = team[i];
                     return VStackCard(
                       onTap: () => context.go(m.cardPath),
                       child: Column(
@@ -57,17 +58,6 @@ class AboutPage extends StatelessWidget {
                           Text(m.role, style: const TextStyle(color: VStackColors.accent2, fontSize: 12)),
                           const SizedBox(height: VStackSpacing.sm),
                           Text(m.bio, style: const TextStyle(color: VStackColors.muted, fontSize: 13, height: 1.45)),
-                          const SizedBox(height: VStackSpacing.sm),
-                          Row(
-                            children: [
-                              const Icon(Icons.badge_outlined, size: 16, color: VStackColors.accent),
-                              const SizedBox(width: 6),
-                              Text(
-                                'ID card · ${m.employeeId}',
-                                style: const TextStyle(color: VStackColors.accent, fontSize: 12, fontWeight: FontWeight.w600),
-                              ),
-                            ],
-                          ),
                         ],
                       ),
                     );

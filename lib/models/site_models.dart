@@ -65,12 +65,19 @@ class SiteContent {
     for (final m in team) {
       if (m.employeeId == id) return m;
     }
+    // Cards printed before a department code change still resolve by their
+    // company-wide employee number.
+    final number = TeamMember.employeeNumber(id);
+    if (number == null) return null;
+    for (final m in team) {
+      if (TeamMember.employeeNumber(m.employeeId) == number) return m;
+    }
     return null;
   }
 
   /// Finds a team member from a scanned value: a card URL or a bare employee ID.
   TeamMember? memberFromScan(String value) {
-    final match = RegExp(r'VBS-OR-\d{4}', caseSensitive: false).firstMatch(value);
+    final match = RegExp(r'VBS-[A-Z]{2}-\d{4}', caseSensitive: false).firstMatch(value);
     return match == null ? null : memberByEmployeeId(match.group(0)!);
   }
 
@@ -238,10 +245,19 @@ class TeamMember {
     this.phone,
     this.photo,
     this.searchAliases = const [],
+    this.hideFromPublic = false,
   });
 
-  /// Employee IDs look like VBS-OR-0001 and must be unique across the team.
-  static final employeeIdPattern = RegExp(r'^VBS-OR-\d{4}$');
+  /// Employee IDs look like VBS-PD-0004: company, department code, then an
+  /// employee number that is unique across the whole company.
+  /// Department codes: OR = co-founders, PD = programming & development,
+  /// DM = digital marketing.
+  static final employeeIdPattern = RegExp(r'^VBS-[A-Z]{2}-\d{4}$');
+
+  static int? employeeNumber(String employeeId) {
+    final match = RegExp(r'^VBS-[A-Z]{2}-(\d{4})$').firstMatch(employeeId);
+    return match == null ? null : int.parse(match.group(1)!);
+  }
 
   final String id;
   final String employeeId;
@@ -262,10 +278,12 @@ class TeamMember {
   final String? photo;
   /// Extra name spellings so search engines can match people (e.g. Ashif T Saheer).
   final List<String> searchAliases;
+  /// Left out of the public team section; their card is still visible to staff.
+  final bool hideFromPublic;
 
   String get displayCardName => cardName ?? name;
 
-  /// Public employee card page; the ID card barcode and QR code both encode this.
+  /// Staff-only employee card page; the ID card barcode and QR code both encode this.
   String get cardPath => '/team/$employeeId';
 
   String get cardUrl => 'https://vstackbusinesssolutions.com$cardPath';
@@ -291,17 +309,18 @@ class TeamMember {
                 ?.map((e) => e.toString())
                 .toList() ??
             const [],
+        hideFromPublic: json['hideFromPublic'] as bool? ?? false,
       );
 
   /// Throws if any employee ID is missing, malformed, or duplicated.
   static void validateEmployeeIds(List<TeamMember> team) {
-    final seen = <String>{};
+    final seen = <int>{};
     for (final m in team) {
       if (!employeeIdPattern.hasMatch(m.employeeId)) {
         throw FormatException('Invalid employeeId "${m.employeeId}" for ${m.name}');
       }
-      if (!seen.add(m.employeeId)) {
-        throw FormatException('Duplicate employeeId ${m.employeeId}');
+      if (!seen.add(employeeNumber(m.employeeId)!)) {
+        throw FormatException('Duplicate employee number in ${m.employeeId}');
       }
     }
   }

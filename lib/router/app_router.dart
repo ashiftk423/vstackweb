@@ -16,6 +16,8 @@ import 'package:vstackweb/pages/solutions/solution_detail_page.dart';
 import 'package:vstackweb/pages/solutions/solutions_hub_page.dart';
 import 'package:vstackweb/pages/start_project_page.dart';
 import 'package:vstackweb/pages/team/employee_card_page.dart';
+import 'package:vstackweb/pages/team/staff_gate.dart';
+import 'package:vstackweb/pages/team/staff_login_page.dart';
 import 'package:vstackweb/pages/team/team_cards_page.dart';
 import 'package:vstackweb/pages/work/work_detail_page.dart';
 import 'package:vstackweb/pages/work/work_page.dart';
@@ -64,10 +66,19 @@ GoRouter createAppRouter(SiteContent content) {
           //   path: '/demo-lab/:slug',
           //   builder: (_, state) => DemoDetailPage(slug: state.pathParameters['slug']!),
           // ),
-          GoRoute(path: '/team', builder: (_, _) => const TeamCardsPage()),
+          GoRoute(
+            path: '/team',
+            builder: (_, _) => const StaffGate(child: TeamCardsPage()),
+          ),
           GoRoute(
             path: '/team/:employeeId',
-            builder: (_, state) => EmployeeCardPage(employeeId: state.pathParameters['employeeId']!),
+            builder: (_, state) => StaffGate(
+              child: EmployeeCardPage(employeeId: state.pathParameters['employeeId']!),
+            ),
+          ),
+          GoRoute(
+            path: StaffLoginPage.path,
+            builder: (_, _) => const StaffLoginPage(),
           ),
           GoRoute(path: '/about', builder: (_, __) => const AboutPage()),
           GoRoute(path: '/contact', builder: (_, __) => const ContactPage()),

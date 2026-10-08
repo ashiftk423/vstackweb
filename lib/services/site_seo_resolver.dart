@@ -24,7 +24,7 @@ abstract final class SiteSeoDefaults {
   static const defaultTitle =
       'We Stack Your Business | VStack Business Solutions — Best Software Company Kerala & India';
   static const defaultDescription =
-      'VStack Business Solutions — custom software, billing & POS, Flutter apps, websites, digital marketing, hardware, CCTV & complete IT in Kerala, India. vstackitsolutions@gmail.com · +91 81568 25205';
+      'VStack Business Solutions — custom software, billing & POS, Flutter apps, websites, digital marketing, hardware, CCTV & complete IT in Kerala, India. vstackbusinesssolutions@gmail.com · +91 96332 06341';
 }
 
 SiteSeoMeta resolveSiteSeo(SiteContent content, String path) {
@@ -113,25 +113,14 @@ SiteSeoMeta resolveSiteSeo(SiteContent content, String path) {
     );
   }
 
-  if (normalized == '/team') {
+  if (normalized == '/team' ||
+      normalized.startsWith('/team/') ||
+      normalized == '/staff-access') {
     return const SiteSeoMeta(
-      title: 'Team ID Cards | ${SiteSeoDefaults.siteTitle}',
-      description:
-          'Verified VStack Business Solutions employee ID cards. Scan the barcode or QR code on any VStack ID card to confirm the employee.',
-      canonicalPath: '/team',
+      title: 'Staff Access | ${SiteSeoDefaults.siteTitle}',
+      description: 'Restricted area for authorised VStack Business Solutions staff.',
+      canonicalPath: '/',
     );
-  }
-
-  if (normalized.startsWith('/team/')) {
-    final m = content.memberByEmployeeId(normalized.split('/').last);
-    if (m != null) {
-      return SiteSeoMeta(
-        title: '${m.name} (${m.employeeId}) — ${m.role} | ${SiteSeoDefaults.siteTitle}',
-        description:
-            'Verified employee card: ${m.displayCardName}, ${m.role} at VStack Business Solutions. Employee ID ${m.employeeId}.',
-        canonicalPath: m.cardPath,
-      );
-    }
   }
 
   if (normalized == '/contact') {

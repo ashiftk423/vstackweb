@@ -11,6 +11,7 @@ import 'package:vstackweb/features/tools/widgets/tool_split_layout.dart';
 import 'package:vstackweb/features/tools/widgets/tool_status_widgets.dart';
 import 'package:vstackweb/features/tools/widgets/tool_upload_area.dart';
 import 'package:vstackweb/models/site_models.dart';
+import 'package:vstackweb/services/admin_auth.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/widgets/layout_widgets.dart';
 
@@ -72,7 +73,9 @@ class _BarcodeReaderPageState extends State<BarcodeReaderPage> {
   Widget build(BuildContext context) {
     final content = SiteContentScope.maybeOf(context);
     final latest = _latest;
-    final member = latest == null ? null : content?.memberFromScan(latest.text);
+    final member = latest == null || !AdminAuth.signedIn.value
+        ? null
+        : content?.memberFromScan(latest.text);
 
     return ToolPageShell(
       tool: ToolsRegistry.barcodeReader,

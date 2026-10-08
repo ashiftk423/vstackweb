@@ -7,8 +7,8 @@ Use the **exact same business details everywhere** (NAP consistency):
 - **Name:** VStack Business Solutions  
 - **Also known as:** VStack, We Stack, V Stack India  
 - **Website:** https://vstackbusinesssolutions.com  
-- **Email:** vstackitsolutions@gmail.com  
-- **Phone:** +91 81568 25205  
+- **Email:** vstackbusinesssolutions@gmail.com  
+- **Phone:** +91 96332 06341  
 
 ---
 
@@ -125,4 +125,4 @@ When someone asks “software company in Thrissur”, AI will cite whoever has t
 
 Technical SEO is handled in the codebase. For ongoing digital marketing execution (ads, content, social), use your own Digital Marketing service offering or hire dedicated resources.
 
-Contact: vstackitsolutions@gmail.com · +91 81568 25205
+Contact: vstackbusinesssolutions@gmail.com · +91 96332 06341

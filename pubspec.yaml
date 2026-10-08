@@ -45,6 +45,7 @@ dependencies:
   archive: ^4.0.7
   video_player: ^2.10.0
   barcode: ^2.2.9
+  crypto: ^3.0.7
 
 dev_dependencies:
   flutter_test:

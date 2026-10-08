@@ -278,8 +278,9 @@ class _Brand extends StatelessWidget {
       children: [
         Image.asset(
           BrandAssets.logoWhite,
-          width: 86 * scale,
-          height: 86 * scale,
+          // The PNG has transparent padding, so this renders a mark taller than the text block.
+          width: 120 * scale,
+          height: 120 * scale,
         ),
         SizedBox(width: 16 * scale),
         Container(
@@ -477,12 +478,8 @@ class _CardFront extends StatelessWidget {
         .map((s) => s.trim())
         .where((s) => s.isNotEmpty)
         .toList();
-    final roleTitle = roleParts.first.replaceAll('-', ' ').toUpperCase();
-    final roleDetail =
-        (roleParts.length > 1
-                ? roleParts.skip(1).join(' · ')
-                : member.department ?? '')
-            .toUpperCase();
+    final roleTitle = roleParts.first.toUpperCase();
+    final roleSubtitle = roleParts.skip(1).join(' · ').toUpperCase();
     final nameStyle = GoogleFonts.bodoniModa(
       fontSize: 66,
       fontWeight: FontWeight.w500,
@@ -551,25 +548,22 @@ class _CardFront extends StatelessWidget {
                     children: [
                       Text(
                         roleTitle,
-                        maxLines: 2,
                         style: const TextStyle(
-                          fontSize: 25,
+                          fontSize: 21,
                           fontWeight: FontWeight.w800,
                           height: 1.1,
                         ),
                       ),
-                      if (roleDetail.isNotEmpty) ...[
-                        const SizedBox(height: 6),
+                      if (roleSubtitle.isNotEmpty) ...[
+                        const SizedBox(height: 4),
                         Text(
-                          roleDetail,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
+                          roleSubtitle,
                           style: const TextStyle(
-                            fontSize: 15,
+                            fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: _roleBlue,
-                            letterSpacing: 0.6,
-                            height: 1.25,
+                            color: Colors.white70,
+                            letterSpacing: 0.4,
+                            height: 1.2,
                           ),
                         ),
                       ],
@@ -657,6 +651,8 @@ class _CardBack extends StatelessWidget {
       ('NAME', member.displayCardName),
       ('DESIGNATION', member.role),
       if (member.department != null) ('DEPARTMENT', member.department!),
+      ('COMPANY EMAIL', contact.email),
+      ('CONTACT NUMBER', phone),
       if (member.joinedOn != null) ('JOINED', member.joinedOn!),
       if (member.validUntil != null) ('VALID UNTIL', member.validUntil!),
       if (member.bloodGroup != null) ('BLOOD GROUP', member.bloodGroup!),
@@ -763,6 +759,15 @@ class _CardBack extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       contact.email,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        color: _roleBlue,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      phone,
                       style: const TextStyle(
                         fontSize: 12.5,
                         color: _roleBlue,

@@ -7,8 +7,8 @@
 - **Legal name:** VStack Business Solutions
 - **Also known as:** VStack, We Stack, We Stack Business Solutions, We Stack Your Business, V Stack, V Stack Business Solutions, VStack India, We Stack India, V Stack India
 - **Website:** https://vstackbusinesssolutions.com/
-- **Email:** vstackitsolutions@gmail.com
-- **Phone / WhatsApp:** +91 81568 25205 (also searchable as 8156825205, +918156825205)
+- **Email:** vstackbusinesssolutions@gmail.com
+- **Phone / WhatsApp:** +91 96332 06341 (also searchable as 9633206341, +919633206341)
 - **Location:** Kerala, India · Remote worldwide
 - **Founded:** Technology partner since 2025
 
@@ -48,13 +48,12 @@ VStack Business Solutions provides end-to-end business technology:
 
 ## Leadership & team
 
-- **Ashif Saheer** — Co-Founder · Programming Department Head
-- **Abhinav Govind** — Co-Founder · Service & Hardware Department Head
-- **Gokul Krishna** — Co-Founder · Marketing & Hardware Department Head
+- **Ashif Saheer** — Co-Founder & Business Consultant (Programming & Marketing)
+- **Abhinav Govind** — Co-Founder & Business Consultant (Marketing & Hardware)
+- **Gokul Krishna** — Co-Founder & Business Consultant (Service & Hardware)
 - **Gayathri Mini Rajan** — Frontend Developer
 - **Edwin Reji John** — Backend Developer
 - **Rizwan Abdul Azeez** — Frontend Developer · Flutter Specialist
-
 Full profiles: https://vstackbusinesssolutions.com/about
 
 ## Free online tools
