@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:barcode/barcode.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:vstackweb/constants/brand_assets.dart';
 import 'package:vstackweb/models/site_models.dart';
 import 'package:vstackweb/theme/vstack_theme.dart';
 import 'package:vstackweb/widgets/barcode_view.dart';
@@ -41,7 +42,9 @@ class EmployeeIdCard extends StatelessWidget {
           ? _CardFront(member: member)
           : _CardBack(member: member, contact: contact),
     );
-    if (boundaryKey != null) face = RepaintBoundary(key: boundaryKey, child: face);
+    if (boundaryKey != null) {
+      face = RepaintBoundary(key: boundaryKey, child: face);
+    }
     return AspectRatio(
       aspectRatio: designSize.width / designSize.height,
       child: FittedBox(child: face),
@@ -51,7 +54,11 @@ class EmployeeIdCard extends StatelessWidget {
 
 /// Tap to flip between the front and back of an [EmployeeIdCard].
 class FlippableIdCard extends StatefulWidget {
-  const FlippableIdCard({super.key, required this.member, required this.contact});
+  const FlippableIdCard({
+    super.key,
+    required this.member,
+    required this.contact,
+  });
 
   final TeamMember member;
   final ContactInfo contact;
@@ -60,9 +67,16 @@ class FlippableIdCard extends StatefulWidget {
   State<FlippableIdCard> createState() => _FlippableIdCardState();
 }
 
-class _FlippableIdCardState extends State<FlippableIdCard> with SingleTickerProviderStateMixin {
-  late final _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 700));
-  late final _angle = CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic);
+class _FlippableIdCardState extends State<FlippableIdCard>
+    with SingleTickerProviderStateMixin {
+  late final _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 700),
+  );
+  late final _angle = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeInOutCubic,
+  );
 
   @override
   void dispose() {
@@ -71,7 +85,8 @@ class _FlippableIdCardState extends State<FlippableIdCard> with SingleTickerProv
   }
 
   void _flip() {
-    final showingBack = _controller.status == AnimationStatus.forward ||
+    final showingBack =
+        _controller.status == AnimationStatus.forward ||
         _controller.status == AnimationStatus.completed;
     showingBack ? _controller.reverse() : _controller.forward();
   }
@@ -102,7 +117,10 @@ class _FlippableIdCardState extends State<FlippableIdCard> with SingleTickerProv
                         side: IdCardSide.back,
                       ),
                     )
-                  : EmployeeIdCard(member: widget.member, contact: widget.contact),
+                  : EmployeeIdCard(
+                      member: widget.member,
+                      contact: widget.contact,
+                    ),
             );
           },
         ),
@@ -146,7 +164,9 @@ class _CardSurface extends StatelessWidget {
                 height: 8,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [_beamBlue, VStackColors.accent2]),
+                    gradient: LinearGradient(
+                      colors: [_beamBlue, VStackColors.accent2],
+                    ),
                   ),
                 ),
               ),
@@ -157,7 +177,10 @@ class _CardSurface extends StatelessWidget {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(_cardRadius),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 2),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      width: 2,
+                    ),
                   ),
                 ),
               ),
@@ -201,10 +224,42 @@ class _LightBeamsPainter extends CustomPainter {
     }
 
     // Dark wedge that the light streaks sit on.
-    beam([Offset(w * 0.52, 0), Offset(w * 0.86, 0), Offset(w, h * 0.30), Offset(w, h * 0.62)], 0.10);
-    beam([Offset(w * 0.70, 0), Offset(w * 0.80, 0), Offset(w, h * 0.33), Offset(w, h * 0.45)], 0.55, glow: 26);
-    beam([Offset(w * 0.88, 0), Offset(w * 0.905, 0), Offset(w, h * 0.155), Offset(w, h * 0.19)], 0.9, glow: 10);
-    beam([Offset(w * 0.60, h * 0.02), Offset(w * 0.615, h * 0.02), Offset(w, h * 0.66), Offset(w, h * 0.69)], 0.85, glow: 14);
+    beam([
+      Offset(w * 0.52, 0),
+      Offset(w * 0.86, 0),
+      Offset(w, h * 0.30),
+      Offset(w, h * 0.62),
+    ], 0.10);
+    beam(
+      [
+        Offset(w * 0.70, 0),
+        Offset(w * 0.80, 0),
+        Offset(w, h * 0.33),
+        Offset(w, h * 0.45),
+      ],
+      0.55,
+      glow: 26,
+    );
+    beam(
+      [
+        Offset(w * 0.88, 0),
+        Offset(w * 0.905, 0),
+        Offset(w, h * 0.155),
+        Offset(w, h * 0.19),
+      ],
+      0.9,
+      glow: 10,
+    );
+    beam(
+      [
+        Offset(w * 0.60, h * 0.02),
+        Offset(w * 0.615, h * 0.02),
+        Offset(w, h * 0.66),
+        Offset(w, h * 0.69),
+      ],
+      0.85,
+      glow: 14,
+    );
   }
 
   @override
@@ -221,17 +276,18 @@ class _Brand extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ColorFiltered(
-          colorFilter: const ColorFilter.mode(_roleBlue, BlendMode.srcIn),
-          child: Image.asset(
-            'assets/logo/v_stack_logo-removebg-preview.png',
-            width: 64 * scale,
-            height: 64 * scale,
-          ),
+        Image.asset(
+          BrandAssets.logoWhite,
+          width: 86 * scale,
+          height: 86 * scale,
         ),
-        SizedBox(width: 14 * scale),
-        Container(width: 2, height: 54 * scale, color: Colors.white.withValues(alpha: 0.85)),
-        SizedBox(width: 14 * scale),
+        SizedBox(width: 16 * scale),
+        Container(
+          width: 2.5,
+          height: 70 * scale,
+          color: Colors.white.withValues(alpha: 0.85),
+        ),
+        SizedBox(width: 16 * scale),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -239,19 +295,19 @@ class _Brand extends StatelessWidget {
             Text(
               'VSTACK',
               style: TextStyle(
-                fontSize: 42 * scale,
+                fontSize: 54 * scale,
                 fontWeight: FontWeight.w800,
-                letterSpacing: 3 * scale,
+                letterSpacing: 3.5 * scale,
                 height: 1,
               ),
             ),
-            SizedBox(height: 4 * scale),
+            SizedBox(height: 5 * scale),
             Text(
               'BUSINESS SOLUTIONS',
               style: TextStyle(
-                fontSize: 14 * scale,
+                fontSize: 17 * scale,
                 fontWeight: FontWeight.w600,
-                letterSpacing: 3.2 * scale,
+                letterSpacing: 3.6 * scale,
               ),
             ),
           ],
@@ -261,8 +317,9 @@ class _Brand extends StatelessWidget {
   }
 }
 
-ImageProvider _photoProvider(String photo) =>
-    photo.startsWith('http') ? NetworkImage(photo) : AssetImage(photo) as ImageProvider;
+ImageProvider _photoProvider(String photo) => photo.startsWith('http')
+    ? NetworkImage(photo)
+    : AssetImage(photo) as ImageProvider;
 
 /// Big cut-out photo with an oversized faded copy behind it, as in the
 /// VStack poster style. Falls back to large initials when there is no photo.
@@ -274,19 +331,21 @@ class _HeroPortrait extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final photo = member.photo;
-    if (photo == null || photo.isEmpty) return _InitialsPortrait(initials: member.initials);
+    if (photo == null || photo.isEmpty) {
+      return _InitialsPortrait(initials: member.initials);
+    }
     final image = _photoProvider(photo);
 
     Widget fadedBottom(Widget child) => ShaderMask(
-          blendMode: BlendMode.dstIn,
-          shaderCallback: (rect) => const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.white, Colors.white, Colors.transparent],
-            stops: [0, 0.8, 1],
-          ).createShader(rect),
-          child: child,
-        );
+      blendMode: BlendMode.dstIn,
+      shaderCallback: (rect) => const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Colors.white, Colors.white, Colors.transparent],
+        stops: [0, 0.8, 1],
+      ).createShader(rect),
+      child: child,
+    );
 
     return Stack(
       clipBehavior: Clip.none,
@@ -306,7 +365,13 @@ class _HeroPortrait extends StatelessWidget {
                 0.40, 0.40, 0.40, 0, 6,
                 0, 0, 0, 1, 0,
               ]),
-              child: fadedBottom(Image(image: image, fit: BoxFit.contain, alignment: Alignment.topCenter)),
+              child: fadedBottom(
+                Image(
+                  image: image,
+                  fit: BoxFit.contain,
+                  alignment: Alignment.topCenter,
+                ),
+              ),
             ),
           ),
         ),
@@ -319,8 +384,15 @@ class _HeroPortrait extends StatelessWidget {
           child: ImageFiltered(
             imageFilter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
             child: ColorFiltered(
-              colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: 0.6), BlendMode.srcIn),
-              child: Image(image: image, fit: BoxFit.contain, alignment: Alignment.bottomCenter),
+              colorFilter: ColorFilter.mode(
+                Colors.black.withValues(alpha: 0.6),
+                BlendMode.srcIn,
+              ),
+              child: Image(
+                image: image,
+                fit: BoxFit.contain,
+                alignment: Alignment.bottomCenter,
+              ),
             ),
           ),
         ),
@@ -329,7 +401,13 @@ class _HeroPortrait extends StatelessWidget {
           right: -20,
           top: 136,
           bottom: 140,
-          child: fadedBottom(Image(image: image, fit: BoxFit.contain, alignment: Alignment.bottomCenter)),
+          child: fadedBottom(
+            Image(
+              image: image,
+              fit: BoxFit.contain,
+              alignment: Alignment.bottomCenter,
+            ),
+          ),
         ),
       ],
     );
@@ -343,7 +421,10 @@ class _InitialsPortrait extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final serif = GoogleFonts.bodoniModa(fontWeight: FontWeight.w600, height: 1);
+    final serif = GoogleFonts.bodoniModa(
+      fontWeight: FontWeight.w600,
+      height: 1,
+    );
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -352,7 +433,10 @@ class _InitialsPortrait extends StatelessWidget {
           top: 120,
           child: Text(
             initials,
-            style: serif.copyWith(fontSize: 400, color: Colors.white.withValues(alpha: 0.05)),
+            style: serif.copyWith(
+              fontSize: 400,
+              color: Colors.white.withValues(alpha: 0.05),
+            ),
           ),
         ),
         Positioned(
@@ -383,12 +467,22 @@ class _CardFront extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final nameParts = member.displayCardName.toUpperCase().split(RegExp(r'\s+'));
+    final nameParts = member.displayCardName.toUpperCase().split(
+      RegExp(r'\s+'),
+    );
     final firstLine = nameParts.first;
     final secondLine = nameParts.skip(1).join(' ');
-    final roleParts = member.role.split('·').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+    final roleParts = member.role
+        .split('·')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
     final roleTitle = roleParts.first.replaceAll('-', ' ').toUpperCase();
-    final roleDetail = (roleParts.length > 1 ? roleParts.skip(1).join(' · ') : member.department ?? '').toUpperCase();
+    final roleDetail =
+        (roleParts.length > 1
+                ? roleParts.skip(1).join(' · ')
+                : member.department ?? '')
+            .toUpperCase();
     final nameStyle = GoogleFonts.bodoniModa(
       fontSize: 66,
       fontWeight: FontWeight.w500,
@@ -417,7 +511,12 @@ class _CardFront extends StatelessWidget {
               ),
             ),
           ),
-          const Positioned(left: 0, right: 0, top: 34, child: Center(child: _Brand())),
+          const Positioned(
+            left: 0,
+            right: 0,
+            top: 34,
+            child: Center(child: _Brand()),
+          ),
           Positioned(
             left: 32,
             right: 28,
@@ -435,7 +534,8 @@ class _CardFront extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(firstLine, style: nameStyle),
-                        if (secondLine.isNotEmpty) Text(secondLine, style: nameStyle),
+                        if (secondLine.isNotEmpty)
+                          Text(secondLine, style: nameStyle),
                       ],
                     ),
                   ),
@@ -452,7 +552,11 @@ class _CardFront extends StatelessWidget {
                       Text(
                         roleTitle,
                         maxLines: 2,
-                        style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w800, height: 1.1),
+                        style: const TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.w800,
+                          height: 1.1,
+                        ),
                       ),
                       if (roleDetail.isNotEmpty) ...[
                         const SizedBox(height: 6),
@@ -489,7 +593,11 @@ class _CardFront extends StatelessWidget {
                     children: [
                       const Text(
                         'EMPLOYEE ID',
-                        style: TextStyle(fontSize: 12, color: VStackColors.muted, letterSpacing: 2.4),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: VStackColors.muted,
+                          letterSpacing: 2.4,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -504,22 +612,26 @@ class _CardFront extends StatelessWidget {
                       const SizedBox(height: 6),
                       const Text(
                         'vstackbusinesssolutions.com',
-                        style: TextStyle(fontSize: 13, color: VStackColors.muted),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: VStackColors.muted,
+                        ),
                       ),
                     ],
                   ),
                 ),
+                // Front barcode holds the short employee ID so the bars stay wide enough to scan.
                 Container(
-                  padding: const EdgeInsets.all(7),
+                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: BarcodeView(
-                    barcode: Barcode.qrCode(errorCorrectLevel: BarcodeQRCorrectionLevel.medium),
-                    data: member.cardUrl,
-                    width: 84,
-                    height: 84,
+                    barcode: Barcode.code128(),
+                    data: member.employeeId,
+                    width: 190,
+                    height: 70,
                     color: _ink,
                   ),
                 ),
@@ -553,108 +665,133 @@ class _CardBack extends StatelessWidget {
     ];
 
     return _CardSurface(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(32, 34, 32, 30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Center(child: _Brand(scale: 0.8)),
-            const SizedBox(height: 30),
-            Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 40,
+            right: 40,
+            top: 230,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: 0.07,
+                child: Image.asset(BrandAssets.logoWhite, fit: BoxFit.contain),
+              ),
+            ),
+          ),
+          Positioned.fill(child: _backContent(phone, details)),
+        ],
+      ),
+    );
+  }
+
+  Widget _backContent(String phone, List<(String, String)> details) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(32, 34, 32, 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Center(child: _Brand(scale: 0.9)),
+          const SizedBox(height: 30),
+          const Text(
+            'EMPLOYEE ID',
+            style: TextStyle(
+              fontSize: 12,
+              color: VStackColors.muted,
+              letterSpacing: 2.4,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            member.employeeId,
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Container(width: 56, height: 3, color: _roleBlue),
+          ),
+          const SizedBox(height: 18),
+          for (final d in details.take(7))
+            Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'EMPLOYEE ID',
-                          style: TextStyle(fontSize: 12, color: VStackColors.muted, letterSpacing: 2.4),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          member.employeeId,
-                          style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: 1.5),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(width: 56, height: 3, color: _roleBlue),
-                        const SizedBox(height: 18),
-                        for (final d in details.take(7))
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 14),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  d.$1,
-                                  style: const TextStyle(fontSize: 11.5, color: VStackColors.muted, letterSpacing: 1.8),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  d.$2,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700, height: 1.25),
-                                ),
-                              ],
-                            ),
-                          ),
-                        const Spacer(),
-                        Text(
-                          'This card is the property of VStack Business Solutions. If found, please return it or call $phone.',
-                          style: const TextStyle(fontSize: 12.5, color: VStackColors.muted, height: 1.4),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          contact.email,
-                          style: const TextStyle(fontSize: 12.5, color: _roleBlue, fontWeight: FontWeight.w600),
-                        ),
-                      ],
+                  Text(
+                    d.$1,
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      color: VStackColors.muted,
+                      letterSpacing: 1.8,
                     ),
                   ),
-                  const SizedBox(width: 20),
-                  // Vertical barcode along the long edge gives the dense card URL more room.
-                  Container(
-                    width: 118,
-                    padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: RotatedBox(
-                      quarterTurns: 1,
-                      child: LayoutBuilder(
-                        builder: (context, c) => Column(
-                          children: [
-                            BarcodeView(
-                              barcode: Barcode.code128(),
-                              data: member.cardUrl,
-                              width: c.maxWidth,
-                              height: c.maxHeight - 26,
-                              color: _ink,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              member.employeeId,
-                              style: const TextStyle(
-                                color: _ink,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 6,
-                                height: 1.1,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                  const SizedBox(height: 2),
+                  Text(
+                    d.$2,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      height: 1.25,
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          const Spacer(),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'This card is the property of VStack Business Solutions. If found, please return it or call $phone.',
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        color: VStackColors.muted,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      contact.email,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        color: _roleBlue,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 20),
+              Container(
+                padding: const EdgeInsets.all(9),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: BarcodeView(
+                  barcode: Barcode.qrCode(
+                    errorCorrectLevel: BarcodeQRCorrectionLevel.medium,
+                  ),
+                  data: member.cardUrl,
+                  width: 140,
+                  height: 140,
+                  color: _ink,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
