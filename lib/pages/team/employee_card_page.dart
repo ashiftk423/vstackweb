@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:vstackweb/app/site_content_scope.dart';
 import 'package:vstackweb/features/tools/services/file_download.dart';
 import 'package:vstackweb/models/site_models.dart';
@@ -45,19 +47,59 @@ class _EmployeeCardViewState extends State<_EmployeeCardView> {
   final _frontKey = GlobalKey();
   final _backKey = GlobalKey();
 
-  Future<void> _download(GlobalKey key, String side) async {
+  bool _savingPdf = false;
+
+  Future<Uint8List?> _capture(GlobalKey key) async {
     final boundary =
         key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-    if (boundary == null) return;
-    // 856 × 2 = 1712 px wide ≈ 500 dpi on an 85.6 mm card.
+    if (boundary == null) return null;
+    // 856 × 2 = 1712 px tall ≈ 500 dpi on an 85.6 mm card.
     final image = await boundary.toImage(pixelRatio: 2);
     final data = await image.toByteData(format: ui.ImageByteFormat.png);
-    if (data == null) return;
+    return data?.buffer.asUint8List();
+  }
+
+  Future<void> _download(GlobalKey key, String side) async {
+    final bytes = await _capture(key);
+    if (bytes == null) return;
     downloadBytes(
-      data.buffer.asUint8List(),
+      bytes,
       '${widget.member.employeeId}-$side.png',
       mimeType: 'image/png',
     );
+  }
+
+  Future<void> _downloadPdf() async {
+    setState(() => _savingPdf = true);
+    try {
+      final front = await _capture(_frontKey);
+      final back = await _capture(_backKey);
+      if (front == null || back == null) return;
+      final cardFormat = PdfPageFormat(
+        54 * PdfPageFormat.mm,
+        85.6 * PdfPageFormat.mm,
+      );
+      final doc = pw.Document(
+        title: '${widget.member.displayCardName} — ${widget.member.employeeId}',
+        author: 'VStack Business Solutions',
+      );
+      for (final side in [front, back]) {
+        doc.addPage(
+          pw.Page(
+            pageFormat: cardFormat,
+            margin: pw.EdgeInsets.zero,
+            build: (_) => pw.Image(pw.MemoryImage(side), fit: pw.BoxFit.fill),
+          ),
+        );
+      }
+      downloadBytes(
+        await doc.save(),
+        '${widget.member.employeeId}-id-card.pdf',
+        mimeType: 'application/pdf',
+      );
+    } finally {
+      if (mounted) setState(() => _savingPdf = false);
+    }
   }
 
   @override
@@ -179,8 +221,24 @@ class _EmployeeCardViewState extends State<_EmployeeCardView> {
               ),
               const SizedBox(height: 4),
               const Text(
-                'Download both sides as high-resolution PNGs for printing (CR80 portrait, 54 × 85.6 mm).',
+                'Save both sides as one PDF to share, or download each side as a high-resolution PNG for printing (CR80 portrait, 54 × 85.6 mm).',
                 style: TextStyle(color: VStackColors.muted, fontSize: 13),
+              ),
+              const SizedBox(height: VStackSpacing.md),
+              FilledButton.icon(
+                onPressed: _savingPdf ? null : _downloadPdf,
+                style: FilledButton.styleFrom(
+                  backgroundColor: VStackColors.accent,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                ),
+                icon: _savingPdf
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Icon(Icons.picture_as_pdf_rounded, size: 18),
+                label: const Text('Save as PDF (both sides)'),
               ),
               const SizedBox(height: VStackSpacing.md),
               ConstrainedBox(
